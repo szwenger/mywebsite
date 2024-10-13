@@ -43,3 +43,22 @@ nav ul li a:hover {
   background-color: #555;
   color: #ffcc00;
 }
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+}
+
+#content {
+  flex: 1;
+}
+
+footer {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 8px;
+  box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
+}
