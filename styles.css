@@ -62,3 +62,51 @@ footer {
   padding: 8px;
   box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
 }
+
+/* Dark Mode Styles */
+body.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+nav.dark-mode ul {
+  background: linear-gradient(90deg, #333, #111);
+}
+
+nav.dark-mode ul li a {
+  color: #e0e0e0;
+}
+
+nav.dark-mode ul li a:hover {
+  background-color: #444;
+  color: #ffcc00;
+}
+
+footer.dark-mode {
+  background-color: #222;
+  color: #e0e0e0;
+}
+
+nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  background: linear-gradient(90deg, #4b6cb7, #182848);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+}
+
+nav ul li {
+  display: inline;
+}
+
+nav ul li.right {
+  margin-left: auto;
+}
+
+nav ul li.right img {
+  cursor: pointer;
+  width: 32px; /* Adjust size as needed */
+  height: 32px; /* Adjust size as needed */
+}
