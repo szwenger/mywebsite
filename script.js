@@ -5,6 +5,13 @@ document.addEventListener('DOMContentLoaded', function () {
   showTime();
   setInterval(showTime, 1000);
 
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  const body = document.body;
+
+  darkModeToggle.addEventListener('click', function () {
+    body.classList.toggle('dark-mode');
+  });
+
   function loadContent(url, elementId) {
     fetch(url)
       .then(response => response.text())
@@ -38,6 +45,8 @@ document.addEventListener('DOMContentLoaded', function () {
       <h2>13th October 2024</h2>
       <p>I have added a new page to the website, called "Content Creation". This page will be used to showcase all of my content creation work, such as videos, images, and more. I will be updating this page irregularly, so make sure to check it out! <br>
       Also, my project of the Network-Attached-Storage (NAS) is taking big steps forward. The carcase is finished, and the system is set up to accept the 3 12TB hard drives that will be ordered soon.</p>
+      <h2>3rd November 2024</h2>
+      <p>I tried to finally setup my Network Attached Storage (NAS) and ran into a few problems with that, so it still isn't correctly setup. </p>
     `;
   });
 
@@ -58,18 +67,18 @@ document.addEventListener('DOMContentLoaded', function () {
         </ul>
         <p>My main pc has the following hardware components:</p>
         <h2>PC Setup</h2><ul>
-        <li>Case: <a href="https://amzn.eu/d/4hkrHid">Cooler Master MasterBox TD500 Mesh</a></li>
-        <li>CPU: <a href="https://amzn.eu/d/9HwxtbE">Intel&reg; Core™ i5-13600K</a></li>
-        <li>GPU: <a href="https://amzn.eu/d/5oOMUjF">AMD RX 6800XT</a></li>
-        <li>RAM: <a href="https://amzn.eu/d/4JcwcsO">Gskill F4-3200C16D-32GVK (2 x 16 GB)</a></li>
-        <li>Mainboard: <a href="https://amzn.eu/d/b3DLYPB"><i>Gigabyte</i>&reg; Z690 UD DDR4</a></li>
-        <li>Operating System: <a href="https://www.microsoft.com/de-de/d/windows-11-pro/dg7gmgf0d8h4/000P">Windows 11 Pro (64 Bit)</a></li>
-        <li>Mouse: <a href="https://amzn.eu/d/deVYJgk">Logitech G305</a></li>
-        <li>Keyboard: <a href="https://amzn.eu/d/3x2ZswV">HyperX Alloy Origins 60 (HyperX Red) (US)</a></li>
-        <li>Mousepad: <a href="https://www.amazon.com/SteelSeries-QcK-Gaming-Mouse-Black/dp/B000UVRU6G/ref=sr_1_1?ie=UTF8&qid=1484578950&sr=8-1&keywords=Steelseries+QcK%2B">Steelseries QcK+</a></li>
-        <li>1st Monitor: <a href="https://amzn.eu/d/aVYspWD">AOC Gaming Q27G2U - 27 Zoll QHD Monitor, 144 Hz, 1ms</a></li>
-        <li>2nd Monitor: <a href="https://a.co/d/9RJIAvi">BenQ GL2450 24 Zoll LED-Monitor (60 Hz)</a></li>
-        <li>3rd Monitor (vertical): Lenovo ThinkVision</li>
+          <li>Case: <a href="https://amzn.eu/d/4hkrHid">Cooler Master MasterBox TD500 Mesh</a></li>
+          <li>CPU: <a href="https://amzn.eu/d/9HwxtbE">Intel&reg; Core™ i5-13600K</a></li>
+          <li>GPU: <a href="https://amzn.eu/d/5oOMUjF">AMD RX 6800XT</a></li>
+          <li>RAM: <a href="https://amzn.eu/d/4JcwcsO">Gskill F4-3200C16D-32GVK (2 x 16 GB)</a></li>
+          <li>Mainboard: <a href="https://amzn.eu/d/b3DLYPB"><i>Gigabyte</i>&reg; Z690 UD DDR4</a></li>
+          <li>Operating System: <a href="https://www.microsoft.com/de-de/d/windows-11-pro/dg7gmgf0d8h4/000P">Windows 11 Pro (64 Bit)</a></li>
+          <li>Mouse: <a href="https://amzn.eu/d/deVYJgk">Logitech G305</a></li>
+          <li>Keyboard: <a href="https://amzn.eu/d/3x2ZswV">HyperX Alloy Origins 60 (HyperX Red) (US)</a></li>
+          <li>Mousepad: <a href="https://www.amazon.com/SteelSeries-QcK-Gaming-Mouse-Black/dp/B000UVRU6G/ref=sr_1_1?ie=UTF8&qid=1484578950&sr=8-1&keywords=Steelseries+QcK%2B">Steelseries QcK+</a></li>
+          <li>1st Monitor: <a href="https://amzn.eu/d/aVYspWD">AOC Gaming Q27G2U - 27 Zoll QHD Monitor, 144 Hz, 1ms</a></li>
+          <li>2nd Monitor: <a href="https://a.co/d/9RJIAvi">BenQ GL2450 24 Zoll LED-Monitor (60 Hz)</a></li>
+          <li>3rd Monitor (vertical): Lenovo ThinkVision</li>
         </ul>
         <h3>Headset</h3>
         <p><a href="https://amzn.eu/d/6Mxrhpq"><i>beyerdynamic</i> DT 880 BLACK SPECIAL EDITION</a> + <a href="https://www.amazon.de/gp/product/B00WGAT56W/ref=ppx_yo_dt_b_asin_title_o07_s01?ie=UTF8&th=1"><i>Shure</i> PGA48XLR</a></p>
@@ -80,4 +89,3 @@ document.addEventListener('DOMContentLoaded', function () {
     `;
   });
 });
-
