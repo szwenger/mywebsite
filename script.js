@@ -48,12 +48,12 @@ document.addEventListener('DOMContentLoaded', function () {
         <h2>Network-Attached-Storage (NAS)</h2>
         <p>For my NAS project, I am using the following hardware:</p>
         <ul>
-          <li>Case: <a href="https://www.fractal-design.com/products/cases/node/node-804/black/" target="_blank">Fractal Design Node 804</a></li>
-          <li>Power Supply: <a href="https://www.corsair.com/eu/en/Categories/Products/Power-Supply-Units/Power-Supply-Units-Advanced/RMx-Series/p/CP-9020179-EU" target="_blank">Corsair RM850x</a></li>
-          <li>Mainboard: <a href="https://www.asrock.com/mb/Intel/H370M-ITXac/index.asp" target="_blank">ASRock H370M-ITX/ac</a></li>
-          <li>Processor: <a href="https://ark.intel.com/content/www/us/en/ark/products/126687/intel-core-i3-8100-processor-6m-cache-3-60-ghz.html" target="_blank">Intel Core i3-8100</a></li>
-          <li>RAM: <a href="https://www.corsair.com/eu/en/Categories/Products/Memory/VENGEANCE-LPX/p/CMK16GX4M2B3000C15" target="_blank">Corsair Vengeance LPX 16GB</a></li>
-          <li>Hard Drives: 3x <a href="https://www.seagate.com/internal-hard-drives/hdd/ironwolf/" target="_blank">Seagate IronWolf 12TB</a></li>
+          <li>Case: </li>
+          <li>Power Supply: </li>
+          <li>Mainboard: </li>
+          <li>Processor: </li>
+          <li>RAM: </li>
+          <li>Hard Drives: </li>
           
         </ul>
         <p>My main pc has the following hardware components:</p>
