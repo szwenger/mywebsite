@@ -2,8 +2,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // ─── Dark mode ──────────────────────────────────────────────
   const darkModeToggle = document.getElementById('darkModeToggle');
+  const darkPref = localStorage.getItem('dark');
+  if (darkPref === null ? matchMedia('(prefers-color-scheme: dark)').matches : darkPref === '1') {
+    document.body.classList.add('dark-mode');
+  }
   darkModeToggle.addEventListener('click', function () {
-    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('dark', document.body.classList.toggle('dark-mode') ? '1' : '0');
   });
 
   // ─── Navigation helpers ──────────────────────────────────────
@@ -24,7 +28,11 @@ document.addEventListener('DOMContentLoaded', function () {
   function showHome() {
     carouselContainer.style.display = '';
     defaultMenu.style.display = 'none';
-    contentDiv.innerHTML = '';
+    createCarousel(); // re-measure: width was 0 while hidden
+    fetch('homeContent.html')
+      .then((r) => r.text())
+      .then((html) => { contentDiv.innerHTML = html; })
+      .catch(() => { contentDiv.innerHTML = ''; }); // e.g. file:// has no fetch
   }
 
   // ─── Section content ─────────────────────────────────────────
@@ -228,8 +236,10 @@ document.addEventListener('DOMContentLoaded', function () {
   container.addEventListener('touchmove', (e) => {
     if (isMouseDown) getPosX(e.touches[0].clientX);
   });
-  window.addEventListener('resize', createCarousel);
+  window.addEventListener('resize', () => {
+    if (carouselContainer.style.display !== 'none') createCarousel();
+  });
 
   update();
-  createCarousel();
+  showHome();
 });
