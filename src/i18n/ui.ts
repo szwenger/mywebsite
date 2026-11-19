@@ -4,6 +4,9 @@ export const LANGS: Lang[] = ['en', 'de', 'ru'];
 // DE and RU are drafts; Simon reviews them before launch.
 export const ui = {
   en: {
+    blogIntro: 'Short notes, project updates and longer write-ups.',
+    fallbackNote: 'Not translated yet. Showing the original in',
+    backToBlog: 'All posts',
     siteTitle: 'Galuin',
     siteDescription: 'Simon (Galuin): notes, videos, stream and handy browser tools.',
     langName: 'English',
@@ -16,6 +19,9 @@ export const ui = {
     nfTitle: 'This page does not exist.', nfHome: 'Back home',
   },
   de: {
+    blogIntro: 'Kurze Notizen, Projekt-Updates und längere Beiträge.',
+    fallbackNote: 'Noch nicht übersetzt. Hier das Original auf',
+    backToBlog: 'Alle Beiträge',
     siteTitle: 'Galuin',
     siteDescription: 'Simon (Galuin): Notizen, Videos, Stream und praktische Browser-Tools.',
     langName: 'Deutsch',
@@ -28,6 +34,9 @@ export const ui = {
     nfTitle: 'Diese Seite gibt es nicht.', nfHome: 'Zur Startseite',
   },
   ru: {
+    blogIntro: 'Короткие заметки, новости проектов и большие статьи.',
+    fallbackNote: 'Пока не переведено. Показан оригинал на языке:',
+    backToBlog: 'Все записи',
     siteTitle: 'Galuin',
     siteDescription: 'Саймон (Galuin): заметки, видео, стримы и полезные инструменты прямо в браузере.',
     langName: 'Русский',

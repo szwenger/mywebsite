@@ -1,0 +1,29 @@
+---
+import Base from '../../../layouts/Base.astro';
+import NoteItem from '../../../components/NoteItem.astro';
+import PostCard from '../../../components/PostCard.astro';
+import { LANGS, t, type Lang } from '../../../i18n/ui';
+import { loadPosts } from '../../../lib/load-posts';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const items = await loadPosts(lang);
+---
+<Base lang={lang} title={`${t(lang, 'navBlog')} · Galuin`} description={t(lang, 'blogIntro')} current="blog">
+  <section class="wrap page">
+    <h1 class="section-title">{t(lang, 'navBlog')}</h1>
+    <p class="meta intro">{t(lang, 'blogIntro')}</p>
+    <div class="list">
+      {items.map(({ post, Content }) => post.kind === 'note'
+        ? <NoteItem lang={lang} post={post}><Content /></NoteItem>
+        : <PostCard lang={lang} post={post} />)}
+    </div>
+  </section>
+</Base>
+<style>
+  .page { padding-block: clamp(32px, 6vw, 64px) 0; }
+  .intro { margin: -6px 0 24px; font-size: .95rem; }
+  .list { display: grid; gap: 18px; max-width: 760px; }
+</style>

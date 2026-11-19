@@ -1,0 +1,24 @@
+---
+import { path, t, type Lang } from '../i18n/ui';
+import { dateLabel } from '../lib/load-posts';
+import type { PostView } from '../lib/posts';
+interface Props { lang: Lang; post: PostView }
+const { lang, post } = Astro.props;
+---
+<a class="card post" data-post={post.slug} lang={post.shownIn} href={path(lang, `/blog/${post.slug}/`)}>
+  {post.cover && <img src={post.cover} alt="" loading="lazy" />}
+  <div class="body">
+    <div class="head">
+      <time class="meta" datetime={post.date.toISOString().slice(0, 10)}>{dateLabel(post.date, lang)}</time>
+      {post.fallback && <span class="chip" title={t(lang, 'fallbackNote')}>{post.shownIn.toUpperCase()}</span>}
+    </div>
+    <h2>{post.title}</h2>
+  </div>
+</a>
+<style>
+  .post { overflow: hidden; }
+  .post img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-bottom: 1px solid var(--line); }
+  .body { padding: 18px 22px 22px; }
+  .head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  h2 { margin: 6px 0 0; font-size: 1.15rem; }
+</style>

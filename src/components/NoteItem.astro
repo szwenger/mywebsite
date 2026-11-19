@@ -1,0 +1,24 @@
+---
+import { path, t, type Lang } from '../i18n/ui';
+import { dateLabel } from '../lib/load-posts';
+import type { PostView } from '../lib/posts';
+interface Props { lang: Lang; post: PostView }
+const { lang, post } = Astro.props;
+---
+<article class="card note" data-post={post.slug} lang={post.shownIn}>
+  <div class="head">
+    <time class="meta" datetime={post.date.toISOString().slice(0, 10)}>{dateLabel(post.date, lang)}</time>
+    {post.fallback && <span class="chip" title={t(lang, 'fallbackNote')}>{post.shownIn.toUpperCase()}</span>}
+  </div>
+  <h2><a href={path(lang, `/blog/${post.slug}/`)}>{post.title}</a></h2>
+  <div class="prose"><slot /></div>
+</article>
+<style>
+  .note { padding: 22px 24px; }
+  .head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  h2 { margin: 6px 0 10px; font-size: 1.15rem; }
+  h2 a { text-decoration: none; }
+  h2 a:hover { color: var(--accent-ink); }
+  .prose :global(p) { margin: 0 0 .8em; max-width: 65ch; }
+  .prose :global(p:last-child) { margin-bottom: 0; }
+</style>

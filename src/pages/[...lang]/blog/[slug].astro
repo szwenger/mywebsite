@@ -1,0 +1,35 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { LANGS, path, t, type Lang } from '../../../i18n/ui';
+import { dateLabel, loadPosts } from '../../../lib/load-posts';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const slugs = [...new Set((await getCollection('posts')).map((e) => e.id.split('/')[0]))];
+  return LANGS.flatMap((l) => slugs.map((slug) => ({ params: { lang: l === 'en' ? undefined : l, slug } })));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const { slug } = Astro.params;
+const { post, Content } = (await loadPosts(lang)).find((i) => i.post.slug === slug)!;
+const canonical = post.fallback ? `https://galuin.com${path(post.originalLang, `/blog/${slug}/`)}` : undefined;
+---
+<Base lang={lang} title={`${post.title} · Galuin`} canonical={canonical} current="blog">
+  <article class="wrap page" lang={post.shownIn}>
+    <p class="meta"><a href={path(lang, '/blog/')}>← {t(lang, 'backToBlog')}</a></p>
+    <h1>{post.title}</h1>
+    <p class="meta">
+      <time datetime={post.date.toISOString().slice(0, 10)}>{dateLabel(post.date, lang)}</time>
+      {post.fallback && <span class="chip">{t(lang, 'fallbackNote')} {t(post.shownIn, 'langName')}</span>}
+    </p>
+    <div class="prose"><Content /></div>
+  </article>
+</Base>
+<style>
+  .page { padding-block: clamp(32px, 6vw, 64px) 0; max-width: calc(760px + 2 * var(--gutter)); }
+  h1 { margin: 12px 0 8px; font-size: clamp(1.5rem, 3.4vw, 2.2rem); }
+  .meta a { text-decoration: none; }
+  .meta a:hover { color: var(--fg); text-decoration: underline; }
+  .meta .chip { margin-left: 10px; }
+  .prose { margin-top: 24px; font-size: 1.05rem; }
+  .prose :global(p) { max-width: 65ch; }
+</style>

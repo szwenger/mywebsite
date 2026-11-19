@@ -101,3 +101,43 @@ test('404 page: not indexed, links home in all three languages', () => {
   assert.ok(!h.includes('rel="canonical"'), '404 must not claim a canonical URL');
   for (const p of ['/', '/de/', '/ru/']) assert.ok(h.includes(`href="${p}"`), `${p} in 404`);
 });
+
+// ---- Task 2: blog ----
+const SLUGS = ['welcome', 'version-0-1', 'content-page-and-nas', 'nas-build'];
+
+test('blog index exists in every language and lists all 4 posts once', () => {
+  for (const lang of ['en', 'de', 'ru']) {
+    const h = read(join(lang === 'en' ? '' : lang, 'blog', 'index.html'));
+    assert.match(h, new RegExp(`<html lang="${lang}"`));
+    assert.equal((h.match(/data-post=/g) ?? []).length, 4, `${lang}: post count`);
+    for (const s of SLUGS) assert.equal((h.match(new RegExp(`data-post="${s}"`, 'g')) ?? []).length, 1, `${lang}: ${s}`);
+  }
+});
+
+test('every slug has a page in every language', () => {
+  for (const lang of ['en', 'de', 'ru']) for (const s of SLUGS) {
+    const f = join(lang === 'en' ? '' : lang, 'blog', s, 'index.html');
+    assert.ok(existsSync(join('dist', f)), f);
+  }
+});
+
+test('a fallback page shows the original text and canonicalises to it', () => {
+  const h = read('de/blog/welcome/index.html');
+  assert.match(h, /<html lang="de"/);
+  assert.match(h, /<article[^>]*\blang="en"/);
+  assert.match(h, /<link rel="canonical" href="https:\/\/galuin\.com\/blog\/welcome\/"/);
+});
+
+test('the original page canonicalises to itself and the blog is in the nav as current', () => {
+  const h = read('blog/welcome/index.html');
+  assert.match(h, /<link rel="canonical" href="https:\/\/galuin\.com\/blog\/welcome\/"/);
+  assert.match(h, /aria-current="page"[^>]*>Blog</);
+});
+
+test('notes show their text on the index, the NAS note has no TBD rows', () => {
+  const h = read('blog/index.html');
+  assert.match(h, /Welcome to my personal blog/);
+  const nas = read('blog/nas-build/index.html');
+  assert.match(nas, /3 × 12/);
+  assert.doesNotMatch(nas, /TBD/);
+});
