@@ -1,0 +1,27 @@
+---
+// GitHub Pages serves this one file for every missing path, so it speaks all three languages.
+import Base from '../layouts/Base.astro';
+import { LANGS, path, t } from '../i18n/ui';
+---
+<Base lang="en" title="404 · Galuin" description="This page does not exist." noindex>
+  <section class="wrap nf">
+    <p class="code" aria-hidden="true">404</p>
+    <ul>
+      {LANGS.map((l) => (
+        <li lang={l}>
+          <h1 class:list={{ sub: l !== 'en' }}>{t(l, 'nfTitle')}</h1>
+          <a href={path(l, '/')} hreflang={l}>{t(l, 'nfHome')} <span aria-hidden="true">→</span></a>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>
+<style>
+  .nf { padding-block: clamp(48px, 12vh, 120px); }
+  .code { margin: 0; font: 800 clamp(5rem, 18vw, 11rem)/.9 var(--display); letter-spacing: -.05em; color: var(--accent); text-shadow: .05em .05em 0 var(--hard); }
+  ul { display: grid; gap: 22px; margin: 40px 0 0; padding: 0; list-style: none; }
+  h1 { margin: 0 0 4px; font-size: clamp(1.2rem, 2.6vw, 1.7rem); }
+  h1.sub { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--muted); }
+  a { color: var(--accent-ink); font-weight: 600; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>

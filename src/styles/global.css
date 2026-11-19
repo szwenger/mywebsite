@@ -1,0 +1,61 @@
+/* Visual system: dark, card-based, one accent taken from the logo (#6a78d1).
+   Signature: the logo's hard offset shadow comes back as the hover state of cards. */
+:root {
+  --font: 'Onest Variable', system-ui, sans-serif;
+  --display: 'Unbounded Variable', 'Onest Variable', system-ui, sans-serif;
+  --max: 1200px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --accent: #6a78d1;
+}
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0d0f14; --surface: #151821; --surface-2: #1c2030; --line: #272c3b;
+  --fg: #eceef5; --muted: #959cb0; --accent-ink: #a5aef0; --hard: #000;
+}
+html[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f3f4f8; --surface: #ffffff; --surface-2: #e9ebf3; --line: #d6d9e5;
+  --fg: #11141d; --muted: #565d72; --accent-ink: #3e4bab; --hard: #11141d;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; min-height: 100svh; display: flex; flex-direction: column;
+  background: var(--bg); color: var(--fg); font: 400 1rem/1.6 var(--font);
+  font-feature-settings: 'ss01'; text-rendering: optimizeLegibility;
+}
+main { flex: 1; }
+a { color: inherit; text-underline-offset: .2em; }
+img { max-width: 100%; height: auto; display: block; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; text-wrap: balance; }
+:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 3px; border-radius: 4px; }
+::selection { background: var(--accent); color: #fff; }
+
+.wrap { width: 100%; max-width: calc(var(--max) + 2 * var(--gutter)); margin-inline: auto; padding-inline: var(--gutter); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip { position: absolute; left: 12px; top: -60px; z-index: 50; padding: 10px 14px; border-radius: var(--radius-sm); background: var(--fg); color: var(--bg); font-weight: 600; }
+.skip:focus { top: 12px; }
+
+/* Cards. A linked card lifts up-left and leaves the logo's hard shadow behind. */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+a.card, .card-link { display: block; text-decoration: none; transition: transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s; }
+@media (hover: hover) {
+  a.card:hover, .card-link:hover { transform: translate(-3px, -3px); box-shadow: 5px 5px 0 var(--accent); border-color: var(--accent); }
+}
+a.card:focus-visible, .card-link:focus-visible { box-shadow: 5px 5px 0 var(--accent); border-color: var(--accent); }
+
+/* Section title: display face, a small logo-blue block in front. */
+.section-title { display: flex; align-items: center; gap: .55em; margin: 0 0 18px; font-size: clamp(1.05rem, 1.6vw, 1.3rem); }
+.section-title::before { content: ''; width: .62em; height: .62em; border-radius: 2px; background: var(--accent); box-shadow: 2px 2px 0 var(--hard); flex: none; }
+
+.meta { color: var(--muted); font-size: .82rem; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border: 1px solid var(--line); border-radius: 99px; font-size: .78rem; color: var(--muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+  a.card:hover, .card-link:hover { transform: none; }
+}

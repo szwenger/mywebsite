@@ -1,0 +1,67 @@
+---
+import '@fontsource-variable/onest';
+import '@fontsource-variable/unbounded';
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { LANGS, localize, t, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description?: string;
+  noindex?: boolean;
+  /** Site-relative URL of this page in each language; defaults to the same path in every language. */
+  alternates?: Record<Lang, string>;
+  /** Absolute canonical URL; defaults to this page. Fallback pages point it at the original post. */
+  canonical?: string;
+  /** Nav item to mark as current: 'blog' | 'videos' | 'tools' | 'hardware'. */
+  current?: string;
+}
+const { lang, title, description = t(lang, 'siteDescription'), noindex = false, canonical, current } = Astro.props;
+const site = 'https://galuin.com';
+const here = Astro.url.pathname;
+const alternates = Astro.props.alternates
+  ?? Object.fromEntries(LANGS.map((l) => [l, noindex ? localize('/', l) : localize(here, l)])) as Record<Lang, string>;
+const OG_LOCALE = { en: 'en_US', de: 'de_DE', ru: 'ru_RU' } as const;
+---
+<!doctype html>
+<html lang={lang} data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="dark light" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Galuin" />
+    <meta property="og:locale" content={OG_LOCALE[lang]} />
+    {noindex
+      ? <meta name="robots" content="noindex" />
+      : <>
+          <meta property="og:url" content={canonical ?? site + here} />
+          <link rel="canonical" href={canonical ?? site + here} />
+          {LANGS.map((l) => <link rel="alternate" hreflang={l} href={site + alternates[l]} />)}
+          <link rel="alternate" hreflang="x-default" href={site + alternates.en} />
+        </>}
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <script is:inline>
+      (function () {
+        var t;
+        try { t = localStorage.getItem('theme'); } catch (e) {}
+        if (t !== 'dark' && t !== 'light') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">{t(lang, 'skip')}</a>
+    <Nav lang={lang} current={current} alternates={alternates} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+  </body>
+</html>
