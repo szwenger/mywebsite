@@ -4,6 +4,9 @@ export const LANGS: Lang[] = ['en', 'de', 'ru'];
 // DE and RU are drafts; Simon reviews them before launch.
 export const ui = {
   en: {
+    videosIntro: 'Gaming and tech videos from my YouTube channel.',
+    moreOnYouTube: 'More on YouTube',
+    shortBadge: 'Short',
     blogIntro: 'Short notes, project updates and longer write-ups.',
     fallbackNote: 'Not translated yet. Showing the original in',
     backToBlog: 'All posts',
@@ -19,6 +22,9 @@ export const ui = {
     nfTitle: 'This page does not exist.', nfHome: 'Back home',
   },
   de: {
+    videosIntro: 'Gaming- und Tech-Videos von meinem YouTube-Kanal.',
+    moreOnYouTube: 'Mehr auf YouTube',
+    shortBadge: 'Short',
     blogIntro: 'Kurze Notizen, Projekt-Updates und längere Beiträge.',
     fallbackNote: 'Noch nicht übersetzt. Hier das Original auf',
     backToBlog: 'Alle Beiträge',
@@ -34,6 +40,9 @@ export const ui = {
     nfTitle: 'Diese Seite gibt es nicht.', nfHome: 'Zur Startseite',
   },
   ru: {
+    videosIntro: 'Видео об играх и технологиях с моего YouTube-канала.',
+    moreOnYouTube: 'Больше на YouTube',
+    shortBadge: 'Short',
     blogIntro: 'Короткие заметки, новости проектов и большие статьи.',
     fallbackNote: 'Пока не переведено. Показан оригинал на языке:',
     backToBlog: 'Все записи',

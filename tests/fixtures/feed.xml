@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns:yt="http://www.youtube.com/xml/schemas/2015" xmlns:media="http://search.yahoo.com/mrss/" xmlns="http://www.w3.org/2005/Atom">
+ <link rel="self" href="http://www.youtube.com/feeds/videos.xml?channel_id=UCqcksKsQR1sMoFbrvdG209Q"/>
+ <id>yt:channel:qcksKsQR1sMoFbrvdG209Q</id>
+ <yt:channelId>qcksKsQR1sMoFbrvdG209Q</yt:channelId>
+ <title>Galuin</title>
+ <link rel="alternate" href="https://www.youtube.com/channel/UCqcksKsQR1sMoFbrvdG209Q"/>
+ <author>
+  <name>Galuin</name>
+  <uri>https://www.youtube.com/channel/UCqcksKsQR1sMoFbrvdG209Q</uri>
+ </author>
+ <published>2009-08-15T07:41:27+00:00</published>
+ <entry>
+  <id>yt:video:Fy9UYGzPVG8</id>
+  <yt:videoId>Fy9UYGzPVG8</yt:videoId>
+  <yt:channelId>UCqcksKsQR1sMoFbrvdG209Q</yt:channelId>
+  <title>NOOB plays Elden Ring Part [GER]</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=Fy9UYGzPVG8"/>
+  <author>
+   <name>Galuin</name>
+   <uri>https://www.youtube.com/channel/UCqcksKsQR1sMoFbrvdG209Q</uri>
+  </author>
+  <published>2023-11-17T13:00:31+00:00</published>
+  <updated>2026-10-04T02:59:33+00:00</updated>
+  <media:group>
+   <media:title>NOOB plays Elden Ring Part [GER]</media:title>
+   <media:content url="https://www.youtube.com/v/Fy9UYGzPVG8?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i3.ytimg.com/vi/Fy9UYGzPVG8/hqdefault.jpg" width="480" height="360"/>
+  </media:group>
+ </entry>
+<entry>
+  <id>yt:video:062ABq5WHRU</id>
+  <yt:videoId>062ABq5WHRU</yt:videoId>
+  <yt:channelId>UCqcksKsQR1sMoFbrvdG209Q</yt:channelId>
+  <title>Hanging by a thread 😰 ... #galuin on #twitch</title>
+  <link rel="alternate" href="https://www.youtube.com/shorts/062ABq5WHRU"/>
+  <author>
+   <name>Galuin</name>
+   <uri>https://www.youtube.com/channel/UCqcksKsQR1sMoFbrvdG209Q</uri>
+  </author>
+  <published>2023-07-18T09:44:31+00:00</published>
+  <updated>2026-10-01T21:02:31+00:00</updated>
+  <media:group>
+   <media:title>Hanging by a thread 😰 ... #galuin on #twitch</media:title>
+   <media:content url="https://www.youtube.com/v/062ABq5WHRU?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i1.ytimg.com/vi/062ABq5WHRU/hqdefault.jpg" width="480" height="360"/>
+  </media:group>
+ </entry>
+<entry>
+  <id>yt:video:AAAAAAAAAAA</id>
+  <yt:videoId>AAAAAAAAAAA</yt:videoId>
+  <yt:channelId>UCqcksKsQR1sMoFbrvdG209Q</yt:channelId>
+  <title>He said &quot;hi&quot; &amp; left</title>
+  <link rel="alternate" href="https://www.youtube.com/watch?v=AAAAAAAAAAA"/>
+  <author>
+   <name>Galuin</name>
+   <uri>https://www.youtube.com/channel/UCqcksKsQR1sMoFbrvdG209Q</uri>
+  </author>
+  <published>2023-11-17T13:00:31+00:00</published>
+  <updated>2026-10-04T02:59:33+00:00</updated>
+  <media:group>
+   <media:title>He said &quot;hi&quot; &amp; left</media:title>
+   <media:content url="https://www.youtube.com/v/AAAAAAAAAAA?version=3" type="application/x-shockwave-flash" width="640" height="390"/>
+   <media:thumbnail url="https://i3.ytimg.com/vi/AAAAAAAAAAA/hqdefault.jpg" width="480" height="360"/>
+  </media:group>
+ </entry>
+</feed>

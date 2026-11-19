@@ -141,3 +141,15 @@ test('notes show their text on the index, the NAS note has no TBD rows', () => {
   assert.match(nas, /3 × 12/);
   assert.doesNotMatch(nas, /TBD/);
 });
+
+// ---- Task 3: videos ----
+test('videos page exists in every language, links the channel, thumbnails are local', () => {
+  for (const lang of ['en', 'de', 'ru']) {
+    const h = read(join(lang === 'en' ? '' : lang, 'videos', 'index.html'));
+    assert.match(h, new RegExp(`<html lang="${lang}"`));
+    assert.match(h, /href="https:\/\/www\.youtube\.com\/@Galuin"/);
+    assert.match(h, /aria-current="page"[^>]*>(Videos|Видео)</);
+    const main = h.slice(h.indexOf('<main'), h.indexOf('</main>'));
+    for (const [, src] of main.matchAll(/<img[^>]*\ssrc="([^"]+)"/g)) assert.ok(src.startsWith('/thumbs/'), `${lang}: ${src}`);
+  }
+});

@@ -1,0 +1,24 @@
+---
+import { t, type Lang } from '../i18n/ui';
+import { videoDate, type Video } from '../lib/load-videos';
+interface Props { lang: Lang; video: Video }
+const { lang, video } = Astro.props;
+---
+<a class="card video" href={video.url} rel="noopener">
+  <div class="thumb">
+    {video.thumb && <img src={video.thumb} alt="" width="480" height="360" loading="lazy" />}
+    {video.isShort && <span class="badge">{t(lang, 'shortBadge')}</span>}
+  </div>
+  <div class="body">
+    <h2>{video.title}</h2>
+    <time class="meta" datetime={video.published}>{videoDate(video.published, lang)}</time>
+  </div>
+</a>
+<style>
+  .video { overflow: hidden; height: 100%; }
+  .thumb { position: relative; aspect-ratio: 16 / 9; background: var(--surface-2); border-bottom: 1px solid var(--line); overflow: hidden; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .badge { position: absolute; top: 10px; left: 10px; padding: 2px 9px; border-radius: 99px; background: var(--accent); color: #fff; font-size: .72rem; font-weight: 700; box-shadow: 2px 2px 0 var(--hard); }
+  .body { padding: 14px 18px 18px; }
+  h2 { margin: 0 0 6px; font: 600 .98rem/1.35 var(--font); letter-spacing: 0; }
+</style>
