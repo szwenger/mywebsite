@@ -4,6 +4,11 @@ export const LANGS: Lang[] = ['en', 'de', 'ru'];
 // DE and RU are drafts; Simon reviews them before launch.
 export const ui = {
   en: {
+    notesTitle: 'Notes', latestVideos: 'Latest videos', allVideos: 'All videos',
+    leadVideo: 'New on YouTube', leadPost: 'Latest post',
+    twitchTitle: 'Live on Twitch', twitchText: 'I stream on Twitch as galuin. The player loads from twitch.tv only after you click; Twitch may set cookies then.',
+    twitchLoad: 'Load player', watchOnTwitch: 'Watch on Twitch',
+    toolsIntro: 'Small tools that run in your browser. Your files never leave your device.', allTools: 'All tools',
     videosIntro: 'Gaming and tech videos from my YouTube channel.',
     moreOnYouTube: 'More on YouTube',
     shortBadge: 'Short',
@@ -18,10 +23,14 @@ export const ui = {
     navLabel: 'Main', langLabel: 'Language', themeToggle: 'Toggle light/dark theme',
     footerLine: 'Games, code and a few tools that run in your browser.',
     footerWork: 'Work & projects', impressum: 'Legal notice', privacy: 'Privacy',
-    homeSoon: 'New front page in the works.',
     nfTitle: 'This page does not exist.', nfHome: 'Back home',
   },
   de: {
+    notesTitle: 'Notizen', latestVideos: 'Neueste Videos', allVideos: 'Alle Videos',
+    leadVideo: 'Neu auf YouTube', leadPost: 'Neuester Beitrag',
+    twitchTitle: 'Live auf Twitch', twitchText: 'Ich streame auf Twitch als galuin. Der Player lädt erst nach einem Klick von twitch.tv; Twitch kann dann Cookies setzen.',
+    twitchLoad: 'Player laden', watchOnTwitch: 'Auf Twitch ansehen',
+    toolsIntro: 'Kleine Tools, die im Browser laufen. Deine Dateien verlassen nie dein Gerät.', allTools: 'Alle Tools',
     videosIntro: 'Gaming- und Tech-Videos von meinem YouTube-Kanal.',
     moreOnYouTube: 'Mehr auf YouTube',
     shortBadge: 'Short',
@@ -36,10 +45,14 @@ export const ui = {
     navLabel: 'Hauptmenü', langLabel: 'Sprache', themeToggle: 'Hell/Dunkel umschalten',
     footerLine: 'Games, Code und ein paar Tools, die im Browser laufen.',
     footerWork: 'Arbeit & Projekte', impressum: 'Impressum', privacy: 'Datenschutz',
-    homeSoon: 'Die neue Startseite entsteht gerade.',
     nfTitle: 'Diese Seite gibt es nicht.', nfHome: 'Zur Startseite',
   },
   ru: {
+    notesTitle: 'Заметки', latestVideos: 'Свежие видео', allVideos: 'Все видео',
+    leadVideo: 'Новое на YouTube', leadPost: 'Свежая запись',
+    twitchTitle: 'Стримы на Twitch', twitchText: 'Я стримлю на Twitch под ником galuin. Плеер загружается с twitch.tv только после клика; тогда Twitch может сохранить cookie.',
+    twitchLoad: 'Загрузить плеер', watchOnTwitch: 'Смотреть на Twitch',
+    toolsIntro: 'Небольшие инструменты прямо в браузере. Ваши файлы не покидают устройство.', allTools: 'Все инструменты',
     videosIntro: 'Видео об играх и технологиях с моего YouTube-канала.',
     moreOnYouTube: 'Больше на YouTube',
     shortBadge: 'Short',
@@ -54,7 +67,6 @@ export const ui = {
     navLabel: 'Главное меню', langLabel: 'Язык', themeToggle: 'Светлая/тёмная тема',
     footerLine: 'Игры, код и пара инструментов, работающих прямо в браузере.',
     footerWork: 'Работа и проекты', impressum: 'Выходные данные', privacy: 'Конфиденциальность',
-    homeSoon: 'Новая главная страница в работе.',
     nfTitle: 'Такой страницы нет.', nfHome: 'На главную',
   },
 } as const satisfies Record<Lang, Record<string, string>>;

@@ -9,6 +9,7 @@
   --radius-sm: 8px;
   --ease: cubic-bezier(.22, 1, .36, 1);
   --accent: #6a78d1;
+  --accent-strong: #5563c6; /* fills behind white text: 5:1 contrast, --accent alone is 4:1 */
 }
 html[data-theme='dark'] {
   color-scheme: dark;
@@ -47,6 +48,16 @@ a.card, .card-link { display: block; text-decoration: none; transition: transfor
   a.card:hover, .card-link:hover { transform: translate(-3px, -3px); box-shadow: 5px 5px 0 var(--accent); border-color: var(--accent); }
 }
 a.card:focus-visible, .card-link:focus-visible { box-shadow: 5px 5px 0 var(--accent); border-color: var(--accent); }
+
+/* Button: solid accent, same lift-and-shadow move as the cards. */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 20px;
+  border: 0; border-radius: 99px; background: var(--accent-strong); color: #fff;
+  font: 600 .95rem/1.2 var(--font); cursor: pointer; text-decoration: none;
+  box-shadow: 3px 3px 0 var(--hard); transition: transform .15s var(--ease), box-shadow .15s var(--ease);
+}
+@media (hover: hover) { .btn:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--hard); } }
+.btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--hard); }
 
 /* Section title: display face, a small logo-blue block in front. */
 .section-title { display: flex; align-items: center; gap: .55em; margin: 0 0 18px; font-size: clamp(1.05rem, 1.6vw, 1.3rem); }

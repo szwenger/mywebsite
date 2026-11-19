@@ -153,3 +153,58 @@ test('videos page exists in every language, links the channel, thumbnails are lo
     for (const [, src] of main.matchAll(/<img[^>]*\ssrc="([^"]+)"/g)) assert.ok(src.startsWith('/thumbs/'), `${lang}: ${src}`);
   }
 });
+
+// ---- Task 4: front page ----
+const section = (h, name) => {
+  const i = h.indexOf(`data-section="${name}"`);
+  if (i < 0) return null;
+  const start = h.lastIndexOf('<', i);
+  const tag = h.slice(start + 1).match(/^\w+/)[0];
+  return h.slice(start, h.indexOf(`</${tag}>`, i) + tag.length + 3);
+};
+const cachedVideos = existsSync('src/data/videos.json') ? JSON.parse(readFileSync('src/data/videos.json', 'utf8')).videos : [];
+
+test('front page has lead, notes, videos, Twitch and tools sections in every language', () => {
+  for (const [lang, f] of Object.entries(PAGES)) {
+    const h = read(f);
+    for (const s of ['notes', 'twitch', 'tools']) assert.ok(section(h, s), `${s} on ${f}`);
+    // All migrated posts are notes, so the lead is a video exactly when the feed gave us any.
+    assert.equal(!!section(h, 'lead'), cachedVideos.length > 0, `lead on ${f}`);
+    assert.equal(!!section(h, 'videos'), cachedVideos.length > 1, `videos row on ${f}`);
+    assert.ok(!h.includes('homeSoon') && !/front page in the works/i.test(h), `placeholder left on ${f}`);
+    assert.match(h, new RegExp(`<html lang="${lang}"`));
+  }
+});
+
+test('notes column shows the newest notes in full, at most 5', () => {
+  const notes = section(read('index.html'), 'notes');
+  const n = (notes.match(/data-post=/g) ?? []).length;
+  assert.ok(n >= 1 && n <= 5, `notes: ${n}`);
+  assert.match(notes, /data-post="nas-build"/);
+  assert.match(notes, /3 × 12/);
+});
+
+test('videos row: at most 4 cards, none repeats the lead, local thumbnails, links to /videos/', { skip: cachedVideos.length > 1 ? false : 'no videos cached' }, () => {
+  for (const [lang, f] of Object.entries(PAGES)) {
+    const h = read(f);
+    const row = section(h, 'videos');
+    const ids = [...row.matchAll(/href="https:\/\/www\.youtube\.com\/(?:watch\?v=|shorts\/)([\w-]+)"/g)].map((m) => m[1]);
+    assert.ok(ids.length >= 1 && ids.length <= 4, `${f}: ${ids.length} cards`);
+    const leadId = section(h, 'lead').match(/youtube\.com\/(?:watch\?v=|shorts\/)([\w-]+)/)?.[1];
+    assert.ok(!ids.includes(leadId), `${f}: lead repeated in row`);
+    assert.ok(row.includes(`href="${pre(lang)}/videos/"`), `${f}: link to videos page`);
+  }
+});
+
+test('Twitch card: click-to-load button and a plain link, no player in the HTML', () => {
+  for (const f of Object.values(PAGES)) {
+    const tw = section(read(f), 'twitch');
+    assert.match(tw, /<button[^>]*data-twitch-load/, f);
+    assert.match(tw, /href="https:\/\/www\.twitch\.tv\/galuin"/, f);
+    assert.doesNotMatch(tw, /player\.twitch\.tv/, f);
+  }
+});
+
+test('tools strip links to the tools overview', () => {
+  for (const [lang, f] of Object.entries(PAGES)) assert.ok(section(read(f), 'tools').includes(`href="${pre(lang)}/tools/"`), f);
+});

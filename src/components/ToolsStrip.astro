@@ -1,0 +1,33 @@
+---
+import { path, t, type Lang } from '../i18n/ui';
+import { tools } from '../data/tools';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+---
+<section class="tools" data-section="tools" aria-labelledby="tools-title">
+  <div class="head">
+    <h2 class="section-title" id="tools-title">{t(lang, 'navTools')}</h2>
+    <p class="meta">{t(lang, 'toolsIntro')}</p>
+  </div>
+  <ul>
+    {tools.map((tool) => (
+      <li>
+        <a class="chip tool" href={path(lang, `/tools/${tool.slug}/`)} title={tool.blurb[lang]}>
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d={tool.icon} fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          {tool.name[lang]}
+        </a>
+      </li>
+    ))}
+    <li><a class="chip all" href={path(lang, '/tools/')}>{t(lang, 'allTools')} <span aria-hidden="true">→</span></a></li>
+  </ul>
+</section>
+<style>
+  .tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; }
+  .head .section-title { margin-bottom: 4px; }
+  .head p { margin: 0; font-size: .9rem; }
+  ul { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+  .chip { padding: 9px 16px; font-size: .92rem; font-weight: 500; color: var(--fg); text-decoration: none; background: var(--surface); transition: transform .2s var(--ease), box-shadow .2s var(--ease), border-color .2s; }
+  .chip svg { color: var(--accent-ink); }
+  .all { color: var(--muted); background: transparent; }
+  @media (hover: hover) { .chip:hover { transform: translate(-2px, -2px); box-shadow: 3px 3px 0 var(--accent); border-color: var(--accent); color: var(--fg); } }
+</style>
