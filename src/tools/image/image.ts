@@ -1,4 +1,4 @@
-import { accepts, outName, targetSize, type Format } from './logic';
+import { accepts, fitsCanvas, outName, targetSize, type Format } from './logic';
 
 const root = document.querySelector<HTMLElement>('[data-image]');
 if (root) init(root);
@@ -38,21 +38,36 @@ function init(root: HTMLElement) {
   const limit = (el: HTMLInputElement) => { const n = Math.floor(Number(el.value)); return n >= 1 ? n : undefined; };
   const showError = (msg: string) => { errorEl.textContent = msg; errorEl.hidden = !msg; };
 
-  /** Draws the file into a canvas at the target size and encodes it. Resolves null when the browser cannot export the format. */
-  async function convert(file: File, fmt: Format, quality: number, maxW?: number, maxH?: number): Promise<Blob | null> {
+  // An unsupported export type silently falls back to PNG, so probe each format once on a 1×1 canvas.
+  const support = new Map<Format, Promise<boolean>>();
+  const canExport = (fmt: Format) => {
+    if (!support.has(fmt)) {
+      support.set(fmt, new Promise((done) => {
+        const c = document.createElement('canvas');
+        c.width = c.height = 1;
+        c.toBlob((b) => done(b?.type === `image/${fmt}`), `image/${fmt}`);
+      }));
+    }
+    return support.get(fmt)!;
+  };
+
+  /** Draws the file into a canvas at the target size and encodes it, or says why it cannot. */
+  async function convert(file: File, fmt: Format, quality: number, maxW?: number, maxH?: number): Promise<Blob | 'unsupported' | 'too-big'> {
+    if (!(await canExport(fmt))) return 'unsupported';
     const bmp = await createImageBitmap(file);
     try {
-      const { w, h } = targetSize(bmp.width, bmp.height, maxW, maxH);
+      const size = targetSize(bmp.width, bmp.height, maxW, maxH);
+      if (!fitsCanvas(size)) return 'too-big';
+      const { w, h } = size;
       const canvas = document.createElement('canvas');
       canvas.width = w;
       canvas.height = h;
-      const ctx = canvas.getContext('2d')!;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return 'too-big'; // the browser refused a canvas this size
       if (fmt === 'jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); } // JPEG has no transparency
       ctx.drawImage(bmp, 0, 0, w, h);
-      const mime = `image/${fmt}`;
-      const blob = await new Promise<Blob | null>((done) => canvas.toBlob(done, mime, quality));
-      // An unsupported export type silently falls back to PNG, so compare the type we get back.
-      return blob && blob.type === mime ? blob : null;
+      const blob = await new Promise<Blob | null>((done) => canvas.toBlob(done, `image/${fmt}`, quality));
+      return blob ?? 'too-big'; // the format works (probed above), so a null blob means the canvas was too large
     } finally { bmp.close(); }
   }
 
@@ -71,8 +86,8 @@ function init(root: HTMLElement) {
       it.url = it.name = it.size = it.note = undefined;
       try {
         const blob = await convert(it.file, fmt, quality, maxW, maxH);
-        if (blob) { it.url = URL.createObjectURL(blob); it.name = outName(it.file.name, fmt); it.size = blob.size; }
-        else it.note = s.unsupported.replace('{fmt}', LABEL[fmt]);
+        if (blob instanceof Blob) { it.url = URL.createObjectURL(blob); it.name = outName(it.file.name, fmt); it.size = blob.size; }
+        else it.note = blob === 'unsupported' ? s.unsupported.replace('{fmt}', LABEL[fmt]) : s.tooBig;
       } catch (e) {
         console.error('image tool', e);
         it.note = s.failed;

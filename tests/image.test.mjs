@@ -35,3 +35,12 @@ test('accepts takes png, jpeg, webp, gif and bmp only', () => {
   for (const t of ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/bmp']) assert.equal(accepts({ type: t }), true, t);
   for (const t of ['application/pdf', 'image/svg+xml', 'image/tiff', '']) assert.equal(accepts({ type: t }), false, t);
 });
+
+test('fitsCanvas: within the 16.7 MP iOS canvas limit, judged on the output size', async () => {
+  const { fitsCanvas, MAX_PIXELS } = await import('../src/tools/image/logic.ts');
+  assert.equal(MAX_PIXELS, 16_777_216);
+  assert.equal(fitsCanvas({ w: 4096, h: 4096 }), true);
+  assert.equal(fitsCanvas({ w: 4096, h: 4097 }), false);
+  assert.equal(fitsCanvas(targetSize(8000, 6000)), false, '48 MP phone photo, no limit set');
+  assert.equal(fitsCanvas(targetSize(8000, 6000, 4000)), true, 'same photo with a max width');
+});

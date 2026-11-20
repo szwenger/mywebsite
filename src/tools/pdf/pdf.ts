@@ -2,6 +2,7 @@ import * as pdfjs from 'pdfjs-dist';
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { extract, imagesToPdf, loadInfo, merge, rotate } from './ops';
 import { parseRanges } from './ranges';
+import { oneAtATime } from './busy';
 
 // The worker is bundled into our own assets; nothing is loaded from a CDN.
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
@@ -41,12 +42,13 @@ function init(root: HTMLElement) {
 
   const showError = (msg: string) => { errorEl.textContent = msg; errorEl.hidden = !msg; };
 
-  /** Runs one operation with a busy message; any failure shows the generic "invalid" text. */
-  async function run(fn: () => Promise<void>) {
+  /** Runs one operation with a busy message; any failure shows the generic "invalid" text. Clicks while busy are ignored. */
+  const run = oneAtATime(async (fn: () => Promise<void>) => {
     showError('');
     statusEl.textContent = s.busy;
-    try { await fn(); } catch (e) { console.error('pdf tool', e); showError(s.invalid); } finally { statusEl.textContent = ''; }
-  }
+    root.setAttribute('aria-busy', 'true');
+    try { await fn(); } catch (e) { console.error('pdf tool', e); showError(s.invalid); } finally { statusEl.textContent = ''; root.removeAttribute('aria-busy'); }
+  });
 
   async function apply(next: Bytes) {
     if (doc) history.push(doc);

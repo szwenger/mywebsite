@@ -83,3 +83,20 @@ test('loadInfo reports encrypted for a PDF whose trailer has /Encrypt', async ()
   const bytes = new Uint8Array(await doc.save());
   assert.deepEqual(await loadInfo(bytes), { error: 'encrypted' });
 });
+
+test('oneAtATime: calls made while one is running are dropped, so no edit is built on a stale document', async () => {
+  const { oneAtATime } = await import('../src/tools/pdf/busy.ts');
+  let release;
+  const calls = [];
+  const run = oneAtATime(async (n) => { calls.push(n); if (n === 1) await new Promise((r) => { release = r; }); });
+  const first = run(1);
+  assert.equal(await run(2), false, 'second click while busy is ignored');
+  release();
+  assert.equal(await first, true);
+  assert.equal(await run(3), true, 'free again afterwards');
+  assert.deepEqual(calls, [1, 3]);
+  const failing = oneAtATime(async () => { throw new Error('boom'); });
+  await assert.rejects(failing());
+  assert.equal(await oneAtATime(async () => {})(), true);
+  await assert.rejects(failing(), 'a failure releases the lock');
+});

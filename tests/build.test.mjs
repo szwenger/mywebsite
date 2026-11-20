@@ -103,13 +103,24 @@ test('404 page: not indexed, links home in all three languages', () => {
 });
 
 // ---- Task 2: blog ----
-const SLUGS = ['welcome', 'version-0-1', 'content-page-and-nas', 'nas-build'];
+// Posts as the content folder has them, so these tests follow new posts instead of pinning today's set.
+const POSTS = readdirSync('src/content/posts').map((slug) => {
+  const dir = join('src/content/posts', slug);
+  const fm = readdirSync(dir).filter((f) => f.endsWith('.md')).map((f) => readFileSync(join(dir, f), 'utf8').split('---')[1] ?? '');
+  return { slug, long: fm.some((m) => /^cover:/m.test(m)), date: fm.map((m) => m.match(/^date:\s*(\S+)/m)?.[1]).find(Boolean) ?? '' };
+});
+const SLUGS = POSTS.map((p) => p.slug);
+const hasLongPost = POSTS.some((p) => p.long);
 
-test('blog index exists in every language and lists all 4 posts once', () => {
+test('the migrated posts are still there', () => {
+  for (const s of ['welcome', 'version-0-1', 'content-page-and-nas', 'nas-build']) assert.ok(SLUGS.includes(s), s);
+});
+
+test('blog index exists in every language and lists every post once', () => {
   for (const lang of ['en', 'de', 'ru']) {
     const h = read(join(lang === 'en' ? '' : lang, 'blog', 'index.html'));
     assert.match(h, new RegExp(`<html lang="${lang}"`));
-    assert.equal((h.match(/data-post=/g) ?? []).length, 4, `${lang}: post count`);
+    assert.equal((h.match(/data-post=/g) ?? []).length, SLUGS.length, `${lang}: post count`);
     for (const s of SLUGS) assert.equal((h.match(new RegExp(`data-post="${s}"`, 'g')) ?? []).length, 1, `${lang}: ${s}`);
   }
 });
@@ -168,9 +179,9 @@ test('front page has lead, notes, videos, Twitch and tools sections in every lan
   for (const [lang, f] of Object.entries(PAGES)) {
     const h = read(f);
     for (const s of ['notes', 'twitch', 'tools']) assert.ok(section(h, s), `${s} on ${f}`);
-    // All migrated posts are notes, so the lead is a video exactly when the feed gave us any.
-    assert.equal(!!section(h, 'lead'), cachedVideos.length > 0, `lead on ${f}`);
-    assert.equal(!!section(h, 'videos'), cachedVideos.length > 1, `videos row on ${f}`);
+    // A long post takes the lead; without one the newest video does and leaves the row.
+    assert.equal(!!section(h, 'lead'), hasLongPost || cachedVideos.length > 0, `lead on ${f}`);
+    assert.equal(!!section(h, 'videos'), cachedVideos.length > (hasLongPost ? 0 : 1), `videos row on ${f}`);
     assert.ok(!h.includes('homeSoon') && !/front page in the works/i.test(h), `placeholder left on ${f}`);
     assert.match(h, new RegExp(`<html lang="${lang}"`));
   }
@@ -178,10 +189,13 @@ test('front page has lead, notes, videos, Twitch and tools sections in every lan
 
 test('notes column shows the newest notes in full, at most 5', () => {
   const notes = section(read('index.html'), 'notes');
-  const n = (notes.match(/data-post=/g) ?? []).length;
-  assert.ok(n >= 1 && n <= 5, `notes: ${n}`);
-  assert.match(notes, /data-post="nas-build"/);
-  assert.match(notes, /3 × 12/);
+  const ids = [...notes.matchAll(/data-post="([^"]+)"/g)].map((m) => m[1]);
+  const all = POSTS.filter((p) => !p.long);
+  assert.equal(ids.length, Math.min(5, all.length), 'notes shown');
+  for (const id of ids) assert.ok(all.some((p) => p.slug === id), `${id} is not a note`);
+  const newest = all.reduce((a, b) => (b.date > a.date ? b : a));
+  assert.ok(all.filter((p) => p.date === newest.date).some((p) => ids.includes(p.slug)), 'newest note missing');
+  if (ids.includes('nas-build')) assert.match(notes, /3 × 12/);
 });
 
 test('videos row: at most 4 cards, none repeats the lead, local thumbnails, links to /videos/', { skip: cachedVideos.length > 1 ? false : 'no videos cached' }, () => {
@@ -248,12 +262,22 @@ test('impressum names the owner and the contact address', () => {
   }
 });
 
-test('without CI the placeholder address shows a visible pending line and the page is noindex', () => {
+// legal.ts throws on import under CI while the address is the placeholder; that counts as "no address".
+let legalData = { hasAddress: false, legal: { address: [] } };
+try { legalData = await import('../src/data/legal.ts'); } catch { /* placeholder under CI */ }
+
+test('Impressum: placeholder shows a pending line and noindex; a real address shows every line and is indexed', () => {
   for (const dir of Object.values(LANG_DIRS)) {
     const h = read(`${dir}impressum/index.html`);
-    assert.match(h, /data-address-pending/);
-    assert.match(h, /<meta name="robots" content="noindex"/);
     assert.doesNotMatch(mainOf(h), /TODO-ADDRESS/, 'raw sentinel not shown');
+    if (legalData.hasAddress) {
+      assert.doesNotMatch(h, /data-address-pending/);
+      assert.doesNotMatch(h, /<meta name="robots" content="noindex"/);
+      for (const line of legalData.legal.address) assert.ok(mainOf(h).includes(line), `${dir}: ${line}`);
+    } else {
+      assert.match(h, /data-address-pending/);
+      assert.match(h, /<meta name="robots" content="noindex"/);
+    }
   }
 });
 
