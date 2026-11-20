@@ -1,0 +1,61 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */4 * * *' # refreshes the YouTube feed every four hours
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  actions: write # lets the keep-alive step re-enable this workflow
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      CI: true # turns on the Impressum address gate in src/data/legal.ts
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      # The video list and thumbnails are fetched at build time. A unique key makes every run save a
+      # fresh copy; restore-keys restores the newest one, so a failed fetch falls back to the last good list.
+      - uses: actions/cache@v6
+        with:
+          path: |
+            src/data/videos.json
+            public/thumbs
+          key: videos-${{ github.run_id }}
+          restore-keys: videos-
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+      # GitHub pauses scheduled workflows after 60 days without repository activity; re-enabling resets that clock.
+      - name: Keep the schedule alive
+        if: github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT repos/${{ github.repository }}/actions/workflows/pages.yml/enable
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

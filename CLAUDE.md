@@ -4,44 +4,33 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a static personal website for **galuin.com** (hosted on GitHub Pages), a gaming and coding personal site. No build tools, package managers, or frameworks — plain HTML, CSS, and vanilla JavaScript.
+Personal site for **galuin.com** (GitHub Pages): a news-style front page with blog posts, YouTube videos and a Twitch card, plus videos, hardware, Impressum and privacy pages and three browser-only tools (QR, PDF, image converter). English, German and Russian. Astro 7, static output, TypeScript. The repository is public.
 
-## Development
-
-Open `index.html` directly in a browser or use any local static server:
+## Commands
 
 ```bash
-# Python
-python -m http.server 8080
-
-# Node.js
-npx serve .
+npm ci          # install
+npm run dev     # dev server
+npm run build   # prebuild fetches videos, then astro build into dist/
+npm test        # node:test; the build tests read dist/, so build first
 ```
 
-There are no build steps, linting, or test commands.
+Run `npm run build && npm test` before every commit. `CI=true npm run build` fails while the Impressum address is still the placeholder.
 
 ## Architecture
 
-The site uses a **single-page application pattern** without a router library:
+- **i18n:** `en` (no URL prefix), `de`, `ru`, with `trailingSlash: 'always'`. Shared pages live in `src/pages/[...lang]/` and return `lang: l === 'en' ? undefined : l` from `getStaticPaths`. Strings are in `src/i18n/ui.ts`; page-specific strings sit in an `s` table inside the page.
+- **Posts:** `src/content/posts/<slug>/<lang>.md`. No `cover` in the front matter is a short note, a `cover` makes a long post (the newest becomes the lead story; with none, the newest video leads).
+- **Videos:** `scripts/fetch-videos.mjs` (npm `prebuild`) reads the YouTube RSS feed into `src/data/videos.json` and `public/thumbs/`. It never fails the build and falls back to the cache. Both paths are git-ignored; CI caches them.
+- **Tools:** each tool has `src/tools/<slug>/logic.ts` (pure, unit-tested), a client script, and a page in `src/pages/[...lang]/tools/<slug>/`. Register it in `src/data/tools.ts`. Everything runs in the browser; no third-party loads on page load, no CDN scripts (a build test checks this).
+- **Impressum:** `src/data/legal.ts` holds the address. While it is `TODO-ADDRESS` the page is `noindex` and CI builds throw.
+- **Deploy:** `.github/workflows/pages.yml` builds, tests and deploys on push to `main`, manually, and every four hours (video refresh plus a keep-alive call).
 
-- `index.html` — Shell page with nav, the 3D carousel, a `#content` div, and footer
-- `script.js` — All interactivity: content loading, dark mode, carousel 3D logic
-- `styles.css` — All styles including nav, dark mode, and the 3D carousel
-- `homeContent.html` — External HTML fragment loaded via `fetch()` into `#content`
+## Conventions
 
-**Two display modes controlled by JS:**
-- **Home/landing**: `#carouselContainer` visible, `#defaultMenu` hidden — shows the 3D carousel
-- **Content pages**: `#carouselContainer` hidden, `#defaultMenu` visible — shows the standard nav
-
-**Content loading pattern:** All section content (Home, Content Creation, Hardware, Blog) is injected into `<div id="content">` via `innerHTML`. Home content is fetched from `homeContent.html`; other sections have their HTML inlined in `script.js` event handlers.
-
-**3D Carousel:** CSS `transform-style: preserve-3d` with JS-driven `--rotatey` CSS custom property. Items are positioned via `rotatey()` + `translatez()`. Draggable via mouse/touch with linear interpolation (`lerp`) for smooth animation via `requestAnimationFrame`.
-
-**Dark mode:** Toggled by adding/removing `dark-mode` class on `<body>` via the toggle image in the nav.
-
-## File Conventions
-
-- Page sections added to the nav need a button in both `#defaultMenu` (standard nav) and `#carouselContainer` (carousel), plus a click handler in `script.js`
-- The `114-carrossel-3d/` folder contains a standalone prototype of the carousel — not used by the main site
-- `resources/` holds static assets (images, logos)
-- The CNAME file maps the GitHub Pages deployment to `galuin.com`
+- Test first. Unit tests import `.ts` directly (Node type stripping): escape `/` inside regex character classes and avoid TS-only syntax Node cannot strip.
+- Astro removes HTML comments from templates, and DOM created by client scripts needs `:global()` styles.
+- Public repo: no private details in code, content or tests (no home address, birth data or employer internals). Private terms for the leak test live only in the git-ignored `tests/private-terms.local.txt`.
+- `docs/` and `HANDOFF.md` are git-ignored on purpose. Stage explicit paths rather than `git add -A`.
+- Hardware links to Amazon are plain links, not affiliate links.
+- The `CNAME` file in `public/` maps the deployment to `galuin.com`.

@@ -1,46 +1,89 @@
 # galuin.com
 
-Personal website for Galuin — gaming, coding, and hardware content. Hosted on GitHub Pages at [galuin.com](https://galuin.com).
+Personal site of Galuin: a news-style front page with blog posts, the latest YouTube videos and a Twitch card, plus pages for videos, hardware and a few browser-only tools (QR codes, PDFs, image conversion). English, German and Russian. Hosted on GitHub Pages at [galuin.com](https://galuin.com).
 
-## About
+## Stack
 
-This site covers:
-- **Content Creation** — YouTube gaming and tech videos
-- **Hardware** — Full PC setup specs and an ongoing NAS build
-- **Blog** — Personal project updates and notes
+[Astro](https://astro.build) (static output), TypeScript, Markdown content collections, `node:test` for tests. The tools run entirely in the visitor's browser; nothing is uploaded and no third-party script loads on page load.
 
-## Tech Stack
-
-Plain HTML5, CSS3, and vanilla JavaScript. No frameworks, no build tools, no dependencies.
-
-## Running Locally
-
-Open `index.html` directly in a browser, or serve with a local static server to avoid `fetch()` CORS issues with `homeContent.html`:
+## Run, build, test
 
 ```bash
-# Python
-python -m http.server 8080
-
-# Node.js
-npx serve .
+npm ci            # install
+npm run dev       # dev server on http://localhost:4321
+npm run build     # fetches videos (prebuild), then builds into dist/
+npm test          # needs a fresh build: the page tests read dist/
+npm run preview   # serve dist/
 ```
 
-Then visit `http://localhost:8080`.
+Node 22 or newer. The unit tests import `.ts` files directly through Node's type stripping.
+
+Optional: `tests/private-terms.local.txt` (git-ignored, one term per line) makes the build test fail if any of those terms appears in the built site. Keep it local.
 
 ## Structure
 
-| File | Purpose |
+| Path | What it holds |
 |---|---|
-| `index.html` | Main shell — nav, 3D carousel, content area, footer |
-| `styles.css` | All styles — nav, carousel, content sections, dark mode |
-| `script.js` | Navigation logic, carousel 3D math, dark mode toggle |
-| `homeContent.html` | Home section HTML fragment (loaded via `fetch`) |
-| `resources/` | Static assets (logos, images) |
-| `114-carrossel-3d/` | Standalone carousel prototype — not used by the main site |
+| `src/pages/` | English at the root, `de/` and `ru/` for the front page; shared pages live in `src/pages/[...lang]/` and are generated for all three languages |
+| `src/content/posts/<slug>/<lang>.md` | Blog posts, one file per language |
+| `src/data/` | `tools.ts` (tool list), `hardware.ts`, `legal.ts` (Impressum), `privacy.ts`, `videos.json` (fetched, git-ignored) |
+| `src/i18n/ui.ts` | Interface strings and language helpers |
+| `src/components/`, `src/layouts/` | Shared Astro components and the base layout |
+| `src/tools/<tool>/` | Client code and pure logic for each tool |
+| `scripts/fetch-videos.mjs` | Runs before every build and refreshes the video list |
+| `tests/` | Unit tests plus build tests that inspect `dist/` |
 
-## Adding a New Section
+## Writing a post
 
-1. Add a `<li>` with a button in `#defaultMenu` (nav) in `index.html`
-2. Add a `<div class="carrossel-item">` with an `<a>` in `#carouselContainer`
-3. Write a content function in `script.js` returning an HTML string wrapped in `<div class="content-section">`
-4. Wire up click handlers for both the nav button and the carousel item using `showSection()`
+1. Create `src/content/posts/<slug>/en.md`. The folder name is the slug and the URL (`/blog/<slug>/`).
+2. Add `de.md` and `ru.md` in the same folder for translations. A missing language is fine.
+3. Front matter:
+
+   ```yaml
+   ---
+   title: My post
+   date: 2026-11-20
+   cover: /posts/my-post.jpg   # optional
+   tags: [hardware, nas]       # optional
+   ---
+   ```
+
+4. **No `cover` makes a short note.** It is shown in full in the front page's notes column. **A `cover` makes a long post:** a card with a teaser, and the newest long post becomes the lead story. Put cover images in `public/posts/` and reference them by their URL path. While no long post exists, the newest video takes the lead slot.
+
+## Adding a tool
+
+1. Put the pure logic in `src/tools/<slug>/logic.ts` and the browser code in `src/tools/<slug>/<slug>.ts`.
+2. Add the page `src/pages/[...lang]/tools/<slug>/index.astro` with `ToolLayout` and an EN/DE/RU string table. Look at `tools/image/` for a small example.
+3. Add an entry to `src/data/tools.ts` (slug, icon path, name and blurb in three languages). The tools overview and the front-page strip pick it up from there.
+4. Write tests first: unit tests for the logic in `tests/<slug>.test.mjs`, and a build test that the page exists in all three languages.
+
+## Videos and the cache
+
+`npm run build` runs `scripts/fetch-videos.mjs` first. It reads the channel's YouTube RSS feed, writes `src/data/videos.json` and downloads thumbnails to `public/thumbs/`. It never fails the build: if YouTube cannot be reached it keeps the cached list, and with no cache the video sections stay empty. Both paths are git-ignored.
+
+In CI, `actions/cache` keeps `src/data/videos.json` and `public/thumbs` between runs. Every run saves a fresh copy under `videos-<run id>` and restores the newest one, so a failed fetch still deploys the last good list.
+
+## Deploy
+
+`.github/workflows/pages.yml` builds, runs the tests, and deploys with GitHub Pages. It runs on every push to `main`, on demand (`workflow_dispatch`), and on a schedule (`17 */4 * * *`) so new videos show up within about four hours. Scheduled runs also re-enable the workflow through the API, which stops GitHub from pausing the schedule after 60 days without repository activity.
+
+## Impressum address
+
+The Impressum needs a postal address by law. It is a placeholder until set:
+
+1. Edit `address` in `src/data/legal.ts` (one string per line).
+2. Until then the Impressum page is `noindex`, and **CI builds fail** (`CI=true` makes `legal.ts` throw), so nothing can be deployed with the placeholder.
+
+To try the CI gate locally: `CI=true npm run build`.
+
+## Cut-over from the old site
+
+Only when ready to go live:
+
+1. Set the real address in `src/data/legal.ts` and commit.
+2. Repository Settings, Pages, Source: **GitHub Actions**.
+3. Merge `redesign` into `main` and push. Watch the workflow run.
+4. Check https://galuin.com in English, German and Russian.
+5. Tick **Enforce HTTPS**.
+
+Rollback: revert the merge commit and push, or switch the Pages source back to the branch.

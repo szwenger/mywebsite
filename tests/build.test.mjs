@@ -357,3 +357,21 @@ test('image converter pages exist in every language; the overview and the tools 
     }
   }
 });
+
+// ---- Task 9: deploy workflow ----
+test('deploy workflow: triggers, build and test steps, video cache, permissions, keep-alive', () => {
+  const wf = readFileSync('.github/workflows/pages.yml', 'utf8');
+  for (const re of [
+    /^on:[\s\S]*?\n {2}push:\s*\n\s+branches: \[main\]/m,
+    /workflow_dispatch:/,
+    /schedule:\s*\n\s+- cron: '[^']+'/,
+    /npm ci/, /npm run build/, /npm test/,
+    /actions\/cache@v\d/,
+    /src\/data\/videos\.json/, /public\/thumbs/,
+    /CI: true/, /pages: write/, /id-token: write/, /actions: write/,
+    /actions\/upload-pages-artifact@v\d/, /actions\/deploy-pages@v\d/,
+  ]) assert.match(wf, re);
+  // keep-alive: re-enables this workflow so GitHub does not pause the schedule, and only on scheduled runs
+  assert.match(wf, /if: github\.event_name == 'schedule'/);
+  assert.match(wf, /gh api -X PUT repos\/\$\{\{ github\.repository \}\}\/actions\/workflows\/pages\.yml\/enable/);
+});
