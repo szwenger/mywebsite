@@ -1,0 +1,43 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { LANGS, t, type Lang } from '../../../i18n/ui';
+import { hardware } from '../../../data/hardware';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+---
+<Base lang={lang} title={`${t(lang, 'navHardware')} · Galuin`} description={t(lang, 'hardwareIntro')} current="hardware">
+  <section class="wrap page">
+    <h1 class="section-title">{t(lang, 'navHardware')}</h1>
+    <p class="meta intro">{t(lang, 'hardwareIntro')}</p>
+    <div class="groups">
+      {hardware.map((group) => (
+        <section class="card group">
+          <h2>{group.title[lang]}</h2>
+          <ul>
+            {group.items.map((item) => (
+              <li data-hw={group.id}>
+                <span class="label">{item.label[lang]}</span>
+                {item.href ? <a href={item.href} rel="noopener">{item.name}</a> : <span>{item.name}</span>}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  </section>
+</Base>
+<style>
+  .page { padding-block: clamp(32px, 6vw, 64px) 0; }
+  .intro { margin: -6px 0 24px; font-size: .95rem; max-width: 60ch; }
+  .groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 20px; align-items: start; }
+  .group { padding: clamp(18px, 2.4vw, 26px); }
+  .group h2 { margin: 0 0 12px; font-size: 1.1rem; }
+  ul { margin: 0; padding: 0; list-style: none; }
+  li { display: grid; grid-template-columns: minmax(7.5rem, 9.5rem) minmax(0, 1fr); gap: 4px 14px; padding: 9px 0; border-top: 1px solid var(--line); overflow-wrap: anywhere; }
+  li:first-child { border-top: 0; }
+  .label { color: var(--muted); font-size: .85rem; padding-top: 2px; }
+  @media (max-width: 480px) { li { grid-template-columns: 1fr; } }
+</style>

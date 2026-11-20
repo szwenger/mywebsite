@@ -1,0 +1,30 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { LANGS, t, type Lang } from '../../../i18n/ui';
+import { privacy } from '../../../data/privacy';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const doc = privacy[lang];
+---
+<Base lang={lang} title={`${doc.title} · Galuin`}>
+  <Fragment set:html={'<!-- DRAFT: privacy text drafted for Simon to check before go-live. Not legal advice. -->'} />
+  <section class="wrap page doc">
+    <h1 class="section-title">{doc.title}</h1>
+    <p class="meta">{t(lang, 'legalUpdated')}: {doc.updated}</p>
+    {doc.sections.map((s) => (
+      <section>
+        <h2>{s.h}</h2>
+        {s.p.map((para) => <p set:html={para} />)}
+      </section>
+    ))}
+  </section>
+</Base>
+<style>
+  .page { padding-block: clamp(32px, 6vw, 64px) 0; max-width: 46rem; }
+  .doc h2 { margin: 28px 0 8px; font-size: 1.05rem; }
+  .doc p { margin: 0 0 10px; line-height: 1.65; }
+  .doc :global(code) { font-size: .9em; }
+</style>

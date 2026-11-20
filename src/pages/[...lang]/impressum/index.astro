@@ -1,0 +1,37 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { LANGS, type Lang } from '../../../i18n/ui';
+import { hasAddress, legal } from '../../../data/legal';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const copy = {
+  en: { head: 'Legal notice', basis: 'Information pursuant to § 5 DDG', contact: 'Contact', email: 'Email', pending: 'Postal address: to be added before launch.', resp: 'Responsible for content pursuant to § 18 (2) MStV', note: 'This is a translation. The German version is legally binding.' },
+  de: { head: 'Impressum', basis: 'Angaben gemäß § 5 DDG', contact: 'Kontakt', email: 'E-Mail', pending: 'Anschrift: wird vor dem Start ergänzt.', resp: 'Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV', note: '' },
+  ru: { head: 'Выходные данные', basis: 'Сведения согласно § 5 DDG (Германия)', contact: 'Контакты', email: 'Эл. почта', pending: 'Почтовый адрес: будет добавлен до запуска.', resp: 'Ответственный за содержание согласно § 18 абз. 2 MStV', note: 'Это перевод. Юридическую силу имеет немецкая версия.' },
+}[lang];
+const address = hasAddress ? legal.address : [];
+---
+<Base lang={lang} title={`${copy.head} · Galuin`} noindex={!hasAddress}>
+  <section class="wrap page doc">
+    <h1 class="section-title">{copy.head}</h1>
+    {copy.note && <p class="meta">{copy.note}</p>}
+    <h2>{copy.basis}</h2>
+    <p>
+      {legal.name}<br />
+      {address.map((line) => <>{line}<br /></>)}
+      {!hasAddress && <em data-address-pending>{copy.pending}</em>}
+    </p>
+    <h2>{copy.contact}</h2>
+    <p>{copy.email}: <a href={`mailto:${legal.email}`}>{legal.email}</a></p>
+    <h2>{copy.resp}</h2>
+    <p>{legal.name}{hasAddress ? `, ${address.join(', ')}` : ''}</p>
+  </section>
+</Base>
+<style>
+  .page { padding-block: clamp(32px, 6vw, 64px) 0; max-width: 46rem; }
+  .doc h2 { margin: 28px 0 8px; font-size: 1.05rem; }
+  .doc p { margin: 0 0 10px; line-height: 1.65; }
+</style>

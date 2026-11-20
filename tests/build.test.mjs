@@ -208,3 +208,71 @@ test('Twitch card: click-to-load button and a plain link, no player in the HTML'
 test('tools strip links to the tools overview', () => {
   for (const [lang, f] of Object.entries(PAGES)) assert.ok(section(read(f), 'tools').includes(`href="${pre(lang)}/tools/"`), f);
 });
+
+// ---- Task 5: hardware, Impressum, privacy ----
+const LANG_DIRS = { en: '', de: 'de/', ru: 'ru/' };
+const hrefs = (h) => [...h.matchAll(/<a [^>]*href="([^"]+)"/g)].map((m) => m[1]);
+const mainOf = (h) => h.split('<main')[1].split('</main>')[0];
+
+test('hardware, impressum and privacy exist in every language', () => {
+  for (const dir of Object.values(LANG_DIRS)) {
+    for (const p of ['hardware', 'impressum', 'privacy']) assert.ok(existsSync(join('dist', dir, p, 'index.html')), `${dir}${p}`);
+  }
+});
+
+test('hardware lists 12 PC items, 3 audio items, the Quest 2 and the 14 original links', () => {
+  const ORIGINAL = [
+    'https://amzn.eu/d/4hkrHid', 'https://amzn.eu/d/9HwxtbE', 'https://amzn.eu/d/5oOMUjF', 'https://amzn.eu/d/4JcwcsO',
+    'https://amzn.eu/d/b3DLYPB', 'https://www.microsoft.com/de-de/d/windows-11-pro/dg7gmgf0d8h4/000P', 'https://amzn.eu/d/deVYJgk',
+    'https://amzn.eu/d/3x2ZswV', 'https://www.amazon.com/SteelSeries-QcK-Gaming-Mouse-Black/dp/B000UVRU6G/', 'https://amzn.eu/d/aVYspWD',
+    'https://a.co/d/9RJIAvi', 'https://amzn.eu/d/6Mxrhpq', 'https://www.amazon.de/gp/product/B00WGAT56W/', 'https://www.amazon.de/gp/product/B00FFIGZF66/',
+  ];
+  for (const dir of Object.values(LANG_DIRS)) {
+    const h = read(`${dir}hardware/index.html`);
+    const links = hrefs(mainOf(h));
+    for (const url of ORIGINAL) assert.ok(links.includes(url), `${dir} missing ${url}`);
+    assert.equal(ORIGINAL.filter((u) => links.includes(u)).length, 14);
+    assert.equal((h.match(/data-hw="pc"/g) ?? []).length, 12, `${dir} pc items`);
+    assert.equal((h.match(/data-hw="audio"/g) ?? []).length, 3, `${dir} audio items`);
+    assert.match(h, /Meta Quest 2/);
+    assert.doesNotMatch(h, /sponsored/, 'not affiliate links');
+    assert.match(h, /rel="noopener"/);
+  }
+});
+
+test('impressum names the owner and the contact address', () => {
+  for (const dir of Object.values(LANG_DIRS)) {
+    const h = read(`${dir}impressum/index.html`);
+    assert.match(h, /Simon Zwenger/);
+    assert.match(h, /request@galuin\.com/);
+  }
+});
+
+test('without CI the placeholder address shows a visible pending line and the page is noindex', () => {
+  for (const dir of Object.values(LANG_DIRS)) {
+    const h = read(`${dir}impressum/index.html`);
+    assert.match(h, /data-address-pending/);
+    assert.match(h, /<meta name="robots" content="noindex"/);
+    assert.doesNotMatch(mainOf(h), /TODO-ADDRESS/, 'raw sentinel not shown');
+  }
+});
+
+test('privacy page covers hosting, storage, Twitch click, outbound links, local tools and rights', () => {
+  const need = {
+    en: [/GitHub Pages/, /localStorage/, /Twitch/, /YouTube/, /Amazon/, /privacy\.github\.com|docs\.github\.com/, /twitch\.tv\/p\/en\/legal\/privacy-notice/],
+    de: [/GitHub Pages/, /localStorage/, /Twitch/, /YouTube/, /Amazon/, /Auskunft/, /Beschwerde/],
+    ru: [/GitHub Pages/, /localStorage/, /Twitch/, /YouTube/, /Amazon/],
+  };
+  for (const [lang, dir] of Object.entries(LANG_DIRS)) {
+    const h = read(`${dir}privacy/index.html`);
+    for (const re of need[lang]) assert.match(h, re, `${lang} ${re}`);
+    assert.match(h, /request@galuin\.com/);
+    assert.doesNotMatch(h, /affiliate|Partner/i, 'Amazon links are not affiliate links');
+  }
+});
+
+test('legal pages carry the draft marker as an HTML comment only', () => {
+  const h = read('de/privacy/index.html');
+  assert.match(h, /<!--\s*DRAFT/);
+  assert.doesNotMatch(mainOf(h).replace(/<!--[\s\S]*?-->/g, ''), /DRAFT/);
+});
