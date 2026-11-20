@@ -1,0 +1,152 @@
+import { accepts, outName, targetSize, type Format } from './logic';
+
+const root = document.querySelector<HTMLElement>('[data-image]');
+if (root) init(root);
+
+type Msg = Record<string, string>;
+interface Item {
+  file: File;
+  url?: string;
+  name?: string;
+  size?: number;
+  note?: string; // why this file has no result
+}
+
+const LABEL: Record<Format, string> = { png: 'PNG', jpeg: 'JPG', webp: 'WebP' };
+
+function init(root: HTMLElement) {
+  const s = JSON.parse(root.dataset.strings!) as Msg;
+  const q = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+  const dropEl = q('[data-drop]');
+  const fileInput = q<HTMLInputElement>('[data-file]');
+  const errorEl = q('[data-error]');
+  const statusEl = q('[data-status]');
+  const work = q('[data-work]');
+  const list = q('[data-list]');
+  const options = q<HTMLElement>('[data-options]');
+  const formatEl = q<HTMLSelectElement>('[data-format]');
+  const qualityEl = q<HTMLInputElement>('[data-quality]');
+  const qualityOut = q('[data-quality-out]');
+  const maxWEl = q<HTMLInputElement>('[data-maxw]');
+  const maxHEl = q<HTMLInputElement>('[data-maxh]');
+  const allBtn = q<HTMLButtonElement>('[data-all]');
+
+  let items: Item[] = [];
+  let gen = 0; // bumped on every conversion run so a stale run stops
+
+  const size = (n: number) => (n < 1048576 ? `${Math.max(1, Math.round(n / 1024))} ${s.kb}` : `${(n / 1048576).toFixed(1)} ${s.mb}`);
+  const limit = (el: HTMLInputElement) => { const n = Math.floor(Number(el.value)); return n >= 1 ? n : undefined; };
+  const showError = (msg: string) => { errorEl.textContent = msg; errorEl.hidden = !msg; };
+
+  /** Draws the file into a canvas at the target size and encodes it. Resolves null when the browser cannot export the format. */
+  async function convert(file: File, fmt: Format, quality: number, maxW?: number, maxH?: number): Promise<Blob | null> {
+    const bmp = await createImageBitmap(file);
+    try {
+      const { w, h } = targetSize(bmp.width, bmp.height, maxW, maxH);
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d')!;
+      if (fmt === 'jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); } // JPEG has no transparency
+      ctx.drawImage(bmp, 0, 0, w, h);
+      const mime = `image/${fmt}`;
+      const blob = await new Promise<Blob | null>((done) => canvas.toBlob(done, mime, quality));
+      // An unsupported export type silently falls back to PNG, so compare the type we get back.
+      return blob && blob.type === mime ? blob : null;
+    } finally { bmp.close(); }
+  }
+
+  function revoke() { for (const it of items) if (it.url) URL.revokeObjectURL(it.url); }
+
+  async function run() {
+    if (!items.length) return;
+    const token = ++gen;
+    const fmt = formatEl.value as Format;
+    const quality = Number(qualityEl.value) / 100;
+    const [maxW, maxH] = [limit(maxWEl), limit(maxHEl)];
+    statusEl.textContent = s.working;
+    for (const it of items) {
+      if (token !== gen) return;
+      if (it.url) URL.revokeObjectURL(it.url);
+      it.url = it.name = it.size = it.note = undefined;
+      try {
+        const blob = await convert(it.file, fmt, quality, maxW, maxH);
+        if (blob) { it.url = URL.createObjectURL(blob); it.name = outName(it.file.name, fmt); it.size = blob.size; }
+        else it.note = s.unsupported.replace('{fmt}', LABEL[fmt]);
+      } catch (e) {
+        console.error('image tool', e);
+        it.note = s.failed;
+      }
+      if (token === gen) render();
+    }
+    if (token === gen) statusEl.textContent = '';
+  }
+
+  function render() {
+    work.hidden = !items.length;
+    allBtn.disabled = !items.some((it) => it.url);
+    list.replaceChildren(...items.map((it, i) => {
+      const li = document.createElement('li');
+      li.className = 'row card';
+      const name = document.createElement('span');
+      name.className = 'fname';
+      name.textContent = it.file.name;
+      const info = document.createElement('span');
+      info.className = 'meta info';
+      const act = document.createElement('span');
+      act.className = 'act';
+      if (it.url) {
+        info.textContent = `${size(it.file.size)} → ${size(it.size!)}`;
+        const a = document.createElement('a');
+        a.className = 'btn';
+        a.href = it.url;
+        a.download = it.name!;
+        a.textContent = s.download;
+        a.setAttribute('aria-label', `${s.download}: ${it.name}`);
+        act.append(a);
+      } else {
+        info.textContent = it.note ?? s.working;
+      }
+      const rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'btn alt';
+      rm.textContent = s.remove;
+      rm.setAttribute('aria-label', `${s.remove}: ${it.file.name}`);
+      rm.addEventListener('click', () => { if (it.url) URL.revokeObjectURL(it.url); items.splice(i, 1); render(); });
+      act.append(rm);
+      li.append(name, info, act);
+      return li;
+    }));
+  }
+
+  function addFiles(files: File[]) {
+    const problems: string[] = [];
+    for (const f of files) {
+      if (accepts(f)) items.push({ file: f });
+      else problems.push(`${f.name}: ${s.badType}`);
+    }
+    showError(problems.join(' '));
+    render();
+    run();
+  }
+
+  const syncQuality = () => { qualityEl.disabled = formatEl.value === 'png'; qualityOut.textContent = `${qualityEl.value}%`; };
+  syncQuality();
+  qualityEl.addEventListener('input', syncQuality);
+  // 'change' (not 'input') so typing a number or dragging the slider converts once, on commit.
+  options.addEventListener('change', () => { syncQuality(); run(); });
+
+  fileInput.addEventListener('change', () => { addFiles([...fileInput.files!]); fileInput.value = ''; });
+  dropEl.addEventListener('dragover', (e) => { e.preventDefault(); dropEl.classList.add('over'); });
+  dropEl.addEventListener('dragleave', () => dropEl.classList.remove('over'));
+  dropEl.addEventListener('drop', (e) => { e.preventDefault(); dropEl.classList.remove('over'); addFiles([...(e.dataTransfer?.files ?? [])]); });
+
+  q('[data-clear]').addEventListener('click', () => { gen++; revoke(); items = []; showError(''); statusEl.textContent = ''; render(); });
+  allBtn.addEventListener('click', async () => {
+    // Sequential clicks on the per-file links; browsers may ask once to allow multiple downloads.
+    for (const a of list.querySelectorAll<HTMLAnchorElement>('a[download]')) {
+      a.click();
+      await new Promise((r) => setTimeout(r, 300));
+    }
+  });
+}

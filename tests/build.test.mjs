@@ -343,3 +343,17 @@ test('no built script loads from a CDN, and the pdf.js worker ships with the sit
   assert.ok(scripts.some((n) => n.includes('pdf.worker')), 'worker file present');
   for (const n of scripts) assert.doesNotMatch(chunkSrc(n), /cdn\.|unpkg|jsdelivr|cdnjs/i, n);
 });
+
+// ---- Task 8: image converter ----
+test('image converter pages exist in every language; the overview and the tools strip list all three tools', () => {
+  for (const [lang, f] of Object.entries(PAGES)) {
+    const dir = f.replace(/index\.html$/, '');
+    assert.ok(existsSync(join('dist', dir, 'tools/image/index.html')), `${dir}tools/image`);
+    const overview = hrefs(mainOf(read(`${dir}tools/index.html`)));
+    const strip = hrefs(section(read(f), 'tools'));
+    for (const slug of ['qr', 'pdf', 'image']) {
+      assert.ok(overview.includes(`${pre(lang)}/tools/${slug}/`), `${lang} overview links to ${slug}`);
+      assert.ok(strip.includes(`${pre(lang)}/tools/${slug}/`), `${lang} front-page strip links to ${slug}`);
+    }
+  }
+});
