@@ -1,0 +1,102 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: {
+    drop: 'Drop PDFs or images here', or: 'or', browse: 'Choose files', hint: 'PDF, PNG and JPEG. Files you add are appended in order, so adding several PDFs merges them.',
+    pages: 'pages', page: 'Page', rotate: 'Rotate 90°', del: 'Delete', earlier: 'Move earlier', later: 'Move later',
+    rangeLabel: 'Keep only these pages', rangePlaceholder: 'e.g. 1-3, 5', rangeBtn: 'Keep pages', undo: 'Undo', reset: 'Start over', download: 'Download PDF',
+    busy: 'Working…', pagesLabel: 'Pages', actions: 'Actions',
+    encrypted: 'This PDF is password-protected. Remove the password first, then add it again.',
+    invalid: 'This file could not be read as a PDF.', badType: 'Only PDF, PNG and JPEG files are supported.',
+    badImage: 'This image could not be read.', empty: 'Range is empty. Enter pages such as 1-3, 5.',
+    syntax: 'Could not read the range. Use page numbers such as 1-3, 5.', 'out-of-range': 'A page number is outside this document.',
+    lastPage: 'A PDF needs at least one page.',
+  },
+  de: {
+    drop: 'PDFs oder Bilder hier ablegen', or: 'oder', browse: 'Dateien wählen', hint: 'PDF, PNG und JPEG. Hinzugefügte Dateien werden der Reihe nach angehängt, mehrere PDFs werden so zusammengefügt.',
+    pages: 'Seiten', page: 'Seite', rotate: 'Um 90° drehen', del: 'Löschen', earlier: 'Nach vorn', later: 'Nach hinten',
+    rangeLabel: 'Nur diese Seiten behalten', rangePlaceholder: 'z. B. 1-3, 5', rangeBtn: 'Seiten behalten', undo: 'Rückgängig', reset: 'Neu beginnen', download: 'PDF herunterladen',
+    busy: 'Wird verarbeitet…', pagesLabel: 'Seiten', actions: 'Aktionen',
+    encrypted: 'Dieses PDF ist passwortgeschützt. Entferne zuerst das Passwort und füge es dann erneut hinzu.',
+    invalid: 'Diese Datei konnte nicht als PDF gelesen werden.', badType: 'Nur PDF-, PNG- und JPEG-Dateien werden unterstützt.',
+    badImage: 'Dieses Bild konnte nicht gelesen werden.', empty: 'Der Bereich ist leer. Gib Seiten wie 1-3, 5 ein.',
+    syntax: 'Der Bereich ist nicht lesbar. Nutze Seitenzahlen wie 1-3, 5.', 'out-of-range': 'Eine Seitenzahl liegt außerhalb des Dokuments.',
+    lastPage: 'Ein PDF braucht mindestens eine Seite.',
+  },
+  ru: {
+    drop: 'Перетащите сюда PDF или картинки', or: 'или', browse: 'Выбрать файлы', hint: 'PDF, PNG и JPEG. Добавленные файлы подряд дописываются в конец, так несколько PDF объединяются.',
+    pages: 'стр.', page: 'Страница', rotate: 'Повернуть на 90°', del: 'Удалить', earlier: 'Переместить раньше', later: 'Переместить позже',
+    rangeLabel: 'Оставить только эти страницы', rangePlaceholder: 'например, 1-3, 5', rangeBtn: 'Оставить страницы', undo: 'Отменить', reset: 'Начать заново', download: 'Скачать PDF',
+    busy: 'Обработка…', pagesLabel: 'Страницы', actions: 'Действия',
+    encrypted: 'Этот PDF защищён паролем. Сначала снимите пароль, затем добавьте файл снова.',
+    invalid: 'Не удалось прочитать файл как PDF.', badType: 'Поддерживаются только PDF, PNG и JPEG.',
+    badImage: 'Не удалось прочитать это изображение.', empty: 'Диапазон пуст. Введите страницы, например 1-3, 5.',
+    syntax: 'Не удалось разобрать диапазон. Используйте номера страниц, например 1-3, 5.', 'out-of-range': 'Номер страницы выходит за пределы документа.',
+    lastPage: 'В PDF должна остаться хотя бы одна страница.',
+  },
+}[lang];
+---
+<ToolLayout lang={lang} slug="pdf">
+  <div class="pdf" data-pdf data-strings={JSON.stringify(s)}>
+    <div class="drop card" data-drop>
+      <p class="big">{s.drop}</p>
+      <p class="meta">{s.or}</p>
+      <label class="btn pick">{s.browse}<input type="file" accept="application/pdf,image/png,image/jpeg,.pdf,.png,.jpg,.jpeg" multiple data-file class="sr-only" /></label>
+      <p class="meta hint">{s.hint}</p>
+    </div>
+
+    <p class="warn" role="alert" data-error hidden></p>
+    <p class="meta" role="status" data-status></p>
+
+    <div class="work" data-work hidden>
+      <div class="bar card">
+        <label class="range">{s.rangeLabel}
+          <span class="row"><input data-range placeholder={s.rangePlaceholder} autocomplete="off" /><button type="button" class="btn alt" data-keep>{s.rangeBtn}</button></span>
+        </label>
+        <div class="row end">
+          <button type="button" class="btn alt" data-undo disabled>{s.undo}</button>
+          <button type="button" class="btn alt" data-reset>{s.reset}</button>
+          <button type="button" class="btn" data-download>{s.download}</button>
+        </div>
+      </div>
+      <h2 class="sr-only">{s.pagesLabel}</h2>
+      <ol class="pages" data-pages></ol>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/pdf/pdf.ts';
+</script>
+<style>
+  .pdf { display: grid; gap: 18px; }
+  .drop { display: grid; justify-items: center; gap: 8px; padding: clamp(24px, 4vw, 40px); text-align: center; border-style: dashed; }
+  .drop.over { border-color: var(--accent); }
+  .big { margin: 0; font-family: var(--font-display, inherit); font-size: 1.15rem; }
+  .hint { max-width: 56ch; margin: 4px 0 0; }
+  .pick { cursor: pointer; }
+  .pick:focus-within { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .warn { margin: 0; padding: 9px 12px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface-2); font-size: .9rem; }
+  .bar { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: end; justify-content: space-between; padding: 16px 20px; }
+  .range { display: grid; gap: 6px; font-size: .88rem; color: var(--muted); }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .row.end { justify-content: flex-end; }
+  input[data-range] { width: 14ch; padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); color: var(--fg); font: inherit; font-size: .95rem; }
+  .btn.alt { background: transparent; color: var(--fg); border: 1px solid var(--line); box-shadow: none; }
+  .btn[disabled] { opacity: .45; cursor: not-allowed; }
+  .pages { list-style: none; margin: 20px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; align-items: start; }
+  :global(.pdf .pg) { display: grid; gap: 8px; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); }
+  :global(.pdf .pg.dragging) { opacity: .45; }
+  :global(.pdf .pg.target) { border-color: var(--accent); }
+  :global(.pdf .pg canvas) { width: 100%; height: auto; background: #fff; border-radius: 4px; cursor: grab; }
+  :global(.pdf .pg .num) { font-size: .8rem; color: var(--muted); text-align: center; }
+  :global(.pdf .pg .tools) { display: flex; justify-content: center; gap: 4px; }
+  :global(.pdf .pg .tools button) { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--fg); cursor: pointer; }
+  :global(.pdf .pg .tools button:hover:not([disabled])) { border-color: var(--accent); }
+  :global(.pdf .pg .tools button[disabled]) { opacity: .35; cursor: not-allowed; }
+</style>

@@ -14,4 +14,14 @@ export const tools: Tool[] = [
       ru: 'QR-коды для ссылок, Wi-Fi и контактов. Скачивание в PNG или SVG.',
     },
   },
+  {
+    slug: 'pdf',
+    icon: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h4',
+    name: { en: 'PDF tools', de: 'PDF-Werkzeuge', ru: 'PDF-инструменты' },
+    blurb: {
+      en: 'Merge, split, rotate, reorder and delete pages, or turn images into a PDF.',
+      de: 'PDFs zusammenfügen, teilen, drehen, Seiten umsortieren und löschen oder Bilder in ein PDF verwandeln.',
+      ru: 'Объединение, разделение, поворот и перестановка страниц PDF, а также превращение картинок в PDF.',
+    },
+  },
 ];

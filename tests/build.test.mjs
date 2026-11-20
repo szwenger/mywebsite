@@ -315,3 +315,31 @@ test('the QR library is reachable only from the QR pages', () => {
   }
   assert.equal(qrPages, 3);
 });
+
+// ---- Task 7: PDF tools ----
+test('PDF tool pages exist in every language and the overview links to them', () => {
+  for (const dir of Object.values(LANG_DIRS)) {
+    assert.ok(existsSync(join('dist', dir, 'tools/pdf/index.html')), `${dir}tools/pdf`);
+    assert.ok(hrefs(mainOf(read(`${dir}tools/index.html`))).includes(`${pre(dir.replace('/', '') || 'en')}/tools/pdf/`), `${dir} links to pdf`);
+  }
+});
+
+test('the PDF libraries are reachable only from the PDF pages', () => {
+  const marker = (name) => chunkSrc(name).includes('PDFDocument.load');
+  let pdfPages = 0;
+  for (const f of pageHtml()) {
+    const html = readFileSync(f, 'utf8');
+    const entries = [...html.matchAll(/\/_astro\/([^"'`\s]+\.js)/g)].map((m) => m[1]);
+    const reaches = closure(entries).some(marker);
+    const isPdfPage = f.split(sep).join('/').endsWith('/tools/pdf/index.html');
+    assert.equal(reaches, isPdfPage, f);
+    if (isPdfPage) pdfPages++;
+  }
+  assert.equal(pdfPages, 3);
+});
+
+test('no built script loads from a CDN, and the pdf.js worker ships with the site', () => {
+  const scripts = readdirSync(jsDir).filter((n) => /\.m?js$/.test(n));
+  assert.ok(scripts.some((n) => n.includes('pdf.worker')), 'worker file present');
+  for (const n of scripts) assert.doesNotMatch(chunkSrc(n), /cdn\.|unpkg|jsdelivr|cdnjs/i, n);
+});
