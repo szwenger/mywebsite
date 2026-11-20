@@ -15,7 +15,7 @@ npm run build   # prebuild fetches videos, then astro build into dist/
 npm test        # node:test; the build tests read dist/, so build first
 ```
 
-Run `npm run build && npm test` before every commit. `CI=true npm run build` fails while the Impressum address is still the placeholder.
+Run `npm run build && npm test` before every commit.
 
 ## Architecture
 
@@ -23,7 +23,7 @@ Run `npm run build && npm test` before every commit. `CI=true npm run build` fai
 - **Posts:** `src/content/posts/<slug>/<lang>.md`. No `cover` in the front matter is a short note, a `cover` makes a long post (the newest becomes the lead story; with none, the newest video leads).
 - **Videos:** `scripts/fetch-videos.mjs` (npm `prebuild`) reads the YouTube RSS feed into `src/data/videos.json` and `public/thumbs/`. It never fails the build and falls back to the cache. Both paths are git-ignored; CI caches them.
 - **Tools:** each tool has `src/tools/<slug>/logic.ts` (pure, unit-tested), a client script, and a page in `src/pages/[...lang]/tools/<slug>/`. Register it in `src/data/tools.ts`. Everything runs in the browser; no third-party loads on page load, no CDN scripts (a build test checks this).
-- **Impressum:** `src/data/legal.ts` holds the address. While it is `TODO-ADDRESS` the page is `noindex` and CI builds throw.
+- **Impressum:** `src/data/legal.ts` holds the address. While it is `TODO-ADDRESS` the page says the address is pending, is `noindex`, and builds print a warning.
 - **Deploy:** `.github/workflows/pages.yml` builds, tests and deploys on push to `main`, manually, and every four hours (video refresh plus a keep-alive call).
 
 ## Conventions

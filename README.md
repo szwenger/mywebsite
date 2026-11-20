@@ -71,19 +71,9 @@ In CI, `actions/cache` keeps `src/data/videos.json` and `public/thumbs` between 
 
 The Impressum needs a postal address by law. It is a placeholder until set:
 
-1. Edit `address` in `src/data/legal.ts` (one string per line).
-2. Until then the Impressum page is `noindex`, and **CI builds fail** (`CI=true` makes `legal.ts` throw), so nothing can be deployed with the placeholder.
+1. Edit `address` in `src/data/legal.ts` (one string per line), commit and push.
+2. Until then the Impressum says the postal address is still to be added, the page is `noindex`, and every build prints a warning.
 
-To try the CI gate locally: `CI=true npm run build`.
+## Rollback
 
-## Cut-over from the old site
-
-Only when ready to go live:
-
-1. Set the real address in `src/data/legal.ts` and commit.
-2. Repository Settings, Pages, Source: **GitHub Actions**.
-3. Merge `redesign` into `main` and push. Watch the workflow run.
-4. Check https://galuin.com in English, German and Russian.
-5. Tick **Enforce HTTPS**.
-
-Rollback: revert the merge commit and push, or switch the Pages source back to the branch.
+Revert the offending commit and push. The Pages source is **GitHub Actions**; the old static site is in the history before the Astro migration.
