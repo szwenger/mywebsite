@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, sep } from 'node:path';
 
 const read = (p) => readFileSync(join('dist', p), 'utf8');
 const walk = (d) => readdirSync(d).flatMap((f) => {
@@ -275,4 +275,43 @@ test('legal pages carry the draft marker as an HTML comment only', () => {
   const h = read('de/privacy/index.html');
   assert.match(h, /<!--\s*DRAFT/);
   assert.doesNotMatch(mainOf(h).replace(/<!--[\s\S]*?-->/g, ''), /DRAFT/);
+});
+
+// ---- Task 6: tools overview and QR ----
+const pageHtml = () => walk('dist').filter((f) => f.endsWith('.html'));
+const jsDir = join('dist', '_astro');
+const chunkSrc = (name) => readFileSync(join(jsDir, name), 'utf8');
+const closure = (names) => {
+  const seen = new Set();
+  const todo = [...names];
+  while (todo.length) {
+    const n = todo.pop();
+    if (seen.has(n) || !existsSync(join(jsDir, n))) continue;
+    seen.add(n);
+    for (const m of chunkSrc(n).matchAll(/["'`]\.\/([^"'`]+\.js)["'`]/g)) todo.push(m[1]);
+  }
+  return [...seen];
+};
+
+test('tools overview and QR page exist in every language and the overview lists the QR tool', () => {
+  for (const dir of Object.values(LANG_DIRS)) {
+    for (const p of ['tools', 'tools/qr']) assert.ok(existsSync(join('dist', dir, p, 'index.html')), `${dir}${p}`);
+    const h = read(`${dir}tools/index.html`);
+    assert.ok(hrefs(mainOf(h)).includes(`${pre(dir.replace('/', '') || 'en')}/tools/qr/`), `${dir} links to qr`);
+    assert.match(mainOf(h), /device|Gerät|устройств/);
+  }
+});
+
+test('the QR library is reachable only from the QR pages', () => {
+  const marker = (name) => chunkSrc(name).includes('WIFI:T:');
+  let qrPages = 0;
+  for (const f of pageHtml()) {
+    const html = readFileSync(f, 'utf8');
+    const entries = [...html.matchAll(/\/_astro\/([^"'`\s]+\.js)/g)].map((m) => m[1]);
+    const reachesQr = closure(entries).some(marker);
+    const isQrPage = f.split(sep).join('/').endsWith('/tools/qr/index.html');
+    assert.equal(reachesQr, isQrPage, f);
+    if (isQrPage) qrPages++;
+  }
+  assert.equal(qrPages, 3);
 });

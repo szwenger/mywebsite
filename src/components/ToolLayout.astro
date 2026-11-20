@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import { t, type Lang } from '../i18n/ui';
+import { tools } from '../data/tools';
+interface Props { lang: Lang; slug: string }
+const { lang, slug } = Astro.props;
+const tool = tools.find((x) => x.slug === slug)!;
+---
+<Base lang={lang} title={`${tool.name[lang]} · Galuin`} description={tool.blurb[lang]} current="tools">
+  <section class="wrap page">
+    <h1 class="section-title">{tool.name[lang]}</h1>
+    <p class="blurb">{tool.blurb[lang]}</p>
+    <p class="meta local">{t(lang, 'toolsLocal')}</p>
+    <slot />
+  </section>
+</Base>
+<style>
+  .page { padding-block: clamp(32px, 6vw, 64px) 0; }
+  .blurb { margin: -6px 0 6px; max-width: 60ch; }
+  .local { margin: 0 0 28px; }
+</style>

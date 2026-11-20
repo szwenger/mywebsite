@@ -1,0 +1,117 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: {
+    modes: 'Content', link: 'Link / text', wifi: 'Wi-Fi', contact: 'Contact',
+    text: 'Text or link', ssid: 'Network name (SSID)', password: 'Password', security: 'Security', none: 'No password', hidden: 'Hidden network',
+    name: 'Name', phone: 'Phone', email: 'Email', url: 'Website', org: 'Organisation',
+    fg: 'Code colour', bg: 'Background', size: 'Size', px: 'px',
+    low: 'Low contrast: this code may not scan. Pick a darker code colour or a lighter background.',
+    png: 'Download PNG', svg: 'Download SVG', preview: 'Preview',
+    empty: 'Fill in the form to see your code.', tooLong: 'Too much data for a QR code. Shorten the text.',
+  },
+  de: {
+    modes: 'Inhalt', link: 'Link / Text', wifi: 'WLAN', contact: 'Kontakt',
+    text: 'Text oder Link', ssid: 'Netzwerkname (SSID)', password: 'Passwort', security: 'Sicherheit', none: 'Kein Passwort', hidden: 'Verstecktes Netzwerk',
+    name: 'Name', phone: 'Telefon', email: 'E-Mail', url: 'Webseite', org: 'Organisation',
+    fg: 'Codefarbe', bg: 'Hintergrund', size: 'Größe', px: 'px',
+    low: 'Geringer Kontrast: Der Code lässt sich vielleicht nicht scannen. Wähle eine dunklere Codefarbe oder einen helleren Hintergrund.',
+    png: 'PNG herunterladen', svg: 'SVG herunterladen', preview: 'Vorschau',
+    empty: 'Fülle das Formular aus, um deinen Code zu sehen.', tooLong: 'Zu viele Daten für einen QR-Code. Kürze den Text.',
+  },
+  ru: {
+    modes: 'Содержимое', link: 'Ссылка / текст', wifi: 'Wi-Fi', contact: 'Контакт',
+    text: 'Текст или ссылка', ssid: 'Имя сети (SSID)', password: 'Пароль', security: 'Защита', none: 'Без пароля', hidden: 'Скрытая сеть',
+    name: 'Имя', phone: 'Телефон', email: 'Эл. почта', url: 'Сайт', org: 'Организация',
+    fg: 'Цвет кода', bg: 'Фон', size: 'Размер', px: 'px',
+    low: 'Низкий контраст: код может не считываться. Выберите более тёмный цвет кода или более светлый фон.',
+    png: 'Скачать PNG', svg: 'Скачать SVG', preview: 'Предпросмотр',
+    empty: 'Заполните форму, чтобы увидеть код.', tooLong: 'Слишком много данных для QR-кода. Сократите текст.',
+  },
+}[lang];
+---
+<ToolLayout lang={lang} slug="qr">
+  <div class="qr" data-qr data-too-long={s.tooLong}>
+    <div class="controls card">
+      <div class="tabs" role="tablist" aria-label={s.modes}>
+        <button type="button" role="tab" id="tab-link" aria-controls="panel-link" aria-selected="true" data-mode="link">{s.link}</button>
+        <button type="button" role="tab" id="tab-wifi" aria-controls="panel-wifi" aria-selected="false" tabindex="-1" data-mode="wifi">{s.wifi}</button>
+        <button type="button" role="tab" id="tab-contact" aria-controls="panel-contact" aria-selected="false" tabindex="-1" data-mode="contact">{s.contact}</button>
+      </div>
+
+      <div class="panel" role="tabpanel" id="panel-link" aria-labelledby="tab-link" data-panel="link">
+        <label>{s.text}<textarea name="text" rows="4"></textarea></label>
+      </div>
+      <div class="panel" role="tabpanel" id="panel-wifi" aria-labelledby="tab-wifi" data-panel="wifi" hidden>
+        <label>{s.ssid}<input name="ssid" autocomplete="off" /></label>
+        <label>{s.password}<input name="password" autocomplete="off" /></label>
+        <label>{s.security}
+          <select name="security"><option value="WPA">WPA/WPA2/WPA3</option><option value="WEP">WEP</option><option value="nopass">{s.none}</option></select>
+        </label>
+        <label class="check"><input type="checkbox" name="hidden" /> {s.hidden}</label>
+      </div>
+      <div class="panel" role="tabpanel" id="panel-contact" aria-labelledby="tab-contact" data-panel="contact" hidden>
+        <label>{s.name}<input name="name" autocomplete="off" /></label>
+        <label>{s.phone}<input name="phone" type="tel" autocomplete="off" /></label>
+        <label>{s.email}<input name="email" type="email" autocomplete="off" /></label>
+        <label>{s.url}<input name="url" type="url" autocomplete="off" /></label>
+        <label>{s.org}<input name="org" autocomplete="off" /></label>
+      </div>
+
+      <div class="style">
+        <label>{s.fg}<input type="color" name="fg" value="#000000" /></label>
+        <label>{s.bg}<input type="color" name="bg" value="#ffffff" /></label>
+        <label class="size"><span>{s.size}: <output name="sizeOut">512</output> {s.px}</span><input type="range" name="size" min="128" max="1024" step="16" value="512" /></label>
+      </div>
+      <p class="warn" role="status" data-warn data-text={s.low} hidden></p>
+    </div>
+
+    <div class="out card">
+      <h2 class="sr-only">{s.preview}</h2>
+      <div class="stage">
+        <canvas data-canvas width="512" height="512" role="img" aria-label={s.preview} hidden></canvas>
+        <p class="meta" data-empty>{s.empty}</p>
+        <p class="warn" role="status" data-error hidden></p>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn" data-download="png" disabled>{s.png}</button>
+        <button type="button" class="btn alt" data-download="svg" disabled>{s.svg}</button>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/qr/qr.ts';
+</script>
+<style>
+  .qr { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+  .controls, .out { padding: clamp(16px, 2.4vw, 26px); }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+  .tabs button { padding: 7px 16px; border: 1px solid var(--line); border-radius: 99px; background: transparent; color: var(--muted); font: inherit; font-size: .9rem; cursor: pointer; }
+  .tabs button[aria-selected='true'] { background: var(--accent-strong); border-color: var(--accent-strong); color: #fff; }
+  .panel { display: grid; gap: 14px; }
+  .panel[hidden] { display: none; }
+  label { display: grid; gap: 6px; font-size: .88rem; color: var(--muted); }
+  input:not([type='checkbox'], [type='color'], [type='range']), textarea, select {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); color: var(--fg); font: inherit; font-size: .95rem;
+  }
+  textarea { resize: vertical; }
+  .check { display: flex; align-items: center; gap: 8px; }
+  .style { display: flex; flex-wrap: wrap; gap: 16px 24px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); align-items: end; }
+  .style .size { flex: 1 1 220px; }
+  input[type='color'] { width: 56px; height: 34px; padding: 2px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); cursor: pointer; }
+  input[type='range'] { width: 100%; accent-color: var(--accent-strong); }
+  .warn { margin: 14px 0 0; padding: 9px 12px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface-2); font-size: .88rem; }
+  .stage { display: grid; place-items: center; min-height: 260px; padding: 12px; border-radius: var(--radius-sm); border: 1px dashed var(--line); }
+  canvas { max-width: 100%; height: auto; image-rendering: pixelated; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  .btn[disabled] { opacity: .45; cursor: not-allowed; }
+  .btn.alt { background: transparent; color: var(--fg); border: 1px solid var(--line); }
+  @media (max-width: 860px) { .qr { grid-template-columns: minmax(0, 1fr); } }
+</style>
