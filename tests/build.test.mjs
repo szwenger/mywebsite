@@ -399,3 +399,13 @@ test('deploy workflow: triggers, build and test steps, video cache, permissions,
   assert.match(wf, /if: github\.event_name == 'schedule'/);
   assert.match(wf, /gh api -X PUT repos\/\$\{\{ github\.repository \}\}\/actions\/workflows\/pages\.yml\/enable/);
 });
+
+test('post images become figures that link to the full image, and a lightbox dialog is on every page', () => {
+  for (const [lang, pre_] of [['en', ''], ['de', '/de'], ['ru', '/ru']]) {
+    const h = read(`${pre_ ? pre_.slice(1) + '/' : ''}blog/llm-benchmark/index.html`);
+    assert.match(h, /<figure class="fig"><a href="\/posts\/llm-benchmark\.png" class="zoom"><img /, `figure in ${lang} post`);
+    assert.match(h, /<dialog[^>]*class="lightbox"[^>]*>[\s\S]*<button[^>]*aria-label="[^"]+"/, `lightbox dialog in ${lang} post`);
+  }
+  const shipped = walk('dist').filter((p) => /\.(js|html)$/.test(p)).map((f) => readFileSync(f, 'utf8')).join('\n');
+  assert.ok(shipped.includes('showModal'), 'lightbox script ships');
+});

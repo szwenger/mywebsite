@@ -4,6 +4,7 @@ import '@fontsource-variable/unbounded';
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import Lightbox from '../components/Lightbox.astro';
 import { LANGS, localize, t, type Lang } from '../i18n/ui';
 
 interface Props {
@@ -63,5 +64,6 @@ const OG_LOCALE = { en: 'en_US', de: 'de_DE', ru: 'ru_RU' } as const;
       <slot />
     </main>
     <Footer lang={lang} />
+    <Lightbox lang={lang} />
   </body>
 </html>

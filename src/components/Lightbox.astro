@@ -1,0 +1,32 @@
+---
+import { t, type Lang } from '../i18n/ui';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+---
+<dialog class="lightbox">
+  <button type="button" class="lb-close" aria-label={t(lang, 'closeImage')}>×</button>
+  <img alt="" />
+  <p class="lb-cap" hidden></p>
+</dialog>
+<script>
+  // Click a post image to see it large. Without JS the link opens the full image itself.
+  const box = document.querySelector<HTMLDialogElement>('dialog.lightbox')!;
+  const img = box.querySelector('img')!;
+  const cap = box.querySelector<HTMLElement>('.lb-cap')!;
+
+  document.addEventListener('click', (e) => {
+    const a = (e.target as Element).closest<HTMLAnchorElement>('a.zoom');
+    if (!a || e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    const small = a.querySelector('img')!;
+    img.src = a.href;
+    img.alt = small.alt;
+    const text = a.closest('figure')?.querySelector('figcaption')?.textContent?.trim() ?? '';
+    cap.textContent = text;
+    cap.hidden = !text;
+    box.setAttribute('aria-label', small.alt);
+    box.showModal();
+  });
+  // A click anywhere in the open dialog closes it (Esc works natively).
+  box.addEventListener('click', () => box.close());
+</script>

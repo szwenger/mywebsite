@@ -70,3 +70,24 @@ a.card:focus-visible, .card-link:focus-visible { box-shadow: 5px 5px 0 var(--acc
   *, *::before, *::after { transition: none !important; animation: none !important; }
   a.card:hover, .card-link:hover { transform: none; }
 }
+
+/* Post images: figure with optional caption, click opens the lightbox. */
+.fig { margin: 1.6em 0; max-width: 100%; }
+.fig .zoom { display: block; cursor: zoom-in; border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; background: var(--surface); }
+.fig .zoom img { width: 100%; }
+.fig figcaption { margin-top: 8px; color: var(--muted); font-size: .88rem; line-height: 1.45; max-width: 65ch; }
+
+.lightbox {
+  width: 100%; max-width: none; height: 100%; max-height: none; margin: 0; padding: clamp(12px, 3vw, 32px); border: 0;
+  background: rgb(5 6 10 / .92); color: #eceef5; cursor: zoom-out;
+  flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+}
+.lightbox[open] { display: flex; }
+.lightbox::backdrop { background: transparent; }
+.lightbox img { max-width: 100%; max-height: calc(100svh - 120px); width: auto; object-fit: contain; border-radius: var(--radius-sm); }
+.lightbox .lb-cap { margin: 0; max-width: 70ch; text-align: center; font-size: .92rem; color: #c3c8d8; }
+.lightbox .lb-close {
+  position: absolute; top: 12px; right: 12px; width: 44px; height: 44px; border: 1px solid #ffffff40; border-radius: 99px;
+  background: #000a; color: #fff; font: 400 1.6rem/1 var(--font); cursor: pointer;
+}
+body:has(dialog.lightbox[open]) { overflow: hidden; }

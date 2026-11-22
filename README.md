@@ -50,6 +50,29 @@ Optional: `tests/private-terms.local.txt` (git-ignored, one term per line) makes
 
 4. **No `cover` makes a short note.** It is shown in full in the front page's notes column. **A `cover` makes a long post:** a card with a teaser, and the newest long post becomes the lead story. Put cover images in `public/posts/` and reference them by their URL path. While no long post exists, the newest video takes the lead slot.
 
+### Images and captions
+
+Put images in `public/posts/` and add as many as you like anywhere in the text, on a line of their own:
+
+```markdown
+![Alt text that describes the image](/posts/my-image.png)
+
+*Optional caption, shown under the image. **Bold**, `code` and links work.*
+```
+
+An image alone in its paragraph becomes a figure. An italic-only paragraph directly after it (or an italic line right under it, no blank line) becomes its caption; any other text stays a normal paragraph. Clicking an image opens it large in a lightbox (click anywhere, the close button or Esc closes it); with JavaScript off the click opens the image file itself. An image in the middle of a sentence stays inline and gets neither. The logic is `src/lib/figures.mjs` (a Sätteri plugin, Astro 7's Markdown engine) and `src/components/Lightbox.astro`.
+
+### Draft translations with a local model
+
+With the model server running (`llm-bench\serve.ps1`, port 8080):
+
+```bash
+npm run translate -- <slug>                 # writes de.md and ru.md next to en.md
+npm run translate -- <slug> --lang de --force   # one language, overwrite
+```
+
+Options: `--url` (default `http://127.0.0.1:8080/v1`, any OpenAI-compatible server such as LM Studio on `:1234/v1`) and `--model`. Terms that stay in English live in `scripts/translate-keep.json`. Code blocks, inline code and URLs never reach the model. The result is a draft: read it (models can drop a negation), then delete the `# machine-translated` line from the front matter and commit. It runs on your machine only, never in CI.
+
 ## Adding a tool
 
 1. Put the pure logic in `src/tools/<slug>/logic.ts` and the browser code in `src/tools/<slug>/<slug>.ts`.

@@ -1,0 +1,5 @@
+[
+  "Flash Attention", "KV cache", "tok/s",
+  "ROCm", "Vulkan", "llama.cpp", "LM Studio", "OpenCode", "Open WebUI",
+  "GGUF", "IQ3_XXS", "q8_0", "MXFP4", "GPU", "VRAM", "Astro", "GitHub Pages"
+]
