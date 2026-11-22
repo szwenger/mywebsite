@@ -90,6 +90,10 @@ h1.section-title::before { content: ''; width: .62em; height: .62em; border-radi
 .pager button[aria-current='page'] { color: var(--fg); background: var(--surface-2); border-color: var(--accent); }
 .pager button:disabled { opacity: .4; cursor: default; }
 
+/* Theme switch: the new page is revealed through an ink blot, see src/scripts/theme.ts. */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-new(root) { mask-image: var(--ink); mask-repeat: no-repeat; mask-size: 0 0; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
   a.card:hover, .card-link:hover { transform: none; }
