@@ -114,7 +114,9 @@ const layers = layerMap as Record<string, string[]>;
   .hero picture, .shot picture, .glow picture, .stage-img, .shot img, .glow img { display: block; width: 100%; height: 100%; object-fit: cover; }
   .hero picture, .shot picture:first-child { position: absolute; inset: 0; }
   /* RGB sources are separate additive layers: the white pass is tinted (multiply) and added to the base (plus-lighter), so the colour can animate */
-  .glow { position: absolute; inset: 0; isolation: isolate; mix-blend-mode: plus-lighter; pointer-events: none; }
+  .glow { position: absolute; inset: 0; isolation: isolate; mix-blend-mode: plus-lighter; pointer-events: none; opacity: 0; transition: opacity 1s ease; }
+  /* A glow stays invisible until its own image and the base picture under it have loaded: before that the bare colour tint (red, sliding rainbow) would flash across the whole stage. Without script it never shows, the base picture stands on its own. */
+  .glow.ready { opacity: 1; }
   .tint { position: absolute; inset: 0; mix-blend-mode: multiply; }
   .glow-fans .tint, .glow-puck .tint { background: #f00; animation: hue 9s linear infinite; }
   .glow-kb .tint { background: linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00) 0 0 / 50% 100% repeat-x; animation: wave 6s linear infinite; }
@@ -371,6 +373,14 @@ const layers = layerMap as Record<string, string[]>;
       p.querySelector('.next')!.addEventListener('click', () => go((i + 1) % chips.length));
     });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') back(); });
+
+    // ---- Reveal each glow only once its image and the base image of the same scene are decoded (see .glow in the styles).
+    // decode() resolves once the image is loaded AND decoded; a loaded but undecoded glow image paints nothing, and the tint alone would flash.
+    // It rejects on a broken image: then the glow simply never shows.
+    root.querySelectorAll<HTMLElement>('.glow').forEach((g) => {
+      const base = g.closest('.hero, .shot')!.querySelector<HTMLImageElement>(':scope > picture img')!;
+      Promise.all([base.decode(), g.querySelector('img')!.decode()]).then(() => g.classList.add('ready'), () => {});
+    });
 
     // ---- Lights: the RGB runs as a rainbow cycle (pure CSS), the button switches it off and on.
     const offBtn = root.querySelector<HTMLButtonElement>('[data-off]')!;
