@@ -2,16 +2,19 @@
 import Base from '../../../layouts/Base.astro';
 import { LANGS, t, type Lang } from '../../../i18n/ui';
 import { hardware } from '../../../data/hardware';
+import HardwareDesk from '../../../components/HardwareDesk.astro';
 
 export function getStaticPaths() {
   return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
 }
 const lang = (Astro.params.lang ?? 'en') as Lang;
 ---
-<Base lang={lang} title={`${t(lang, 'navHardware')} · Galuin`} description={t(lang, 'hardwareIntro')} current="hardware">
+<Base lang={lang} title={`${t(lang, 'navSetup')} · Galuin`} description={t(lang, 'hardwareIntro')} current="hardware">
   <section class="wrap page">
-    <h1 class="section-title">{t(lang, 'navHardware')}</h1>
+    <h1 class="section-title">{t(lang, 'navSetup')}</h1>
     <p class="meta intro">{t(lang, 'hardwareIntro')}</p>
+    <HardwareDesk lang={lang} />
+    <h2 class="all">{t(lang, 'hwAll')}</h2>
     <div class="groups">
       {hardware.map((group) => (
         <section class="card group">
@@ -32,6 +35,7 @@ const lang = (Astro.params.lang ?? 'en') as Lang;
 <style>
   .page { padding-block: clamp(32px, 6vw, 64px) 0; }
   .intro { margin: -6px 0 24px; font-size: .95rem; max-width: 60ch; }
+  .all { margin: 8px 0 16px; font-size: 1.1rem; }
   .groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 20px; align-items: start; }
   .group { padding: clamp(18px, 2.4vw, 26px); }
   .group h2 { margin: 0 0 12px; font-size: 1.1rem; }

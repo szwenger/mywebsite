@@ -1,0 +1,55 @@
+{
+ "hero": [
+  "fans",
+  "kb",
+  "puck"
+ ],
+ "tower": [
+  "fans",
+  "kb",
+  "puck"
+ ],
+ "mouse": [],
+ "keyboard": [
+  "fans",
+  "kb",
+  "puck"
+ ],
+ "pad": [
+  "fans",
+  "kb",
+  "puck"
+ ],
+ "m1": [
+  "fans",
+  "kb",
+  "puck"
+ ],
+ "m2": [
+  "fans",
+  "kb",
+  "puck"
+ ],
+ "m3": [
+  "fans",
+  "kb"
+ ],
+ "headphones": [
+  "fans",
+  "kb"
+ ],
+ "mic": [
+  "kb",
+  "puck"
+ ],
+ "interface": [
+  "fans",
+  "kb",
+  "puck"
+ ],
+ "vr": [
+  "fans",
+  "kb",
+  "puck"
+ ]
+}

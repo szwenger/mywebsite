@@ -142,7 +142,7 @@ test('a fallback page shows the original text and canonicalises to it', () => {
 test('the original page canonicalises to itself and the blog is in the nav as current', () => {
   const h = read('blog/welcome/index.html');
   assert.match(h, /<link rel="canonical" href="https:\/\/galuin\.com\/blog\/welcome\/"/);
-  assert.match(h, /aria-current="page"[^>]*>Blog</);
+  assert.match(h, /aria-current="page"[^>]*>(?:<svg[^>]*>.*?<\/svg>)?Blog</);
 });
 
 test('notes show their text on the index, the NAS note has no TBD rows', () => {
@@ -159,7 +159,7 @@ test('videos page exists in every language, links the channel, thumbnails are lo
     const h = read(join(lang === 'en' ? '' : lang, 'videos', 'index.html'));
     assert.match(h, new RegExp(`<html lang="${lang}"`));
     assert.match(h, /href="https:\/\/www\.youtube\.com\/@Galuin"/);
-    assert.match(h, /aria-current="page"[^>]*>(Videos|Видео)</);
+    assert.match(h, /aria-current="page"[^>]*>(?:<svg[^>]*>.*?<\/svg>)?(Videos|Видео)</);
     const main = h.slice(h.indexOf('<main'), h.indexOf('</main>'));
     for (const [, src] of main.matchAll(/<img[^>]*\ssrc="([^"]+)"/g)) assert.ok(src.startsWith('/thumbs/'), `${lang}: ${src}`);
   }
@@ -234,23 +234,62 @@ test('hardware, impressum and privacy exist in every language', () => {
   }
 });
 
-test('hardware lists 12 PC items, 3 audio items, the Quest 2 and the 14 original links', () => {
+test('hardware lists 12 PC items, 3 audio items, the Quest 2 and the 12 kept original links', () => {
   const ORIGINAL = [
     'https://amzn.eu/d/4hkrHid', 'https://amzn.eu/d/9HwxtbE', 'https://amzn.eu/d/5oOMUjF', 'https://amzn.eu/d/4JcwcsO',
-    'https://amzn.eu/d/b3DLYPB', 'https://www.microsoft.com/de-de/d/windows-11-pro/dg7gmgf0d8h4/000P', 'https://amzn.eu/d/deVYJgk',
-    'https://amzn.eu/d/3x2ZswV', 'https://www.amazon.com/SteelSeries-QcK-Gaming-Mouse-Black/dp/B000UVRU6G/', 'https://amzn.eu/d/aVYspWD',
+    'https://amzn.eu/d/b3DLYPB', 'https://www.microsoft.com/de-de/d/windows-11-pro/dg7gmgf0d8h4/000P',
+    'https://amzn.eu/d/3x2ZswV', 'https://amzn.eu/d/aVYspWD',
     'https://a.co/d/9RJIAvi', 'https://amzn.eu/d/6Mxrhpq', 'https://www.amazon.de/gp/product/B00WGAT56W/', 'https://www.amazon.de/gp/product/B00FFIGZF66/',
   ];
   for (const dir of Object.values(LANG_DIRS)) {
     const h = read(`${dir}hardware/index.html`);
     const links = hrefs(mainOf(h));
     for (const url of ORIGINAL) assert.ok(links.includes(url), `${dir} missing ${url}`);
-    assert.equal(ORIGINAL.filter((u) => links.includes(u)).length, 14);
+    assert.equal(ORIGINAL.filter((u) => links.includes(u)).length, 12);
+    assert.ok(links.includes('https://www.mchose.store/products/mchose-a7-v2-series-lightweight-all-round-wireless-gaming-mouse?variant=50834270847271'), `${dir} mchose link`);
+    assert.match(h, /MCHOSE A7 V2 Ultra/);
+    assert.match(h, /QcK XXL/);
+    assert.doesNotMatch(h, /G305|QcK\+/);
     assert.equal((h.match(/data-hw="pc"/g) ?? []).length, 12, `${dir} pc items`);
     assert.equal((h.match(/data-hw="audio"/g) ?? []).length, 3, `${dir} audio items`);
     assert.match(h, /Meta Quest 2/);
     assert.doesNotMatch(h, /sponsored/, 'not affiliate links');
     assert.match(h, /rel="noopener"/);
+  }
+});
+
+test('hardware desk: every part opens a card, every item is in a card, images and masks exist', () => {
+  const ITEMS = 16;
+  for (const dir of Object.values(LANG_DIRS)) {
+    const h = read(`${dir}hardware/index.html`);
+    const parts = [...h.matchAll(/<button[^>]*class="part"[^>]*>/g)].map((m) => m[0]);
+    assert.equal(parts.length, 11, `${dir} parts`);
+    for (const d of parts) {
+      const id = d.match(/aria-controls="([^"]+)"/)?.[1];
+      assert.ok(id && h.includes(`id="${id}"`), `${dir} ${d} has a card`);
+      assert.match(d, /data-mask="\/hardware\/mask-[\w]+\.webp"/);
+    }
+    assert.doesNotMatch(h, /class="hs"/, 'no dots drawn on the picture');
+    assert.match(h, /data-ids="\/hardware\/hero-ids\.png"/);
+    assert.equal((h.match(/data-spot-item/g) ?? []).length, ITEMS, `${dir} items in cards`);
+    assert.match(h, /<img[^>]*class="stage-img"[^>]*alt="[^"]{20,}"/, `${dir} hero alt`);
+    const files = new Set([...(h.match(/\/hardware\/[\w-]+\.(?:avif|webp|png)/g) ?? [])]);
+    assert.ok(files.size > 20, `${dir} refs ${files.size}`);
+    for (const src of files) assert.ok(existsSync(join('dist', src)), `${dir} ${src} exists`);
+    assert.match(h, /hero-base/);
+    assert.match(h, /data-mode="rainbow"/, `${dir} rainbow by default`);
+    assert.ok((h.match(/class="glow glow-/g) ?? []).length >= 3, `${dir} rgb layers`);
+  }
+});
+
+test('hardware desk: a real camera tour (48 frames per part) is wired to every close-up', () => {
+  for (const dir of Object.values(LANG_DIRS)) {
+    const h = read(`${dir}hardware/index.html`);
+    assert.match(h, /<canvas[^>]*class="tour"/, `${dir} tour canvas`);
+    assert.match(h, /data-tour="48"/, `${dir} tour length`);
+    const shots = new Set([...h.matchAll(/data-shot="([\w]+)"/g)].map((m) => m[1]));
+    assert.ok(shots.size >= 9, `${dir} shots ${shots.size}`);
+    for (const k of shots) for (let i = 0; i < 48; i++) assert.ok(existsSync(join('dist', 'hardware', `tour-${k}-${String(i).padStart(2, '0')}.webp`)), `${dir} tour-${k}-${i}`);
   }
 });
 

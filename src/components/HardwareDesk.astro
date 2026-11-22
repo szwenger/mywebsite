@@ -1,0 +1,383 @@
+---
+import { t, type Lang } from '../i18n/ui';
+import { hardware, spots, type Spot } from '../data/hardware';
+import layerMap from '../data/hardware-layers.json';
+import Icon from './Icon.astro';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+
+const items = hardware.flatMap((g) => g.items);
+const shotOf: Record<Spot, string> = { pc: 'tower', mouse: 'mouse', kb: 'keyboard', pad: 'pad', m1: 'm1', m2: 'm2', m3: 'm3', hp: 'headphones', mic: 'mic', ai: 'interface', vr: 'vr' };
+const shots = [...new Set(Object.values(shotOf))];
+const layers = layerMap as Record<string, string[]>;
+---
+<div class="desk" data-desk data-mode="rainbow">
+  <div class="bar">
+    <button type="button" class="off" data-off aria-pressed="false">
+      <Icon name="bulb" size={16} />
+      <span class="when-on">{t(lang, 'hwOff')}</span><span class="when-off">{t(lang, 'hwOn')}</span>
+    </button>
+  </div>
+
+  <div class="stage-wrap">
+    <div class="stage" data-ids="/hardware/hero-ids.png" data-tour="48">
+      <div class="hero">
+        <picture>
+          <source type="image/avif" srcset="/hardware/hero-base-1200.avif 1200w, /hardware/hero-base-2400.avif 2400w" sizes="(min-width: 1100px) 1100px, 100vw" />
+          <source type="image/webp" srcset="/hardware/hero-base-1200.webp 1200w, /hardware/hero-base-2400.webp 2400w" sizes="(min-width: 1100px) 1100px, 100vw" />
+          <img class="stage-img" src="/hardware/hero-base-1200.webp" width="2400" height="1350" alt={t(lang, 'hwAlt')} fetchpriority="high" decoding="async" />
+        </picture>
+        {layers.hero.map((g) => (
+          <div class={`glow glow-${g}`} aria-hidden="true">
+            <picture>
+              <source type="image/avif" srcset={`/hardware/hero-${g}-1200.avif 1200w, /hardware/hero-${g}-2400.avif 2400w`} sizes="(min-width: 1100px) 1100px, 100vw" />
+              <img src={`/hardware/hero-${g}-1200.webp`} srcset={`/hardware/hero-${g}-1200.webp 1200w, /hardware/hero-${g}-2400.webp 2400w`} sizes="(min-width: 1100px) 1100px, 100vw" width="2400" height="1350" alt="" decoding="async" />
+            </picture>
+            <span class="tint"></span>
+          </div>
+        ))}
+      </div>
+      <canvas class="tour" aria-hidden="true"></canvas>
+      {shots.map((k) => (
+        <div class="shot" data-shot={k} aria-hidden="true">
+          <picture>
+            <source type="image/avif" srcset={`/hardware/part-${k}-base.avif`} />
+            <img src={`/hardware/part-${k}-base.webp`} width="1600" height="900" alt="" loading="lazy" decoding="async" />
+          </picture>
+          {layers[k].map((g) => (
+            <div class={`glow glow-${g}`}>
+              <picture>
+                <source type="image/avif" srcset={`/hardware/part-${k}-${g}.avif`} />
+                <img src={`/hardware/part-${k}-${g}.webp`} width="1600" height="900" alt="" loading="lazy" decoding="async" />
+              </picture>
+              <span class="tint"></span>
+            </div>
+          ))}
+        </div>
+      ))}
+      <div class="dim" aria-hidden="true"></div>
+      <div class="hl" aria-hidden="true"><div class="hl-fill"></div></div>
+      <span class="tip" aria-hidden="true"></span>
+      <span class="hint hint-hover" aria-hidden="true"><i></i>{t(lang, 'hwHint')}</span>
+      <span class="hint hint-touch" aria-hidden="true"><i></i>{t(lang, 'hwHintTouch')}</span>
+    </div>
+
+    {spots.map((s) => (
+      <section class="panel" id={`pop-${s.id}`} aria-label={s.title[lang]} data-pop={s.id} data-shot-for={shotOf[s.id]} hidden>
+        <div class="panel-top">
+          <button type="button" class="back">← {t(lang, 'hwClose')}</button>
+          <span class="step">
+            <button type="button" class="prev" aria-label={t(lang, 'hwPrev')}>‹</button>
+            <button type="button" class="next" aria-label={t(lang, 'hwNext')}>›</button>
+          </span>
+        </div>
+        <h2>{s.title[lang]}</h2>
+        <ul>
+          {items.filter((i) => i.spot === s.id).map((i) => (
+            <li data-spot-item>
+              <span class="n">{i.label[lang]}</span>
+              <span class="d">
+                {i.href ? <a href={i.href} rel="noopener">{i.name}</a> : <b>{i.name}</b>}
+                {i.note && <small>{i.note[lang]}</small>}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+
+  <nav class="parts" aria-label={t(lang, 'hwParts')}>
+    {spots.map((s) => (
+      <button type="button" class="part" data-spot={s.id} data-mask={`/hardware/mask-${s.id}.webp`} aria-controls={`pop-${s.id}`} aria-expanded="false"><Icon name={s.id} size={16} /><span>{s.title[lang]}</span></button>
+    ))}
+  </nav>
+</div>
+
+<style>
+  .desk { margin: 0 0 28px; }
+  .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px 16px; margin-bottom: 12px; }
+  .part :global(.icon), .off :global(.icon) { flex: none; }
+  .part :global(.icon) { color: var(--muted); }
+  .part:hover :global(.icon), .part.lit :global(.icon), .part[aria-expanded="true"] :global(.icon) { color: var(--accent-ink, var(--accent)); }
+  .off { display: inline-flex; align-items: center; gap: 7px; padding: 7px 14px; border: 1px solid var(--line); border-radius: 99px; background: var(--surface); color: var(--fg); font: 600 .85rem var(--font); cursor: pointer; }
+  .when-off { display: none; }
+  [data-mode='off'] .when-on { display: none; } [data-mode='off'] .when-off { display: inline; }
+  .off[aria-pressed='true'] { background: var(--accent-strong); border-color: var(--accent-strong); color: #fff; }
+  .off:focus-visible, .part:focus-visible, .back:focus-visible, .step button:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 3px; }
+
+  .stage-wrap { position: relative; }
+  .stage { position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 22px; box-shadow: 8px 8px 0 var(--hard); background: #0b0d14; aspect-ratio: 16 / 9; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .stage.over { cursor: pointer; }
+  .hero, .shot { position: absolute; inset: 0; display: block; }
+  .hero picture, .shot picture, .glow picture, .stage-img, .shot img, .glow img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .hero picture, .shot picture:first-child { position: absolute; inset: 0; }
+  /* RGB sources are separate additive layers: the white pass is tinted (multiply) and added to the base (plus-lighter), so the colour can animate */
+  .glow { position: absolute; inset: 0; isolation: isolate; mix-blend-mode: plus-lighter; pointer-events: none; }
+  .tint { position: absolute; inset: 0; mix-blend-mode: multiply; }
+  .glow-fans .tint, .glow-puck .tint { background: #f00; animation: hue 9s linear infinite; }
+  .glow-kb .tint { background: linear-gradient(90deg, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00) 0 0 / 50% 100% repeat-x; animation: wave 6s linear infinite; }
+  @keyframes hue { to { filter: hue-rotate(360deg); } }
+  @keyframes wave { to { background-position-x: 100%; } }
+  [data-mode='off'] .glow { display: none; }
+
+  /* the camera drive: pre-rendered stills along a real camera path (hero camera -> close-up camera) are played on a canvas, then the full close-up fades in */
+  .tour { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity .25s; pointer-events: none; }
+  .tour.on { opacity: 1; }
+  .shot { opacity: 0; transition: opacity .4s ease; pointer-events: none; }
+  .shot.on { opacity: 1; }
+
+  /* hover: everything except the part under the pointer dims, the part gets a soft rim light (masks are the part's own silhouette) */
+  .dim, .hl { position: absolute; inset: 0; opacity: 0; transition: opacity .18s; pointer-events: none; }
+  .dim { background: rgb(6 7 12 / .52); -webkit-mask-image: linear-gradient(#000 0 0), var(--m); mask-image: linear-gradient(#000 0 0), var(--m); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-composite: xor; mask-composite: exclude; }
+  .hl { filter: drop-shadow(0 0 1.5px #d5d9ff) drop-shadow(0 0 10px #6a78d1); }
+  .hl-fill { position: absolute; inset: 0; background: rgb(190 198 255 / .14); -webkit-mask-image: var(--m); mask-image: var(--m); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; }
+  .dim.on, .hl.on { opacity: 1; }
+  .zoomed .dim, .zoomed .hl { opacity: 0; }
+  .tip { position: absolute; z-index: 6; left: 0; top: 0; padding: 4px 10px; border-radius: 6px; background: #0b0d14; color: #eceef5; border: 1px solid #272c3b; font: 600 .75rem/1.2 var(--font); white-space: nowrap; pointer-events: none; opacity: 0; transform: translate(-50%, -150%); transition: opacity .15s; }
+  .tip.on { opacity: 1; }
+  .hint { position: absolute; left: 14px; top: 14px; display: inline-flex; gap: 8px; align-items: center; padding: 6px 12px; border-radius: 99px; background: rgb(8 9 14 / .72); color: #cdd2ea; font: 500 .75rem var(--font); transition: opacity .3s; pointer-events: none; }
+  .hint i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-ink); animation: ping 1.8s infinite; }
+  .hint-touch { display: none; }
+  @media (hover: none) { .hint-hover { display: none; } .hint-touch { display: inline-flex; } .tip { display: none; } }
+  .zoomed .hint, .stage.touched .hint { opacity: 0; }
+  @keyframes ping { 0% { transform: scale(.6); opacity: .9; } 100% { transform: scale(1.7); opacity: 0; } }
+
+  .panel { position: absolute; z-index: 10; left: 16px; bottom: 16px; width: min(360px, calc(100% - 32px)); padding: 12px 18px 14px; border: 1px solid rgb(255 255 255 / .14); border-radius: var(--radius); background: rgb(10 12 18 / .78); backdrop-filter: blur(10px); color: #eceef5; box-shadow: 0 10px 30px rgb(0 0 0 / .45); animation: rise .45s var(--ease) backwards; }
+  .panel[hidden] { display: none; }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } }
+  .panel-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .back { padding: 6px 12px 6px 8px; border: 0; border-radius: 99px; background: rgb(255 255 255 / .1); color: #eceef5; font: 600 .78rem var(--font); cursor: pointer; }
+  .back:hover { background: rgb(255 255 255 / .2); }
+  .step { display: inline-flex; gap: 6px; }
+  .step button { width: 30px; height: 30px; border: 0; border-radius: 50%; background: rgb(255 255 255 / .1); color: #eceef5; font-size: 1.2rem; line-height: 1; cursor: pointer; }
+  .step button:hover { background: rgb(255 255 255 / .2); }
+  .panel h2 { margin: 10px 0 4px; font-size: 1.05rem; line-height: 1.3; color: #fff; }
+  .panel ul { margin: 0; padding: 0; list-style: none; }
+  .panel li { display: grid; grid-template-columns: 5.4rem minmax(0, 1fr); gap: 8px; padding: 7px 0; border-top: 1px solid rgb(255 255 255 / .12); font-size: .86rem; overflow-wrap: anywhere; }
+  .panel li:first-child { border-top: 0; }
+  .n { color: #aab0c6; }
+  .d a, .d b { font-weight: 600; color: #fff; }
+  .d a { text-decoration-color: rgb(255 255 255 / .4); }
+  .d small { display: block; margin-top: 3px; color: #aab0c6; font-size: .8rem; }
+
+  /* part list: the keyboard and touch way in, and a legend for the picture */
+  .parts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .part { display: inline-flex; align-items: center; gap: 7px; padding: 7px 14px; border: 1px solid var(--line); border-radius: 99px; background: var(--surface); color: var(--fg); font: 600 .82rem var(--font); cursor: pointer; transition: border-color .15s, background .15s; }
+  .part:hover, .part.lit, .part[aria-expanded='true'] { border-color: var(--accent); background: var(--surface-2); }
+
+  @media (max-width: 760px) {
+    .panel { position: static; width: auto; margin-top: 12px; background: var(--surface); border-color: var(--accent); color: var(--fg); backdrop-filter: none; box-shadow: 4px 4px 0 var(--accent); animation: none; }
+    .back, .step button { background: var(--surface-2); color: var(--fg); }
+    .panel h2, .d a, .d b { color: var(--fg); }
+    .n, .d small { color: var(--muted); }
+    .panel li { border-top-color: var(--line); }
+    .parts { flex-wrap: nowrap; overflow-x: auto; scroll-snap-type: x proximity; padding-bottom: 6px; margin-inline: calc(var(--gutter, 16px) * -1); padding-inline: var(--gutter, 16px); }
+    .part { flex: none; scroll-snap-align: start; padding: 10px 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tint { animation: none !important; background: #ff2d8a !important; }
+    .shot, .tour { transition: opacity .3s; }
+    .hint i, .panel { animation: none; }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-desk]');
+  if (root) {
+    const stage = root.querySelector<HTMLElement>('.stage')!;
+    const chips = [...root.querySelectorAll<HTMLButtonElement>('.part')];
+    const panels = [...root.querySelectorAll<HTMLElement>('.panel')];
+    const shots = [...root.querySelectorAll<HTMLElement>('.shot')];
+    const dim = root.querySelector<HTMLElement>('.dim')!;
+    const hl = root.querySelector<HTMLElement>('.hl')!;
+    const tip = root.querySelector<HTMLElement>('.tip')!;
+    let current = -1;
+    let hover = -1;
+
+    // ---- hit testing: a small index image (value = part number, 0 = nothing) rendered from the same camera as the picture
+    let started = false;
+    let map: Uint8Array | null = null;
+    let mw = 0, mh = 0;
+    const centre: ({ x: number; y: number } | null)[] = chips.map(() => null);
+    const loadMap = () => {
+      if (started) return;
+      started = true;
+      const im = new Image();
+      im.onload = () => {
+        const c = document.createElement('canvas');
+        mw = c.width = im.naturalWidth; mh = c.height = im.naturalHeight;
+        const g = c.getContext('2d', { willReadFrequently: true })!;
+        g.drawImage(im, 0, 0);
+        const d = g.getImageData(0, 0, mw, mh).data;
+        map = new Uint8Array(mw * mh);
+        const sum = chips.map(() => [0, 0, 0]);
+        for (let i = 0; i < map.length; i++) {
+          const v = d[i * 4];                          // greyscale PNG: R = part number
+          map[i] = v;
+          if (v > 0 && v <= chips.length) { const s = sum[v - 1]; s[0] += i % mw; s[1] += (i / mw) | 0; s[2]++; }
+        }
+        sum.forEach((s, k) => { if (s[2]) centre[k] = { x: (s[0] / s[2] / mw) * 100, y: (s[1] / s[2] / mh) * 100 }; });
+      };
+      im.src = stage.dataset.ids!;
+      chips.forEach((c) => { const m = new Image(); m.src = c.dataset.mask!; });   // masks are tiny; warm the cache
+    };
+    // nearest part within `tol` css pixels of the pointer (-1 if none)
+    const hit = (clientX: number, clientY: number, tol: number) => {
+      if (!map) return -1;
+      const r = stage.getBoundingClientRect();
+      const x = Math.round(((clientX - r.left) / r.width) * (mw - 1)), y = Math.round(((clientY - r.top) / r.height) * (mh - 1));
+      const rad = Math.ceil((tol * mw) / r.width);
+      let best = -1, bd = Infinity;
+      for (let dy = -rad; dy <= rad; dy++) {
+        for (let dx = -rad; dx <= rad; dx++) {
+          const xx = x + dx, yy = y + dy;
+          if (xx < 0 || yy < 0 || xx >= mw || yy >= mh) continue;
+          const v = map[yy * mw + xx];
+          if (!v) continue;
+          const dd = dx * dx + dy * dy;
+          if (dd < bd) { bd = dd; best = v - 1; }
+        }
+      }
+      return best;
+    };
+
+    const light = (i: number) => {
+      if (current >= 0 || i === hover) return;
+      hover = i;
+      const on = i >= 0;
+      if (on) { void warm(panels[i].dataset.shotFor!); const m = `url(${chips[i].dataset.mask})`; dim.style.setProperty('--m', m); hl.style.setProperty('--m', m); tip.textContent = chips[i].textContent; }
+      dim.classList.toggle('on', on); hl.classList.toggle('on', on); tip.classList.toggle('on', on);
+      stage.classList.toggle('over', on);
+      chips.forEach((c, k) => c.classList.toggle('lit', k === i));
+    };
+
+    // ---- camera drive: stills along a real camera path, hero camera -> close-up camera, played on a canvas (and played backwards on return)
+    const N = Number(stage.dataset.tour) || 48;
+    const cv = root.querySelector<HTMLCanvasElement>('.tour')!;
+    const cx = cv.getContext('2d')!;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const framesOf: Record<string, Promise<HTMLImageElement[] | null>> = {};
+    const warm = (shot: string) => (framesOf[shot] ??= Promise.all(Array.from({ length: N }, (_, n) => new Promise<HTMLImageElement>((ok, no) => {
+      const im = new Image();
+      im.onload = () => ok(im);
+      im.onerror = no;
+      im.src = `/hardware/tour-${shot}-${String(n).padStart(2, '0')}.webp`;
+    }))).catch(() => null));
+    const shotOf = (i: number) => panels[i].dataset.shotFor!;
+    const ease = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+    const paint = (fr: HTMLImageElement[], pos: number) => {
+      const i = Math.min(N - 2, Math.floor(pos)), a = pos - i;
+      if (cv.width !== fr[0].naturalWidth) { cv.width = fr[0].naturalWidth; cv.height = fr[0].naturalHeight; }
+      cx.globalAlpha = 1; cx.drawImage(fr[i], 0, 0, cv.width, cv.height);
+      if (a > 0.001) { cx.globalAlpha = a; cx.drawImage(fr[i + 1], 0, 0, cv.width, cv.height); }
+    };
+    // fly through the stills from progress `from` to `to` (0 = hero camera, 1 = close-up camera)
+    const fly = (fr: HTMLImageElement[], from: number, to: number, ms: number) => new Promise<void>((done) => {
+      const t0 = performance.now();
+      const step = (now: number) => {
+        const p = Math.min(1, (now - t0) / ms);
+        paint(fr, (from + (to - from) * ease(p)) * (N - 1));
+        p < 1 ? requestAnimationFrame(step) : done();
+      };
+      requestAnimationFrame(step);
+    });
+    const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+    let busy = false;
+    const openCard = (i: number) => {
+      panels.forEach((p, k) => { p.hidden = k !== i; });
+      chips.forEach((c, k) => c.setAttribute('aria-expanded', String(k === i)));
+      current = i;
+    };
+    const go = async (i: number, focus = true) => {
+      if (busy || i === current) return;
+      light(-1);
+      if (current >= 0) {
+        if (shotOf(current) === shotOf(i)) { openCard(i); if (focus) panels[i].querySelector<HTMLElement>('.back')!.focus({ preventScroll: true }); return; }
+        await back(false);
+      }
+      busy = true;
+      stage.classList.add('zoomed');
+      current = i;                                          // blocks hover while we fly
+      const shot = shotOf(i);
+      const fr = reduce ? null : await Promise.race([warm(shot), wait(3000).then(() => null)]);
+      if (fr) {
+        paint(fr, 0);
+        cv.classList.add('on');
+        await wait(260);                                    // the RGB glow of the hero fades out under the first still
+        await fly(fr, 0, 1, 1700);
+      }
+      openCard(i);
+      shots.forEach((s) => s.classList.toggle('on', s.dataset.shot === shot));
+      if (fr) wait(500).then(() => cv.classList.remove('on'));
+      busy = false;
+      if (focus) panels[i].querySelector<HTMLElement>('.back')!.focus({ preventScroll: true });
+    };
+    const back = async (focusChip = true) => {
+      if (current < 0 || busy) return;
+      busy = true;
+      const chip = chips[current];
+      const fr = reduce ? null : await framesOf[shotOf(current)];
+      panels.forEach((p) => { p.hidden = true; });
+      chips.forEach((c) => c.setAttribute('aria-expanded', 'false'));
+      if (fr) { paint(fr, N - 1); cv.classList.add('on'); }
+      shots.forEach((s) => s.classList.remove('on'));
+      if (fr) { await wait(420); await fly(fr, 1, 0, 1300); }
+      stage.classList.remove('zoomed');
+      cv.classList.remove('on');
+      current = -1;
+      busy = false;
+      if (focusChip) chip.focus({ preventScroll: true });
+    };
+
+    stage.addEventListener('pointerenter', loadMap);
+    stage.addEventListener('pointermove', (e) => {
+      loadMap();
+      if (e.pointerType === 'touch' || current >= 0) return;
+      light(hit(e.clientX, e.clientY, 3));
+      if (hover >= 0) {
+        const r = stage.getBoundingClientRect();
+        tip.style.left = `${e.clientX - r.left}px`;
+        tip.style.top = `${e.clientY - r.top}px`;
+      }
+    });
+    stage.addEventListener('pointerleave', () => light(-1));
+    stage.addEventListener('pointerdown', (e) => {
+      loadMap();
+      if (e.pointerType !== 'touch' || current >= 0) return;
+      stage.classList.add('touched');
+      light(hit(e.clientX, e.clientY, 22));   // press feedback on touch screens
+    });
+    stage.addEventListener('click', (e) => {
+      if (current >= 0) return;
+      const i = hit(e.clientX, e.clientY, (e as PointerEvent).pointerType === 'touch' ? 22 : 3);
+      if (i >= 0) go(i, (e as PointerEvent).detail !== 0);
+      else light(-1);
+    });
+    stage.addEventListener('pointercancel', () => light(-1));
+
+    chips.forEach((c, i) => {
+      c.addEventListener('click', () => go(i));
+      c.addEventListener('pointerenter', () => light(i));
+      c.addEventListener('pointerleave', () => light(-1));
+      c.addEventListener('focus', () => light(i));
+      c.addEventListener('blur', () => light(-1));
+    });
+    panels.forEach((p, i) => {
+      p.querySelector('.back')!.addEventListener('click', () => back());
+      p.querySelector('.prev')!.addEventListener('click', () => go((i + chips.length - 1) % chips.length));
+      p.querySelector('.next')!.addEventListener('click', () => go((i + 1) % chips.length));
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') back(); });
+
+    // ---- Lights: the RGB runs as a rainbow cycle (pure CSS), the button switches it off and on.
+    const offBtn = root.querySelector<HTMLButtonElement>('[data-off]')!;
+    offBtn.addEventListener('click', () => {
+      const off = root.dataset.mode !== 'off';
+      root.dataset.mode = off ? 'off' : 'rainbow';
+      offBtn.setAttribute('aria-pressed', String(off));
+    });
+  }
+</script>
