@@ -58,10 +58,10 @@ test('nav links to sections and the Hangout page (language-prefixed); footer to 
   }
 });
 
-test('Hangout page exists in every language and links out to Twitch, YouTube and X', () => {
+test('Hangout page exists in every language and links out to Twitch, YouTube, X and Discord', () => {
   for (const f of ['hangout/index.html', 'de/hangout/index.html', 'ru/hangout/index.html']) {
     const h = read(f);
-    for (const url of ['https://www.twitch.tv/galuin', 'https://www.youtube.com/@Galuin', 'https://x.com/GaluinGaming']) assert.ok(h.includes(`href="${url}"`), `${url} on ${f}`);
+    for (const url of ['https://www.twitch.tv/galuin', 'https://www.youtube.com/@Galuin', 'https://x.com/GaluinGaming', 'https://discord.gg/Nm9b9pe']) assert.ok(h.includes(`href="${url}"`), `${url} on ${f}`);
   }
 });
 

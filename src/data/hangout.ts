@@ -10,4 +10,6 @@ export const spots: Spot[] = [
     blurb: { en: 'Videos and Shorts', de: 'Videos und Shorts', ru: 'Видео и Shorts' } },
   { id: 'x', icon: 'x', name: 'X', handle: '@GaluinGaming', url: 'https://x.com/GaluinGaming',
     blurb: { en: 'Short posts', de: 'Kurze Beiträge', ru: 'Короткие записи' } },
+  { id: 'discord', icon: 'discord', name: 'Discord', handle: 'discord.gg/Nm9b9pe', url: 'https://discord.gg/Nm9b9pe',
+    blurb: { en: 'Chat and community', de: 'Chat und Community', ru: 'Чат и сообщество' } },
 ];
