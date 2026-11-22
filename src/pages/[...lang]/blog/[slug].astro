@@ -88,6 +88,24 @@ const iso = (d: Date) => d.toISOString().slice(0, 10);
   .more-grid :global(.post) { flex: 1; }
   .more-grid :global(.post h2) { font-size: 1rem; }
 
+  /* Diagrams: inline SVG in the post body, coloured by the site tokens so they follow the theme. */
+  .prose :global(.diagram) { margin: 20px 0 8px; padding: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow-x: auto; }
+  .prose :global(.diagram svg) { display: block; width: 100%; min-width: 600px; height: auto; font-family: var(--font); }
+  .prose :global(.diagram .z) { fill: none; stroke: var(--line); stroke-dasharray: 5 5; }
+  .prose :global(.diagram .zt) { fill: var(--muted); font-size: 12px; font-weight: 600; }
+  .prose :global(.diagram .n) { fill: var(--surface-2); stroke: var(--line); }
+  .prose :global(.diagram .nh) { fill: none; stroke: var(--muted); stroke-dasharray: 3 4; }
+  .prose :global(.diagram .lk) { stroke: var(--accent); }
+  .prose :global(.diagram a) { cursor: pointer; }
+  .prose :global(.diagram a:hover .n), .prose :global(.diagram a:hover .nh) { fill: var(--surface); stroke: var(--accent-ink); stroke-width: 2; }
+  .prose :global(.diagram .t) { fill: var(--fg); font-size: 14px; font-weight: 600; }
+  .prose :global(.diagram .s) { fill: var(--muted); font-size: 11.5px; }
+  .prose :global(.diagram .l) { fill: none; stroke: var(--muted); stroke-width: 1.5; }
+  .prose :global(.diagram .tun) { stroke: var(--accent); stroke-width: 2.5; stroke-dasharray: 6 4; }
+  .prose :global(.diagram .ah) { fill: var(--muted); }
+  .prose :global(.diagram .b) { fill: var(--accent-strong); }
+  .prose :global(.diagram .bn) { fill: #fff; font-size: 11px; font-weight: 600; }
+
   /* Sound samples */
   .prose :global(.player) { margin: 20px 0 8px; padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
   .prose :global(.tabs) { display: inline-flex; gap: 4px; padding: 4px; margin-bottom: 16px; background: var(--surface-2); border-radius: 999px; }
