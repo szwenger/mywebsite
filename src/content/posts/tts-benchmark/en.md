@@ -1,6 +1,6 @@
 ---
 title: "Text-to-speech on the CPU: the thread count mattered more than the engine"
-date: 2026-11-22
+date: 2026-11-22T21:25:00Z
 cover: /posts/tts-benchmark.jpg
 tags: [tts, benchmark, cpu, local-ai]
 ---
@@ -20,13 +20,13 @@ RTF and the time for the long sentence (about 11 seconds of audio), using the be
 
 | Engine | English | German | Russian | RAM | Languages |
 |--------|---------|--------|---------|-----|-----------|
-| Baseline (Kokoro and Piper) | 0.19 / 2.1 s | 0.03-0.11 / 0.3-1.2 s | 0.03 / 0.3 s | 1.3 GiB | 3 |
-| Kitten Nano, 8 threads | 0.05 / 0.45 s | 0.05 / 0.5 s | 0.05 / 0.5 s | about 1.4 GB | 8 |
-| Kitten Mini int8 | 0.17 / 1.7 s | 0.17 / 1.9 s | 0.17 / 1.7 s | about 1.2 GB | 16 |
-| Supertonic 3, 8 steps, 2 threads | 0.15 / 1.7 s | 0.15 / 1.9 s | 0.15 / 1.9 s | 0.58 GB | 31 |
-| Supertonic 3, 4 steps, 2 threads | 0.09 / 1.0 s | 0.09 / 1.1 s | 0.08 / 1.1 s | 0.58 GB | 31 |
+| Baseline (Kokoro and Piper) | 0.19 / 2.1 s | 0.03-0.11 / 0.3-1.2 s | 0.03 / 0.3 s | 1.3 GiB | 3 |
+| Kitten Nano, 8 threads | 0.05 / 0.45 s | 0.05 / 0.5 s | 0.05 / 0.5 s | about 1.4 GB | 8 |
+| Kitten Mini int8 | 0.17 / 1.7 s | 0.17 / 1.9 s | 0.17 / 1.7 s | about 1.2 GB | 16 |
+| Supertonic 3, 8 steps, 2 threads | 0.15 / 1.7 s | 0.15 / 1.9 s | 0.15 / 1.9 s | 0.58 GB | 31 |
+| Supertonic 3, 4 steps, 2 threads | 0.09 / 1.0 s | 0.09 / 1.1 s | 0.08 / 1.1 s | 0.58 GB | 31 |
 
-For the first sentence, the one that sets the wait before audio starts, the baseline needs 0.4-0.5 s in English, 0.1-0.2 s in German and 0.06 s in Russian. Kitten Nano needs 0.17-0.2 s, Kitten Mini 0.4-0.5 s, and Supertonic 0.2-0.3 s at 4 steps or 0.4-0.5 s at 8 steps.
+For the first sentence, the one that sets the wait before audio starts, the baseline needs 0.4-0.5 s in English, 0.1-0.2 s in German and 0.06 s in Russian. Kitten Nano needs 0.17-0.2 s, Kitten Mini 0.4-0.5 s, and Supertonic 0.2-0.3 s at 4 steps or 0.4-0.5 s at 8 steps.
 
 ## Listen for yourself
 
@@ -64,24 +64,24 @@ Here is the same sentence from four setups, in each language. Press a row to pla
 - **A router that runs several syntheses at once has to budget threads.** Giving each one the default would cost speed.
 - **The baseline is already fast, and Piper is the quickest part.** Russian runs at RTF 0.03 and German at 0.03 to 0.11 depending on the voice. Kokoro for English is the slowest piece at 0.19.
 - **Each candidate runs at the same speed in all three languages.** The RTF is identical per engine across English, German and Russian, so none of them penalises one language.
-- **Kitten needs more than its docs say.** The model card says no PyTorch is needed, but the English phonemizer pulls in PyTorch and spacy, and the documented `--no-deps` install does not work. That costs about 1.2-1.4 GB of RAM and a large install. Supertonic needs only ONNX Runtime and uses 0.58 GB.
+- **Kitten needs more than its docs say.** The model card says no PyTorch is needed, but the English phonemizer pulls in PyTorch and spacy, and the documented `--no-deps` install does not work. That costs about 1.2-1.4 GB of RAM and a large install. Supertonic needs only ONNX Runtime and uses 0.58 GB.
 - **Kitten Nano is the fastest.** It has the lowest RTF at 0.05, but it is the smallest model.
 
 Speed does not tell you which voice sounds best, so I listened to every engine side by side for each sentence, with a female and a male set. I looked for German and Russian stress, the numbers and dates sentence, and whether the voice stays the same speaker across languages. I picked Supertonic for a trial.
 
 ## The trial setup
 
-I did not touch the live setup. Two extra containers run on the same Docker network, with no published ports: one with Supertonic 3 and its weights baked in (a 1.27 GB image), and a copy of the router that maps the `auto` voice to Supertonic. The bundled Supertonic server cannot produce mp3 and ignores the thread and step settings on its OpenAI route, so a small wrapper handles both and the router converts the wav to mp3.
+I did not touch the live setup. Two extra containers run on the same Docker network, with no published ports: one with Supertonic 3 and its weights baked in (a 1.27 GB image), and a copy of the router that maps the `auto` voice to Supertonic. The bundled Supertonic server cannot produce mp3 and ignores the thread and step settings on its OpenAI route, so a small wrapper handles both and the router converts the wav to mp3.
 
 End to end over HTTP, with the mp3 encode included, the median of 5 for the male voice:
 
 | Language | Short | Medium | Long | Numbers | RTF (long) |
 |----------|-------|--------|------|---------|------------|
-| English | 0.39 s | 0.97 s | 1.76 s | 1.30 s | 0.156 |
-| German | 0.47 s | 1.12 s | 1.93 s | 1.41 s | 0.150 |
-| Russian | 0.48 s | 1.16 s | 1.99 s | 1.41 s | 0.151 |
+| English | 0.39 s | 0.97 s | 1.76 s | 1.30 s | 0.156 |
+| German | 0.47 s | 1.12 s | 1.93 s | 1.41 s | 0.150 |
+| Russian | 0.48 s | 1.16 s | 1.99 s | 1.41 s | 0.151 |
 
-The HTTP and mp3 overhead is small. English is on par or faster than Kokoro (1.76 s against 2.1 s for the long sentence). German and Russian are slower than Piper (about 1.9-2.0 s against 0.3-1.2 s) but still 6-7× faster than real time. The container uses 0.56 GiB.
+The HTTP and mp3 overhead is small. English is on par or faster than Kokoro (1.76 s against 2.1 s for the long sentence). German and Russian are slower than Piper (about 1.9-2.0 s against 0.3-1.2 s) but still 6-7× faster than real time. The container uses 0.56 GiB.
 
 ## Caveats
 

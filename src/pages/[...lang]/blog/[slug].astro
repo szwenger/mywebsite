@@ -1,5 +1,6 @@
 ---
 import Base from '../../../layouts/Base.astro';
+import PostCard from '../../../components/PostCard.astro';
 import { LANGS, path, t, type Lang } from '../../../i18n/ui';
 import { dateLabel, loadPosts } from '../../../lib/load-posts';
 import { getCollection } from 'astro:content';
@@ -10,28 +11,84 @@ export async function getStaticPaths() {
 }
 const lang = (Astro.params.lang ?? 'en') as Lang;
 const { slug } = Astro.params;
-const { post, Content } = (await loadPosts(lang)).find((i) => i.post.slug === slug)!;
+const items = await loadPosts(lang);
+const { post, Content, headings } = items.find((i) => i.post.slug === slug)!;
 const canonical = post.fallback ? `https://galuin.com${path(post.originalLang, `/blog/${slug}/`)}` : undefined;
+
+// "On this page": the ## headings, only when there are enough to be worth a sidebar.
+const toc = headings.filter((h) => h.depth === 2);
+// "More to read": other long posts (all others when there are fewer than two); the script picks 3 at random on each visit.
+const others = items.map((i) => i.post).filter((p) => p.slug !== slug);
+const longOthers = others.filter((p) => p.kind === 'long');
+const more = (longOthers.length >= 2 ? longOthers : others).slice(0, 8);
+const iso = (d: Date) => d.toISOString().slice(0, 10);
 ---
 <Base lang={lang} title={`${post.title} · Galuin`} canonical={canonical} current="blog">
   <article class="wrap page" lang={post.shownIn}>
     <p class="meta"><a href={path(lang, '/blog/')}>← {t(lang, 'backToBlog')}</a></p>
     <h1>{post.title}</h1>
     <p class="meta">
-      <time datetime={post.date.toISOString().slice(0, 10)}>{dateLabel(post.date, lang)}</time>
+      <time datetime={iso(post.date)}>{dateLabel(post.date, lang)}</time>
+      {post.updated && <span class="updated">{t(lang, 'updatedOn')} <time datetime={iso(post.updated)}>{dateLabel(post.updated, lang)}</time></span>}
       {post.fallback && <span class="chip">{t(lang, 'fallbackNote')} {t(post.shownIn, 'langName')}</span>}
     </p>
+    {toc.length >= 3 && (
+      <aside class="toc" aria-label={t(lang, 'onThisPage')}>
+        <nav>
+          <p class="toc-title">{t(lang, 'onThisPage')}</p>
+          <ol>{toc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+        </nav>
+      </aside>
+    )}
     <div class="prose"><Content /></div>
   </article>
+  {more.length > 0 && (
+    <section class="wrap more" aria-labelledby="more-title" data-more>
+      <h2 class="section-title" id="more-title">{t(lang, 'moreToRead')}</h2>
+      <div class="more-grid">
+        {more.map((p, i) => <div data-more-item hidden={i >= 3}><PostCard lang={lang} post={p} /></div>)}
+      </div>
+    </section>
+  )}
 </Base>
 <style>
-  .page { padding-block: clamp(32px, 6vw, 64px) 0; max-width: calc(760px + 2 * var(--gutter)); }
+  .page { position: relative; padding-block: clamp(32px, 6vw, 64px) 0; max-width: calc(760px + 2 * var(--gutter)); }
   h1 { margin: 12px 0 8px; font-size: clamp(1.5rem, 3.4vw, 2.2rem); }
   .meta a { text-decoration: none; }
   .meta a:hover { color: var(--fg); text-decoration: underline; }
   .meta .chip { margin-left: 10px; }
+  .updated { margin-left: 10px; }
+  .updated::before { content: '·'; margin-right: 10px; }
   .prose { margin-top: 24px; font-size: 1.05rem; }
   .prose :global(p) { max-width: 65ch; }
+  .prose :global(h2) { scroll-margin-top: 88px; }
+  @media (prefers-reduced-motion: no-preference) { :global(html) { scroll-behavior: smooth; } }
+
+  /* Tables: left aligned, quiet header, scrolls sideways instead of squeezing on a narrow screen. */
+  .prose :global(table) { display: block; max-width: 100%; overflow-x: auto; margin: 20px 0; border-collapse: collapse; font-size: .92rem; }
+  .prose :global(th), .prose :global(td) { padding: 10px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+  .prose :global(th) { color: var(--muted); font-size: .82rem; font-weight: 600; white-space: nowrap; }
+  .prose :global(td:not(:first-child)) { font-variant-numeric: tabular-nums; }
+
+  /* Live table of contents: hangs to the right of the centred article, only where there is room for it. */
+  .toc { display: none; }
+  @media (min-width: 1320px) {
+    .toc { display: block; position: absolute; top: 0; bottom: 0; left: calc(100% - var(--gutter) + 40px); width: 210px; padding-top: 150px; }
+    .toc nav { position: sticky; top: 96px; }
+  }
+  .toc-title { margin: 0 0 12px; color: var(--muted); font-size: .85rem; font-weight: 600; }
+  .toc ol { margin: 0; padding: 0; list-style: none; border-left: 1px solid var(--line); }
+  .toc a { display: block; margin-left: -1px; padding: 6px 0 6px 14px; border-left: 2px solid transparent; color: var(--muted); font-size: .88rem; line-height: 1.35; text-decoration: none; transition: color .2s var(--ease), border-color .2s var(--ease), padding-left .2s var(--ease); }
+  .toc a:hover { color: var(--fg); }
+  .toc a[aria-current='true'] { padding-left: 18px; border-left-color: var(--accent); color: var(--accent-ink); font-weight: 500; }
+
+  .more { max-width: calc(760px + 2 * var(--gutter)); margin-top: clamp(48px, 7vw, 80px); }
+  .more-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 20px; }
+  .more-grid > :global(div) { display: flex; }
+  .more-grid :global(.post) { flex: 1; }
+  .more-grid :global(.post h2) { font-size: 1rem; }
+
+  /* Sound samples */
   .prose :global(.player) { margin: 20px 0 8px; padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
   .prose :global(.tabs) { display: inline-flex; gap: 4px; padding: 4px; margin-bottom: 16px; background: var(--surface-2); border-radius: 999px; }
   .prose :global(.tabs button) { padding: 6px 16px; border: 0; border-radius: 999px; background: none; color: var(--muted); font: inherit; font-size: .9rem; cursor: pointer; }
@@ -51,6 +108,35 @@ const canonical = post.fallback ? `https://galuin.com${path(post.originalLang, `
   .prose :global(.caption) { color: var(--muted); font-size: .88rem; }
 </style>
 <script>
+  import { activeHeading } from '../../../lib/toc';
+  import { pickRandom } from '../../../lib/pick';
+
+  // Live table of contents: mark the section the reader is in.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.toc a')];
+  if (links.length) {
+    const heads = links.map((a) => document.getElementById(decodeURIComponent(a.hash.slice(1)))!);
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const atEnd = innerHeight + scrollY >= document.documentElement.scrollHeight - 4;
+      const i = atEnd ? heads.length - 1 : activeHeading(heads.map((h) => h.getBoundingClientRect().top), 140);
+      links.forEach((a, j) => (j === i ? a.setAttribute('aria-current', 'true') : a.removeAttribute('aria-current')));
+    };
+    addEventListener('scroll', () => { frame ||= requestAnimationFrame(update); }, { passive: true });
+    addEventListener('resize', update);
+    update();
+  }
+
+  // More to read: a fresh random pick of three on every visit (without JS the three newest stay).
+  const grid = document.querySelector<HTMLElement>('[data-more] .more-grid');
+  if (grid) {
+    const cards = [...grid.querySelectorAll<HTMLElement>('[data-more-item]')];
+    const chosen = pickRandom(cards, 3);
+    cards.forEach((c) => { c.hidden = !chosen.includes(c); });
+    chosen.forEach((c) => grid.append(c));
+  }
+
+  // Sound samples
   const fmt = (n: number) => (isFinite(n) ? `${Math.floor(n / 60)}:${String(Math.floor(n % 60)).padStart(2, '0')}` : '');
   const all = () => [...document.querySelectorAll<HTMLAudioElement>('.player audio')];
   document.querySelectorAll<HTMLElement>('.player').forEach((player) => {

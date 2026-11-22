@@ -1,6 +1,6 @@
 import type { Lang } from '../i18n/ui';
 
-export interface PostEntry { slug: string; lang: Lang; title: string; date: Date; cover?: string; tags?: string[]; body: string }
+export interface PostEntry { slug: string; lang: Lang; title: string; date: Date; updated?: Date; cover?: string; tags?: string[]; body: string }
 export interface PostView extends PostEntry { kind: 'note' | 'long'; shownIn: Lang; fallback: boolean; originalLang: Lang }
 
 const RANK: Record<Lang, number> = { en: 0, de: 1, ru: 2 };

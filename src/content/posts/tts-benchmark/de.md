@@ -1,6 +1,6 @@
 ---
 title: "Sprachausgabe auf der CPU: Die Thread-Zahl war wichtiger als die Engine"
-date: 2026-11-22
+date: 2026-11-22T21:25:00Z
 cover: /posts/tts-benchmark.jpg
 tags: [tts, benchmark, cpu, local-ai]
 ---
@@ -20,13 +20,13 @@ RTF und Zeit für den langen Satz (etwa 11 Sekunden Audio), jeweils mit der best
 
 | Engine | Englisch | Deutsch | Russisch | RAM | Sprachen |
 |--------|----------|---------|----------|-----|----------|
-| Baseline (Kokoro und Piper) | 0,19 / 2,1 s | 0,03-0,11 / 0,3-1,2 s | 0,03 / 0,3 s | 1,3 GiB | 3 |
-| Kitten Nano, 8 Threads | 0,05 / 0,45 s | 0,05 / 0,5 s | 0,05 / 0,5 s | etwa 1,4 GB | 8 |
-| Kitten Mini int8 | 0,17 / 1,7 s | 0,17 / 1,9 s | 0,17 / 1,7 s | etwa 1,2 GB | 16 |
-| Supertonic 3, 8 Schritte, 2 Threads | 0,15 / 1,7 s | 0,15 / 1,9 s | 0,15 / 1,9 s | 0,58 GB | 31 |
-| Supertonic 3, 4 Schritte, 2 Threads | 0,09 / 1,0 s | 0,09 / 1,1 s | 0,08 / 1,1 s | 0,58 GB | 31 |
+| Baseline (Kokoro und Piper) | 0,19 / 2,1 s | 0,03-0,11 / 0,3-1,2 s | 0,03 / 0,3 s | 1,3 GiB | 3 |
+| Kitten Nano, 8 Threads | 0,05 / 0,45 s | 0,05 / 0,5 s | 0,05 / 0,5 s | etwa 1,4 GB | 8 |
+| Kitten Mini int8 | 0,17 / 1,7 s | 0,17 / 1,9 s | 0,17 / 1,7 s | etwa 1,2 GB | 16 |
+| Supertonic 3, 8 Schritte, 2 Threads | 0,15 / 1,7 s | 0,15 / 1,9 s | 0,15 / 1,9 s | 0,58 GB | 31 |
+| Supertonic 3, 4 Schritte, 2 Threads | 0,09 / 1,0 s | 0,09 / 1,1 s | 0,08 / 1,1 s | 0,58 GB | 31 |
 
-Beim ersten Satz, der die Wartezeit bis zum Audio bestimmt, braucht die Baseline 0,4-0,5 s auf Englisch, 0,1-0,2 s auf Deutsch und 0,06 s auf Russisch. Kitten Nano braucht 0,17-0,2 s, Kitten Mini 0,4-0,5 s und Supertonic 0,2-0,3 s bei 4 Schritten beziehungsweise 0,4-0,5 s bei 8 Schritten.
+Beim ersten Satz, der die Wartezeit bis zum Audio bestimmt, braucht die Baseline 0,4-0,5 s auf Englisch, 0,1-0,2 s auf Deutsch und 0,06 s auf Russisch. Kitten Nano braucht 0,17-0,2 s, Kitten Mini 0,4-0,5 s und Supertonic 0,2-0,3 s bei 4 Schritten beziehungsweise 0,4-0,5 s bei 8 Schritten.
 
 ## Selbst anhören
 
@@ -64,7 +64,7 @@ Hier ist derselbe Satz von vier Setups, in jeder Sprache. Eine Zeile anklicken, 
 - **Ein Router, der mehrere Synthesen gleichzeitig ausführt, muss Threads einteilen.** Jeder Synthese den Standard zu geben, würde Geschwindigkeit kosten.
 - **Die Baseline ist schon schnell, und Piper ist der schnellste Teil.** Russisch läuft mit RTF 0,03, Deutsch je nach Stimme mit 0,03 bis 0,11. Kokoro für Englisch ist mit 0,19 der langsamste Teil.
 - **Jeder Kandidat ist in allen drei Sprachen gleich schnell.** Der RTF ist pro Engine für Englisch, Deutsch und Russisch identisch, keine Sprache wird benachteiligt.
-- **Kitten braucht mehr, als die Doku sagt.** Die Model Card behauptet, PyTorch sei nicht nötig, aber der englische Phonemizer zieht PyTorch und spacy nach, und die dokumentierte `--no-deps`-Installation funktioniert nicht. Das kostet etwa 1,2-1,4 GB RAM und eine große Installation. Supertonic braucht nur ONNX Runtime und belegt 0,58 GB.
+- **Kitten braucht mehr, als die Doku sagt.** Die Model Card behauptet, PyTorch sei nicht nötig, aber der englische Phonemizer zieht PyTorch und spacy nach, und die dokumentierte `--no-deps`-Installation funktioniert nicht. Das kostet etwa 1,2-1,4 GB RAM und eine große Installation. Supertonic braucht nur ONNX Runtime und belegt 0,58 GB.
 - **Kitten Nano ist am schnellsten.** Es hat mit 0,05 den niedrigsten RTF, ist aber auch das kleinste Modell.
 
 Geschwindigkeit sagt nichts darüber, welche Stimme am besten klingt. Deshalb habe ich mir jede Engine für jeden Satz nebeneinander angehört, mit einem weiblichen und einem männlichen Set. Ich habe auf Betonung im Deutschen und Russischen geachtet, auf den Satz mit Zahlen und Datum und darauf, ob die Stimme über die Sprachen hinweg derselbe Sprecher bleibt. Ich habe Supertonic für einen Testlauf gewählt.
@@ -77,11 +77,11 @@ Von Ende zu Ende über HTTP, mit mp3-Kodierung, Median aus 5, männliche Stimme:
 
 | Sprache | Kurz | Mittel | Lang | Zahlen | RTF (lang) |
 |---------|------|--------|------|--------|------------|
-| Englisch | 0,39 s | 0,97 s | 1,76 s | 1,30 s | 0,156 |
-| Deutsch | 0,47 s | 1,12 s | 1,93 s | 1,41 s | 0,150 |
-| Russisch | 0,48 s | 1,16 s | 1,99 s | 1,41 s | 0,151 |
+| Englisch | 0,39 s | 0,97 s | 1,76 s | 1,30 s | 0,156 |
+| Deutsch | 0,47 s | 1,12 s | 1,93 s | 1,41 s | 0,150 |
+| Russisch | 0,48 s | 1,16 s | 1,99 s | 1,41 s | 0,151 |
 
-Der Aufwand durch HTTP und mp3 ist klein. Englisch ist gleichauf oder schneller als Kokoro (1,76 s gegenüber 2,1 s für den langen Satz). Deutsch und Russisch sind langsamer als Piper (etwa 1,9-2,0 s gegenüber 0,3-1,2 s), aber immer noch 6- bis 7-mal schneller als Echtzeit. Der Container belegt 0,56 GiB.
+Der Aufwand durch HTTP und mp3 ist klein. Englisch ist gleichauf oder schneller als Kokoro (1,76 s gegenüber 2,1 s für den langen Satz). Deutsch und Russisch sind langsamer als Piper (etwa 1,9-2,0 s gegenüber 0,3-1,2 s), aber immer noch 6- bis 7-mal schneller als Echtzeit. Der Container belegt 0,56 GiB.
 
 ## Einschränkungen
 

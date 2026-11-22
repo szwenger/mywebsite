@@ -34,3 +34,11 @@ test('nothing to show: null', () => {
   assert.equal(pickLead([post('n', '2025-03-01')], []), null);
   assert.equal(pickLead([], []), null);
 });
+
+test('latestLong: newest long posts after the lead, notes and the lead itself left out', async () => {
+  const { latestLong } = await import('../src/lib/front.ts');
+  const posts = [post('a', '2025-05-01', '/a.jpg'), post('n', '2025-04-01'), post('b', '2025-03-01', '/b.jpg'), post('c', '2025-02-01', '/c.jpg'), post('d', '2025-01-01', '/d.jpg'), post('e', '2024-12-01', '/e.jpg')];
+  assert.deepEqual(latestLong(posts, { type: 'post', post: posts[0] }, 3).map((p) => p.slug), ['b', 'c', 'd']);
+  assert.deepEqual(latestLong(posts, { type: 'video', video: video('v', '2025-06-01T00:00:00Z') }, 2).map((p) => p.slug), ['a', 'b']);
+  assert.deepEqual(latestLong([], null, 3), []);
+});

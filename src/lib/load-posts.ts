@@ -8,11 +8,11 @@ export async function loadPosts(lang: Lang) {
   const byId = new Map(entries.map((e) => [e.id, e]));
   const all: PostEntry[] = entries.map((e) => {
     const [slug, l] = e.id.split('/');
-    return { slug, lang: l as Lang, title: e.data.title, date: e.data.date, cover: e.data.cover, tags: e.data.tags, body: e.body ?? '' };
+    return { slug, lang: l as Lang, title: e.data.title, date: e.data.date, updated: e.data.updated, cover: e.data.cover, tags: e.data.tags, body: e.body ?? '' };
   });
   return Promise.all(postsFor(lang, all).map(async (post: PostView) => {
-    const { Content } = await render(byId.get(`${post.slug}/${post.shownIn}`)!);
-    return { post, Content };
+    const { Content, headings } = await render(byId.get(`${post.slug}/${post.shownIn}`)!);
+    return { post, Content, headings };
   }));
 }
 

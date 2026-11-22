@@ -1,12 +1,13 @@
 ---
 import NoteItem from './NoteItem.astro';
+import PostCard from './PostCard.astro';
 import VideoCard from './VideoCard.astro';
 import TwitchCard from './TwitchCard.astro';
 import ToolsStrip from './ToolsStrip.astro';
 import { path, t, type Lang } from '../i18n/ui';
 import { dateLabel, loadPosts } from '../lib/load-posts';
 import { loadVideos, videoDate } from '../lib/load-videos';
-import { pickLead } from '../lib/front';
+import { latestLong, pickLead } from '../lib/front';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 
@@ -14,6 +15,7 @@ const items = await loadPosts(lang);
 const notes = items.filter(({ post }) => post.kind === 'note').slice(0, 3);
 const videos = loadVideos();
 const lead = pickLead(items.map(({ post }) => post), videos);
+const postRow = latestLong(items.map(({ post }) => post), lead, 3);
 const leadVideoId = lead?.type === 'video' ? lead.video.id : undefined;
 const row = videos.filter((v) => !v.isShort && v.id !== leadVideoId).slice(0, 4);
 
@@ -54,6 +56,16 @@ const card = lead?.type === 'post'
       <a class="more" href={path(lang, '/blog/')}>{t(lang, 'backToBlog')} <span aria-hidden="true">→</span></a>
     </section>
   </div>
+
+  {postRow.length > 0 && (
+    <section class="posts" data-section="posts" aria-labelledby="posts-title">
+      <div class="row-head">
+        <h2 class="section-title" id="posts-title">{t(lang, 'latestPosts')}</h2>
+        <a class="more" href={path(lang, '/blog/')}>{t(lang, 'backToBlog')} <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="post-grid">{postRow.map((post) => <PostCard lang={lang} post={post} />)}</div>
+    </section>
+  )}
 
   {row.length > 0 && (
     <section class="videos" data-section="videos" aria-labelledby="videos-title">
@@ -100,15 +112,17 @@ const card = lead?.type === 'post'
   .row-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
   .row-head .more { margin: 0 0 16px; }
   .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+  .post-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 
   @media (max-width: 1000px) {
     .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .post-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 860px) {
     .top { grid-template-columns: minmax(0, 1fr); }
   }
   @media (max-width: 520px) {
-    .grid { grid-template-columns: minmax(0, 1fr); }
+    .grid, .post-grid { grid-template-columns: minmax(0, 1fr); }
     .play { width: 46px; height: 46px; left: 14px; bottom: 14px; }
   }
 </style>

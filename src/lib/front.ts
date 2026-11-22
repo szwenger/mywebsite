@@ -14,3 +14,9 @@ export function pickLead(posts: PostView[], videos: Video[]): Lead | null {
   const video = newest(videos.filter((v) => !v.isShort), at);
   return video ? { type: 'video', video } : null;
 }
+
+/** Long posts for the front page's post row: the newest `n`, not counting the lead story. */
+export function latestLong(posts: PostView[], lead: Lead | null, n: number): PostView[] {
+  const leadSlug = lead?.type === 'post' ? lead.post.slug : undefined;
+  return posts.filter((p) => p.kind === 'long' && p.slug !== leadSlug).slice(0, n);
+}

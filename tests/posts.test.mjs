@@ -56,3 +56,8 @@ test('same-date posts keep a stable order (slug ascending)', () => {
   const all = [e('z', 'en', '2024-01-01'), e('a', 'en', '2024-01-01')];
   assert.deepEqual(postsFor('en', all).map((p) => p.slug), ['a', 'z']);
 });
+
+test('same day: the later time comes first, whatever the slug', () => {
+  const all = [e('imagegen', 'en', '2024-01-01T20:10:00Z'), e('tts', 'en', '2024-01-01T21:25:00Z')];
+  assert.deepEqual(postsFor('en', all).map((p) => p.slug), ['tts', 'imagegen']);
+});
