@@ -1,0 +1,60 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { mode1: 'Bitrate to file size', mode2: 'File size to bitrate', video: 'Video bitrate (kbps)', audio: 'Audio bitrate (kbps)', hours: 'Hours', minutes: 'Minutes', size: 'Target size', unit: 'Unit', size_out: 'File size', per_hour: 'Per hour', video_out: 'Video bitrate', upload: 'Upload speed needed for a stream (with 25 % headroom)', kbps: 'kbps', mbps: 'Mbit/s',
+    note: 'Decimal units (1 GB = 1000 MB), as encoders and providers count. Container overhead adds about 1 to 2 %.', presets: 'Presets', p1: 'Twitch 1080p60 (6000)', p2: 'YouTube 1080p60 (12000)', p3: 'Local recording (30000)' },
+  de: { mode1: 'Bitrate zu Dateigröße', mode2: 'Dateigröße zu Bitrate', video: 'Videobitrate (kbps)', audio: 'Audiobitrate (kbps)', hours: 'Stunden', minutes: 'Minuten', size: 'Zielgröße', unit: 'Einheit', size_out: 'Dateigröße', per_hour: 'Pro Stunde', video_out: 'Videobitrate', upload: 'Nötiger Upload für einen Stream (mit 25 % Reserve)', kbps: 'kbps', mbps: 'Mbit/s',
+    note: 'Dezimale Einheiten (1 GB = 1000 MB), wie bei Encodern und Anbietern. Der Container braucht etwa 1 bis 2 % mehr.', presets: 'Vorlagen', p1: 'Twitch 1080p60 (6000)', p2: 'YouTube 1080p60 (12000)', p3: 'Lokale Aufnahme (30000)' },
+  ru: { mode1: 'Битрейт в размер файла', mode2: 'Размер файла в битрейт', video: 'Битрейт видео (кбит/с)', audio: 'Битрейт аудио (кбит/с)', hours: 'Часы', minutes: 'Минуты', size: 'Нужный размер', unit: 'Единица', size_out: 'Размер файла', per_hour: 'В час', video_out: 'Битрейт видео', upload: 'Нужная скорость отдачи для стрима (с запасом 25 %)', kbps: 'кбит/с', mbps: 'Мбит/с',
+    note: 'Десятичные единицы (1 ГБ = 1000 МБ), как считают кодировщики и провайдеры. Контейнер добавляет около 1–2 %.', presets: 'Шаблоны', p1: 'Twitch 1080p60 (6000)', p2: 'YouTube 1080p60 (12000)', p3: 'Локальная запись (30000)' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="bitrate">
+  <div class="tl two" data-bitrate data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <div class="row tabs" role="group">
+        <label class="check"><input type="radio" name="mode" value="size" checked /> {s.mode1}</label>
+        <label class="check"><input type="radio" name="mode" value="rate" /> {s.mode2}</label>
+      </div>
+      <div data-when="size" class="stack">
+        <label>{s.video}<input name="video" type="number" min="0" step="100" value="6000" /></label>
+        <label>{s.presets}
+          <select name="preset"><option value="">–</option><option value="6000">{s.p1}</option><option value="12000">{s.p2}</option><option value="30000">{s.p3}</option></select>
+        </label>
+      </div>
+      <div data-when="rate" class="stack" hidden>
+        <div class="row">
+          <label>{s.size}<input name="target" type="number" min="0" step="any" value="10" /></label>
+          <label>{s.unit}<select name="unit"><option value="1e6">MB</option><option value="1e9" selected>GB</option></select></label>
+        </div>
+      </div>
+      <label>{s.audio}<input name="audio" type="number" min="0" step="16" value="160" /></label>
+      <div class="row">
+        <label>{s.hours}<input name="h" type="number" min="0" step="1" value="1" /></label>
+        <label>{s.minutes}<input name="m" type="number" min="0" max="59" step="1" value="0" /></label>
+      </div>
+    </div>
+    <div class="card pane" aria-live="polite">
+      <table><tbody>
+        <tr data-show="size"><th>{s.size_out}</th><td class="out-big" data-out="size"></td></tr>
+        <tr data-show="size"><th>{s.per_hour}</th><td data-out="hour"></td></tr>
+        <tr data-show="rate" hidden><th>{s.video_out}</th><td class="out-big" data-out="rate"></td></tr>
+        <tr><th>{s.upload}</th><td data-out="upload"></td></tr>
+      </tbody></table>
+      <p class="meta">{s.note}</p>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/bitrate/bitrate.ts';
+</script>
+<style>
+  .stack { display: grid; gap: 14px; }
+  .stack[hidden], tr[hidden] { display: none; }
+</style>

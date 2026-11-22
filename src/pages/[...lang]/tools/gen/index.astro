@@ -1,0 +1,61 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { password: 'Password', uuid: 'UUID', token: 'Random token', length: 'Length', lower: 'Lowercase (a-z)', upper: 'Uppercase (A-Z)', digits: 'Digits (0-9)', symbols: 'Symbols (!@#…)', ambiguous: 'Include look-alike characters (0 O 1 l I)', version: 'Version', v4: 'v4 (random)', v7: 'v7 (sorted by time)', count: 'How many', bytes: 'Bytes', format: 'Format', regen: 'Generate again', copy: 'Copy', copyAll: 'Copy all', entropy: 'Strength', bits: 'bits', none: 'Choose at least one character set.',
+    note: 'Generated in your browser with the secure random generator. Nothing is sent or stored.' },
+  de: { password: 'Passwort', uuid: 'UUID', token: 'Zufalls-Token', length: 'Länge', lower: 'Kleinbuchstaben (a-z)', upper: 'Großbuchstaben (A-Z)', digits: 'Ziffern (0-9)', symbols: 'Sonderzeichen (!@#…)', ambiguous: 'Verwechselbare Zeichen einschließen (0 O 1 l I)', version: 'Version', v4: 'v4 (zufällig)', v7: 'v7 (nach Zeit sortiert)', count: 'Anzahl', bytes: 'Bytes', format: 'Format', regen: 'Neu erzeugen', copy: 'Kopieren', copyAll: 'Alle kopieren', entropy: 'Stärke', bits: 'Bit', none: 'Wähle mindestens eine Zeichengruppe.',
+    note: 'Wird im Browser mit dem sicheren Zufallsgenerator erzeugt. Nichts wird gesendet oder gespeichert.' },
+  ru: { password: 'Пароль', uuid: 'UUID', token: 'Случайный токен', length: 'Длина', lower: 'Строчные (a-z)', upper: 'Заглавные (A-Z)', digits: 'Цифры (0-9)', symbols: 'Символы (!@#…)', ambiguous: 'Включать похожие символы (0 O 1 l I)', version: 'Версия', v4: 'v4 (случайный)', v7: 'v7 (по времени)', count: 'Сколько', bytes: 'Байты', format: 'Формат', regen: 'Создать заново', copy: 'Копировать', copyAll: 'Копировать всё', entropy: 'Стойкость', bits: 'бит', none: 'Выберите хотя бы один набор символов.',
+    note: 'Создаётся в браузере защищённым генератором случайных чисел. Ничего не отправляется и не сохраняется.' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="gen">
+  <div class="tl two" data-gen data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <div class="row tabs" role="group">
+        <label class="check"><input type="radio" name="kind" value="password" checked /> {s.password}</label>
+        <label class="check"><input type="radio" name="kind" value="uuid" /> {s.uuid}</label>
+        <label class="check"><input type="radio" name="kind" value="token" /> {s.token}</label>
+      </div>
+      <div data-when="password" class="stack">
+        <label><span>{s.length}: <output name="lenOut">20</output></span><input name="length" type="range" min="6" max="64" value="20" /></label>
+        <label class="check"><input type="checkbox" name="lower" checked /> {s.lower}</label>
+        <label class="check"><input type="checkbox" name="upper" checked /> {s.upper}</label>
+        <label class="check"><input type="checkbox" name="digits" checked /> {s.digits}</label>
+        <label class="check"><input type="checkbox" name="symbols" checked /> {s.symbols}</label>
+        <label class="check"><input type="checkbox" name="ambiguous" /> {s.ambiguous}</label>
+      </div>
+      <div data-when="uuid" class="stack" hidden>
+        <label>{s.version}<select name="ver"><option value="4">{s.v4}</option><option value="7">{s.v7}</option></select></label>
+        <label>{s.count}<input name="count" type="number" min="1" max="100" value="5" /></label>
+      </div>
+      <div data-when="token" class="stack" hidden>
+        <label>{s.bytes}<input name="bytes" type="number" min="8" max="128" value="32" /></label>
+        <label>{s.format}<select name="enc"><option value="hex">hex</option><option value="base64url">base64url</option><option value="base64">base64</option></select></label>
+      </div>
+    </div>
+    <div class="card pane" aria-live="polite">
+      <pre class="big" data-out></pre>
+      <p class="note" data-strength hidden></p>
+      <div class="actions">
+        <button type="button" class="btn" data-regen>{s.regen}</button>
+        <button type="button" class="btn alt" data-copy>{s.copyAll}</button>
+      </div>
+      <p class="meta">{s.note}</p>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/gen/gen.ts';
+</script>
+<style>
+  .stack { display: grid; gap: 14px; }
+  .stack[hidden] { display: none; }
+  .big { font-size: 1.05rem; word-break: break-all; user-select: all; }
+</style>

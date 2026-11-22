@@ -1,0 +1,37 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { input: 'docker run command', output: 'docker-compose.yml', copy: 'Copy', download: 'Download', example: 'Load example', warnings: 'Not converted', empty: 'Paste a docker run command on the left.' },
+  de: { input: 'docker-run-Befehl', output: 'docker-compose.yml', copy: 'Kopieren', download: 'Herunterladen', example: 'Beispiel laden', warnings: 'Nicht umgewandelt', empty: 'Füge links einen docker-run-Befehl ein.' },
+  ru: { input: 'Команда docker run', output: 'docker-compose.yml', copy: 'Копировать', download: 'Скачать', example: 'Загрузить пример', warnings: 'Не преобразовано', empty: 'Вставьте слева команду docker run.' },
+}[lang];
+const example = 'docker run -d -p 3000:8080 --gpus all \\\n  -v open-webui:/app/backend/data \\\n  --name open-webui --restart always \\\n  ghcr.io/open-webui/open-webui:main';
+---
+<ToolLayout lang={lang} slug="compose">
+  <div class="tl two" data-compose data-example={example} data-empty={s.empty}>
+    <div class="card pane">
+      <label>{s.input}<textarea name="cmd" spellcheck="false" rows="12" placeholder="docker run -d -p 8080:80 nginx"></textarea></label>
+      <div class="actions"><button type="button" class="btn alt" data-example-btn>{s.example}</button></div>
+    </div>
+    <div class="card pane">
+      <label>{s.output}<pre data-yaml></pre></label>
+      <div class="actions">
+        <button type="button" class="btn alt" data-copy>{s.copy}</button>
+        <button type="button" class="btn alt" data-save>{s.download}</button>
+      </div>
+      <div data-warn hidden>
+        <p class="meta">{s.warnings}</p>
+        <ul data-warn-list></ul>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/compose/compose.ts';
+</script>

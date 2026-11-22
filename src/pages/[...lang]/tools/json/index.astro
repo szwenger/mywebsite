@@ -1,0 +1,43 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { input: 'JSON', output: 'Result', indent: 'Indent', two: '2 spaces', four: '4 spaces', tab: 'Tab', min: 'Minified', sort: 'Sort keys', lenient: 'Allow comments and trailing commas', copy: 'Copy', download: 'Download', valid: 'Valid JSON.', empty: 'Paste JSON on the left.',
+    char: 'Unexpected character {ch} at line {line}, column {col}.', eof: 'Unexpected end of input (line {line}, column {col}).', string: 'Line break inside a string (line {line}, column {col}).', note: 'Numbers and strings are printed exactly as written, so long ids are not rounded.' },
+  de: { input: 'JSON', output: 'Ergebnis', indent: 'Einrückung', two: '2 Leerzeichen', four: '4 Leerzeichen', tab: 'Tabulator', min: 'Minimiert', sort: 'Schlüssel sortieren', lenient: 'Kommentare und Komma am Ende erlauben', copy: 'Kopieren', download: 'Herunterladen', valid: 'Gültiges JSON.', empty: 'Füge links JSON ein.',
+    char: 'Unerwartetes Zeichen {ch} in Zeile {line}, Spalte {col}.', eof: 'Unerwartetes Ende der Eingabe (Zeile {line}, Spalte {col}).', string: 'Zeilenumbruch in einem String (Zeile {line}, Spalte {col}).', note: 'Zahlen und Strings werden genau so ausgegeben, wie sie stehen, lange IDs werden also nicht gerundet.' },
+  ru: { input: 'JSON', output: 'Результат', indent: 'Отступ', two: '2 пробела', four: '4 пробела', tab: 'Табуляция', min: 'Минимизировать', sort: 'Сортировать ключи', lenient: 'Разрешить комментарии и запятую в конце', copy: 'Копировать', download: 'Скачать', valid: 'JSON корректен.', empty: 'Вставьте JSON слева.',
+    char: 'Неожиданный символ {ch} в строке {line}, столбце {col}.', eof: 'Неожиданный конец ввода (строка {line}, столбец {col}).', string: 'Перенос строки внутри строки (строка {line}, столбец {col}).', note: 'Числа и строки выводятся ровно так, как записаны, поэтому длинные идентификаторы не округляются.' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="json">
+  <div class="tl two" data-json data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <label>{s.input}<textarea name="src" spellcheck="false" rows="18"></textarea></label>
+      <div class="row">
+        <label>{s.indent}
+          <select name="indent"><option value="2">{s.two}</option><option value="4">{s.four}</option><option value="tab">{s.tab}</option><option value="0">{s.min}</option></select>
+        </label>
+        <label class="check"><input type="checkbox" name="sort" /> {s.sort}</label>
+        <label class="check"><input type="checkbox" name="lenient" /> {s.lenient}</label>
+      </div>
+    </div>
+    <div class="card pane">
+      <p class="note" data-status role="status"></p>
+      <label>{s.output}<textarea name="out" readonly spellcheck="false" rows="18"></textarea></label>
+      <div class="actions">
+        <button type="button" class="btn alt" data-copy>{s.copy}</button>
+        <button type="button" class="btn alt" data-save>{s.download}</button>
+      </div>
+      <p class="meta">{s.note}</p>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/json/json.ts';
+</script>

@@ -1,0 +1,38 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { a: 'Original', b: 'Changed', ignoreWs: 'Ignore whitespace', ignoreCase: 'Ignore case', swap: 'Swap', same: 'The texts are identical.', stats: '{a} added, {r} removed', result: 'Differences', copy: 'Copy diff' },
+  de: { a: 'Original', b: 'Geändert', ignoreWs: 'Leerraum ignorieren', ignoreCase: 'Groß-/Kleinschreibung ignorieren', swap: 'Tauschen', same: 'Die Texte sind identisch.', stats: '{a} hinzugefügt, {r} entfernt', result: 'Unterschiede', copy: 'Diff kopieren' },
+  ru: { a: 'Оригинал', b: 'Изменённый', ignoreWs: 'Игнорировать пробелы', ignoreCase: 'Игнорировать регистр', swap: 'Поменять', same: 'Тексты одинаковы.', stats: 'добавлено {a}, удалено {r}', result: 'Различия', copy: 'Копировать diff' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="diff">
+  <div class="tl" data-diff data-s={JSON.stringify(s)}>
+    <div class="tl two">
+      <div class="card pane"><label>{s.a}<textarea name="a" spellcheck="false" rows="14"></textarea></label></div>
+      <div class="card pane"><label>{s.b}<textarea name="b" spellcheck="false" rows="14"></textarea></label></div>
+    </div>
+    <div class="card pane">
+      <div class="row">
+        <label class="check"><input type="checkbox" name="ws" /> {s.ignoreWs}</label>
+        <label class="check"><input type="checkbox" name="case" /> {s.ignoreCase}</label>
+        <div class="actions"><button type="button" class="btn alt" data-swap>{s.swap}</button><button type="button" class="btn alt" data-copy>{s.copy}</button></div>
+      </div>
+      <h2 class="sub">{s.result}</h2>
+      <p class="note" data-stats role="status"></p>
+      <div class="diff mono" data-out></div>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/diff/diff.ts';
+</script>
+<style>
+  .sub { margin: 0; font-family: var(--font); font-size: .95rem; font-weight: 600; letter-spacing: 0; }
+</style>

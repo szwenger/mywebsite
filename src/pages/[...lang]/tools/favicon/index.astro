@@ -1,0 +1,43 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { drop: 'Drop an image here or click to choose (PNG, SVG, JPG, WebP)', fit: 'Fit', cover: 'Crop to a square', contain: 'Keep whole image', bg: 'Background', transparent: 'Transparent', zip: 'Download all (ZIP)', snippet: 'Add to your <head>', copy: 'Copy', preview: 'Preview', failed: 'Could not read this image.' },
+  de: { drop: 'Bild hierher ziehen oder klicken zum Auswählen (PNG, SVG, JPG, WebP)', fit: 'Anpassung', cover: 'Quadratisch zuschneiden', contain: 'Ganzes Bild behalten', bg: 'Hintergrund', transparent: 'Transparent', zip: 'Alles laden (ZIP)', snippet: 'In den <head> einfügen', copy: 'Kopieren', preview: 'Vorschau', failed: 'Dieses Bild konnte nicht gelesen werden.' },
+  ru: { drop: 'Перетащите изображение сюда или нажмите для выбора (PNG, SVG, JPG, WebP)', fit: 'Вписывание', cover: 'Обрезать до квадрата', contain: 'Сохранить целиком', bg: 'Фон', transparent: 'Прозрачный', zip: 'Скачать всё (ZIP)', snippet: 'Добавьте в <head>', copy: 'Копировать', preview: 'Предпросмотр', failed: 'Не удалось прочитать изображение.' },
+}[lang];
+const snippet = `<link rel="icon" href="/favicon.ico" sizes="48x48">\n<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">\n<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">\n<link rel="apple-touch-icon" href="/apple-touch-icon.png">`;
+---
+<ToolLayout lang={lang} slug="favicon">
+  <div class="tl two" data-favicon data-s={JSON.stringify(s)} data-snippet={snippet}>
+    <div class="card pane">
+      <label class="drop" data-drop><span>{s.drop}</span><span class="meta" data-file></span><input type="file" accept="image/*" data-input /></label>
+      <div class="row">
+        <label>{s.fit}<select name="fit"><option value="cover">{s.cover}</option><option value="contain">{s.contain}</option></select></label>
+        <label>{s.bg}<select name="bg"><option value="">{s.transparent}</option><option value="#ffffff">#ffffff</option><option value="#000000">#000000</option></select></label>
+      </div>
+      <p class="note bad" data-error hidden>{s.failed}</p>
+    </div>
+    <div class="card pane" data-result hidden>
+      <h2 class="sub">{s.preview}</h2>
+      <div class="previews" data-previews></div>
+      <div class="actions"><button type="button" class="btn" data-zip>{s.zip}</button></div>
+      <label>{s.snippet}<pre data-snippet></pre></label>
+      <div class="actions"><button type="button" class="btn alt" data-copy>{s.copy}</button></div>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/favicon/favicon.ts';
+</script>
+<style>
+  .sub { margin: 0; font-family: var(--font); font-size: .95rem; font-weight: 600; letter-spacing: 0; }
+  .previews { display: flex; flex-wrap: wrap; align-items: end; gap: 16px; }
+  .previews :global(figure) { margin: 0; display: grid; gap: 4px; justify-items: center; font-size: .75rem; color: var(--muted); }
+  .previews :global(img) { image-rendering: pixelated; background: repeating-conic-gradient(var(--surface-2) 0 25%, transparent 0 50%) 50% / 12px 12px; border: 1px solid var(--line); }
+</style>

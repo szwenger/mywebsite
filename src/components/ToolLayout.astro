@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { t, type Lang } from '../i18n/ui';
 import { tools } from '../data/tools';
+import '../styles/tools.css';
 interface Props { lang: Lang; slug: string }
 const { lang, slug } = Astro.props;
 const tool = tools.find((x) => x.slug === slug)!;

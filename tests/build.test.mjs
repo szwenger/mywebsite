@@ -418,15 +418,16 @@ test('PDF tool pages exist in every language and the overview links to them', ()
   }
 });
 
-test('the PDF libraries are reachable only from the PDF pages', () => {
+test('the PDF libraries are reachable only from the PDF pages and the metadata tool', () => {
   const marker = (name) => chunkSrc(name).includes('PDFDocument.load');
   let pdfPages = 0;
   for (const f of pageHtml()) {
     const html = readFileSync(f, 'utf8');
     const entries = [...html.matchAll(/\/_astro\/([^"'`\s]+\.js)/g)].map((m) => m[1]);
     const reaches = closure(entries).some(marker);
-    const isPdfPage = f.split(sep).join('/').endsWith('/tools/pdf/index.html');
-    assert.equal(reaches, isPdfPage, f);
+    const path = f.split(sep).join('/');
+    const isPdfPage = path.endsWith('/tools/pdf/index.html');
+    assert.equal(reaches, isPdfPage || path.endsWith('/tools/meta/index.html'), f);
     if (isPdfPage) pdfPages++;
   }
   assert.equal(pdfPages, 3);
@@ -489,4 +490,33 @@ test('post images become figures that link to the full image, and a lightbox dia
   }
   const shipped = walk('dist').filter((p) => /\.(js|html)$/.test(p)).map((f) => readFileSync(f, 'utf8')).join('\n');
   assert.ok(shipped.includes('showModal'), 'lightbox script ships');
+});
+
+// ---- Tool suite: every registered tool ships in every language, listed once on the overview ----
+test('every tool in tools.ts has a page per language, a title, and one card on its overview', async () => {
+  const { tools, categories } = await import('../src/data/tools.ts');
+  assert.ok(tools.length >= 14);
+  for (const [lang, f] of Object.entries(PAGES)) {
+    const dir = f.replace(/index\.html$/, '');
+    const overview = read(`${dir}tools/index.html`);
+    const links = hrefs(mainOf(overview));
+    for (const t of tools) {
+      assert.ok(t.name[lang] && t.blurb[lang], `${t.slug} has ${lang} text`);
+      assert.ok(Object.keys(categories).includes(t.cat), `${t.slug} category`);
+      const page = join('dist', dir, `tools/${t.slug}/index.html`);
+      assert.ok(existsSync(page), page);
+      assert.ok(readFileSync(page, 'utf8').includes(`<h1 class="section-title`) && readFileSync(page, 'utf8').includes(t.name[lang].replace(/&/g, '&amp;')), `${t.slug} ${lang} heading`);
+      assert.equal(links.filter((h) => h === `${pre(lang)}/tools/${t.slug}/`).length, 1, `${t.slug} once on the ${lang} overview`);
+    }
+  }
+});
+
+test('simple tool pages do not pull in the PDF or QR code libraries', () => {
+  for (const slug of ['vram', 'checksum', 'tz', 'bitrate', 'compose', 'json', 'gen', 'diff', 'favicon']) {
+    for (const dir of Object.values(LANG_DIRS)) {
+      const html = read(`${dir}tools/${slug}/index.html`);
+      const entries = [...html.matchAll(/\/_astro\/([^"'`\s]+\.js)/g)].map((m) => m[1]);
+      assert.ok(!closure(entries).some((n) => chunkSrc(n).includes('PDFDocument.load') || chunkSrc(n).includes('WIFI:T:')), `${dir}${slug}`);
+    }
+  }
 });

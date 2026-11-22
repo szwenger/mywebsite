@@ -1,0 +1,35 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { drop: 'Drop JPEG, PNG or PDF files here, or click to choose', found: 'Found', none: 'No metadata found.', strip: 'Remove metadata and download', gps: 'This file contains a location.', unsupported: 'Not supported (JPEG, PNG or PDF only).', failed: 'Could not read this file.', clean: '-clean',
+    note: 'Removal is lossless: the picture is not re-encoded. A colour profile and the photo orientation stay, because removing them changes how the picture looks.' },
+  de: { drop: 'JPEG-, PNG- oder PDF-Dateien hierher ziehen oder klicken zum Auswählen', found: 'Gefunden', none: 'Keine Metadaten gefunden.', strip: 'Metadaten entfernen und herunterladen', gps: 'Diese Datei enthält einen Standort.', unsupported: 'Nicht unterstützt (nur JPEG, PNG oder PDF).', failed: 'Diese Datei konnte nicht gelesen werden.', clean: '-bereinigt',
+    note: 'Das Entfernen ist verlustfrei: Das Bild wird nicht neu kodiert. Farbprofil und Ausrichtung des Fotos bleiben, weil sich das Bild sonst verändert.' },
+  ru: { drop: 'Перетащите файлы JPEG, PNG или PDF сюда или нажмите для выбора', found: 'Найдено', none: 'Метаданных нет.', strip: 'Удалить метаданные и скачать', gps: 'В файле есть координаты.', unsupported: 'Не поддерживается (только JPEG, PNG или PDF).', failed: 'Не удалось прочитать файл.', clean: '-clean',
+    note: 'Удаление без потерь: изображение не перекодируется. Цветовой профиль и ориентация фото остаются, иначе картинка изменится.' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="meta">
+  <div class="tl" data-meta data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <label class="drop" data-drop><span>{s.drop}</span><input type="file" multiple accept="image/jpeg,image/png,application/pdf,.jpg,.jpeg,.png,.pdf" data-input /></label>
+      <p class="meta">{s.note}</p>
+    </div>
+    <div data-list class="list"></div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/meta/meta.ts';
+</script>
+<style>
+  .list { display: grid; gap: 16px; }
+  .list :global(.item) { display: grid; gap: 12px; padding: 18px; }
+  .list :global(.item h2) { margin: 0; font-family: var(--font); font-size: 1rem; overflow-wrap: anywhere; }
+  .list :global(.item .gps) { border-color: #d65a5a; }
+</style>

@@ -1,0 +1,49 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { date: 'Date', time: 'Time', zone: 'Time zone', local: 'Your time', sharing: 'Link to this moment', copy: 'Copy', discord: 'Discord timestamps', discordNote: 'Paste into a Discord message: everyone sees it in their own time zone.',
+    zones: 'Same moment elsewhere', styles: ['Short time', 'Long time', 'Short date', 'Long date', 'Date and time', 'Full date and time', 'Relative'], viewing: 'This happens at', invalid: 'Pick a date and a time.', open: 'Open in the converter' },
+  de: { date: 'Datum', time: 'Uhrzeit', zone: 'Zeitzone', local: 'Deine Zeit', sharing: 'Link zu diesem Zeitpunkt', copy: 'Kopieren', discord: 'Discord-Zeitstempel', discordNote: 'In eine Discord-Nachricht einfügen: Alle sehen sie in ihrer eigenen Zeitzone.',
+    zones: 'Derselbe Zeitpunkt anderswo', styles: ['Kurze Zeit', 'Lange Zeit', 'Kurzes Datum', 'Langes Datum', 'Datum und Zeit', 'Volles Datum mit Zeit', 'Relativ'], viewing: 'Das passiert um', invalid: 'Wähle ein Datum und eine Uhrzeit.', open: 'Im Umrechner öffnen' },
+  ru: { date: 'Дата', time: 'Время', zone: 'Часовой пояс', local: 'Ваше время', sharing: 'Ссылка на этот момент', copy: 'Копировать', discord: 'Метки времени Discord', discordNote: 'Вставьте в сообщение Discord: каждый увидит время в своём часовом поясе.',
+    zones: 'Тот же момент в других местах', styles: ['Краткое время', 'Полное время', 'Краткая дата', 'Полная дата', 'Дата и время', 'Полная дата и время', 'Относительно'], viewing: 'Это произойдёт в', invalid: 'Выберите дату и время.', open: 'Открыть в конвертере' },
+}[lang];
+const styles = ['t', 'T', 'd', 'D', 'f', 'F', 'R'];
+---
+<ToolLayout lang={lang} slug="tz">
+  <div class="tl two" data-tz data-lang={lang} data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <div class="row">
+        <label>{s.date}<input type="date" name="date" /></label>
+        <label>{s.time}<input type="time" name="time" value="20:00" /></label>
+      </div>
+      <label>{s.zone}<select name="zone"></select></label>
+      <label>{s.sharing}<input name="link" class="mono" readonly /></label>
+      <div class="actions"><button type="button" class="btn alt" data-copy-link>{s.copy}</button></div>
+      <p class="note" data-viewing hidden></p>
+      <p class="note bad" data-invalid hidden>{s.invalid}</p>
+    </div>
+    <div class="card pane">
+      <h2 class="sub">{s.zones}</h2>
+      <table><tbody data-zones></tbody></table>
+      <h2 class="sub">{s.discord}</h2>
+      <p class="meta">{s.discordNote}</p>
+      <table><tbody>
+        {styles.map((st, i) => <tr><th>{s.styles[i]}</th><td><code class="mono" data-discord={st}></code></td><td><button type="button" class="btn alt sm" data-copy-d={st}>{s.copy}</button></td></tr>)}
+      </tbody></table>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/tz/tz.ts';
+</script>
+<style>
+  .sub { margin: 0; font-family: var(--font); font-size: .95rem; font-weight: 600; letter-spacing: 0; }
+  .sm { padding: 4px 12px; font-size: .8rem; }
+</style>

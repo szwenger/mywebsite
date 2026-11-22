@@ -1,0 +1,78 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+import { QUANTS, KV_TYPES, PRESETS } from '../../../../tools/vram/logic';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: {
+    preset: 'Model preset', custom: 'Custom', params: 'Parameters (billions)', quant: 'Quantisation', bpw: 'Bits per weight', layers: 'Layers', kvHeads: 'KV heads', headDim: 'Head dimension',
+    ctx: 'Context length (tokens)', kvType: 'KV cache type', gpu: 'GPU memory (GB)', overhead: 'Overhead (GB)', weights: 'Weights', kv: 'KV cache', over: 'Compute buffers', total: 'Total', maxCtx: 'Longest context that fits',
+    fits: 'Fits in your GPU memory.', tight: 'Does not fit. Lower the context, use a smaller quantisation or a quantised KV cache.', noFit: 'The weights alone do not fit.', tokens: 'tokens',
+    note: 'An estimate: real files and runtimes differ by a few percent. Sliding-window and mixture-of-experts models are not modelled, and a card also needs room for the desktop.',
+  },
+  de: {
+    preset: 'Modellvorlage', custom: 'Eigene', params: 'Parameter (Milliarden)', quant: 'Quantisierung', bpw: 'Bit pro Gewicht', layers: 'Schichten', kvHeads: 'KV-Köpfe', headDim: 'Kopfdimension',
+    ctx: 'Kontextlänge (Tokens)', kvType: 'KV-Cache-Typ', gpu: 'GPU-Speicher (GB)', overhead: 'Overhead (GB)', weights: 'Gewichte', kv: 'KV-Cache', over: 'Rechenpuffer', total: 'Gesamt', maxCtx: 'Längster passender Kontext',
+    fits: 'Passt in deinen GPU-Speicher.', tight: 'Passt nicht. Verkürze den Kontext, nimm eine kleinere Quantisierung oder einen quantisierten KV-Cache.', noFit: 'Allein die Gewichte passen nicht.', tokens: 'Tokens',
+    note: 'Eine Schätzung: Echte Dateien und Laufzeiten weichen um einige Prozent ab. Sliding-Window- und Mixture-of-Experts-Modelle werden nicht abgebildet, und die Karte braucht auch Platz für den Desktop.',
+  },
+  ru: {
+    preset: 'Шаблон модели', custom: 'Своя', params: 'Параметры (млрд)', quant: 'Квантование', bpw: 'Бит на вес', layers: 'Слои', kvHeads: 'KV-головы', headDim: 'Размер головы',
+    ctx: 'Длина контекста (токены)', kvType: 'Тип KV-кэша', gpu: 'Память GPU (ГБ)', overhead: 'Накладные (ГБ)', weights: 'Веса', kv: 'KV-кэш', over: 'Рабочие буферы', total: 'Итого', maxCtx: 'Максимальный контекст',
+    fits: 'Помещается в память GPU.', tight: 'Не помещается. Уменьшите контекст, возьмите меньшее квантование или квантованный KV-кэш.', noFit: 'Одни веса уже не помещаются.', tokens: 'токенов',
+    note: 'Оценка: реальные файлы и рантаймы отличаются на несколько процентов. Модели со скользящим окном и mixture-of-experts не учитываются, а видеокарте нужно место и под рабочий стол.',
+  },
+}[lang];
+---
+<ToolLayout lang={lang} slug="vram">
+  <div class="tl two" data-vram data-fits={s.fits} data-tight={s.tight} data-nofit={s.noFit} data-tokens={s.tokens}>
+    <div class="card pane">
+      <label>{s.preset}
+        <select name="preset">
+          <option value="">{s.custom}</option>
+          {PRESETS.map((p) => <option value={p.id}>{p.id}</option>)}
+        </select>
+      </label>
+      <div class="row">
+        <label>{s.params}<input name="paramsB" type="number" min="0.1" step="0.1" value="8" /></label>
+        <label>{s.quant}
+          <select name="quant">{QUANTS.map((q) => <option value={q.bpw} selected={q.id === 'Q4_K_M'}>{q.id}</option>)}</select>
+        </label>
+        <label>{s.bpw}<input name="bpw" type="number" min="1" max="32" step="0.05" value="4.85" /></label>
+      </div>
+      <div class="row">
+        <label>{s.layers}<input name="layers" type="number" min="1" step="1" value="32" /></label>
+        <label>{s.kvHeads}<input name="kvHeads" type="number" min="1" step="1" value="8" /></label>
+        <label>{s.headDim}<input name="headDim" type="number" min="1" step="1" value="128" /></label>
+      </div>
+      <div class="row">
+        <label>{s.ctx}<input name="ctx" type="number" min="256" step="256" value="8192" /></label>
+        <label>{s.kvType}<select name="kvBytes">{KV_TYPES.map((k) => <option value={k.bytes}>{k.id}</option>)}</select></label>
+      </div>
+      <div class="row">
+        <label>{s.gpu}<input name="vramGB" type="number" min="1" step="1" value="24" /></label>
+        <label>{s.overhead}<input name="overheadGB" type="number" min="0" step="0.1" value="0.5" /></label>
+      </div>
+    </div>
+    <div class="card pane" aria-live="polite">
+      <table>
+        <tbody>
+          <tr><th>{s.weights}</th><td data-out="weights"></td></tr>
+          <tr><th>{s.kv}</th><td data-out="kv"></td></tr>
+          <tr><th>{s.over}</th><td data-out="overhead"></td></tr>
+          <tr><th>{s.total}</th><td class="out-big" data-out="total"></td></tr>
+          <tr><th>{s.maxCtx}</th><td data-out="maxCtx"></td></tr>
+        </tbody>
+      </table>
+      <p class="note" data-verdict></p>
+      <p class="meta">{s.note}</p>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/vram/vram.ts';
+</script>

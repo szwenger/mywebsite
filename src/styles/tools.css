@@ -1,0 +1,34 @@
+/* Shared look of the simple tool pages (everything under .tl). The older tools (qr, pdf, image, presenter) keep their own scoped styles. */
+.tl { display: grid; gap: 20px; }
+.tl.two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+@media (max-width: 860px) { .tl.two { grid-template-columns: minmax(0, 1fr); } }
+.tl .pane { padding: clamp(16px, 2.4vw, 26px); display: grid; gap: 14px; min-width: 0; }
+.tl label { display: grid; gap: 6px; font-size: .88rem; color: var(--muted); }
+.tl .row { display: flex; flex-wrap: wrap; gap: 14px 20px; align-items: end; }
+.tl .row > label { flex: 1 1 140px; }
+.tl .check { display: flex; align-items: center; gap: 8px; }
+.tl input:not([type='checkbox'], [type='radio'], [type='color'], [type='range'], [type='file']), .tl textarea, .tl select {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); color: var(--fg); font: inherit; font-size: .95rem;
+}
+.tl textarea, .tl pre, .tl .mono { font-family: ui-monospace, 'Cascadia Mono', Consolas, Menlo, monospace; font-size: .86rem; line-height: 1.5; }
+.tl textarea { resize: vertical; min-height: 12rem; tab-size: 2; }
+.tl input[type='range'] { width: 100%; accent-color: var(--accent-strong); }
+.tl pre { margin: 0; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); white-space: pre-wrap; overflow-wrap: anywhere; min-height: 3rem; }
+.tl .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.tl .btn.alt { background: transparent; color: var(--fg); border: 1px solid var(--line); box-shadow: none; }
+.tl .btn[disabled] { opacity: .45; cursor: not-allowed; }
+.tl .note { margin: 0; padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); font-size: .88rem; }
+.tl .note.bad { border-color: #d65a5a; }
+.tl .note.good { border-color: #4fae7b; }
+.tl .drop { display: grid; place-items: center; gap: 4px; min-height: 130px; padding: 18px; border: 1px dashed var(--line); border-radius: var(--radius-sm); text-align: center; color: var(--muted); cursor: pointer; }
+.tl .drop.over { border-color: var(--accent); color: var(--fg); }
+.tl .drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.tl .drop:focus-within { outline: 2px solid var(--accent-ink); outline-offset: 3px; }
+.tl table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.tl th, .tl td { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.tl th { color: var(--muted); font-weight: 500; }
+.tl .out-big { font-family: var(--display); font-size: clamp(1.4rem, 3vw, 2rem); letter-spacing: -.02em; }
+.tl .diff { margin: 0; border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: auto; }
+.tl .diff div { padding: 1px 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.tl .diff .add { background: rgb(79 174 123 / .18); }
+.tl .diff .del { background: rgb(214 90 90 / .18); }
