@@ -1,0 +1,52 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { pattern: 'Pattern', text: 'Test text', repl: 'Replace with (optional, $1 and $<name> work)', flags: 'Flags', result: 'Matches', replaced: 'Result of the replacement', copy: 'Copy', count: '{n} matches', many: 'More than 2000 matches, showing the first 2000.', none: 'No match.', slow: 'The pattern took too long and was stopped. It probably backtracks too much.', nr: '#', pos: 'Position', match: 'Match', groups: 'Groups', note: 'JavaScript regular expressions, evaluated in your browser.',
+    f: { g: 'all matches', i: 'ignore case', m: 'multiline', s: 'dot matches newline', u: 'unicode' } },
+  de: { pattern: 'Muster', text: 'Testtext', repl: 'Ersetzen durch (optional, $1 und $<name> funktionieren)', flags: 'Optionen', result: 'Treffer', replaced: 'Ergebnis der Ersetzung', copy: 'Kopieren', count: '{n} Treffer', many: 'Mehr als 2000 Treffer, die ersten 2000 werden gezeigt.', none: 'Kein Treffer.', slow: 'Das Muster hat zu lange gebraucht und wurde gestoppt. Vermutlich gibt es zu viel Backtracking.', nr: '#', pos: 'Position', match: 'Treffer', groups: 'Gruppen', note: 'JavaScript-reguläre-Ausdrücke, ausgewertet in deinem Browser.',
+    f: { g: 'alle Treffer', i: 'Groß-/Kleinschreibung ignorieren', m: 'mehrzeilig', s: 'Punkt trifft Zeilenumbruch', u: 'Unicode' } },
+  ru: { pattern: 'Шаблон', text: 'Тестовый текст', repl: 'Заменить на (необязательно, работают $1 и $<name>)', flags: 'Флаги', result: 'Совпадения', replaced: 'Результат замены', copy: 'Копировать', count: 'Совпадений: {n}', many: 'Больше 2000 совпадений, показаны первые 2000.', none: 'Совпадений нет.', slow: 'Шаблон работал слишком долго и был остановлен. Скорее всего, слишком много возвратов.', nr: '№', pos: 'Позиция', match: 'Совпадение', groups: 'Группы', note: 'Регулярные выражения JavaScript, вычисляются в вашем браузере.',
+    f: { g: 'все совпадения', i: 'без учёта регистра', m: 'многострочный', s: 'точка включает перенос', u: 'юникод' } },
+}[lang];
+---
+<ToolLayout lang={lang} slug="regex">
+  <div class="tl" data-regex data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <label>{s.pattern}<input name="pattern" class="mono" value="(\w+)@(\w+)\.com" spellcheck="false" autocomplete="off" /></label>
+      <fieldset class="flags">
+        <legend>{s.flags}</legend>
+        {(['g', 'i', 'm', 's', 'u'] as const).map((k) => <label class="check"><input type="checkbox" data-flag value={k} checked={k === 'g'} /> <code>{k}</code> {s.f[k]}</label>)}
+      </fieldset>
+      <label>{s.text}<textarea name="text" spellcheck="false" rows="7">Write to anna@example.com or bob@test.com.</textarea></label>
+      <label>{s.repl}<input name="repl" class="mono" spellcheck="false" autocomplete="off" /></label>
+    </div>
+    <div class="card pane" aria-live="polite">
+      <h2 class="sub">{s.result}</h2>
+      <p class="note" data-status role="status" hidden></p>
+      <pre data-view></pre>
+      <table><thead><tr><th>{s.nr}</th><th>{s.pos}</th><th>{s.match}</th><th>{s.groups}</th></tr></thead><tbody data-rows></tbody></table>
+      <h2 class="sub">{s.replaced}</h2>
+      <pre data-replaced hidden></pre>
+      <div class="actions"><button type="button" class="btn alt" data-copy>{s.copy}</button></div>
+      <p class="meta">{s.note}</p>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/regex/regex.ts';
+</script>
+<style>
+  .sub { margin: 0; font-family: var(--font); font-size: .95rem; font-weight: 600; letter-spacing: 0; }
+  .flags { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0; padding: 0; border: 0; }
+  .flags legend { padding: 0; margin-bottom: 6px; font-size: .88rem; color: var(--muted); }
+  [data-view] :global(mark) { color: inherit; border-radius: 3px; }
+  [data-view] :global(mark.a) { background: rgb(106 120 209 / .45); }
+  [data-view] :global(mark.b) { background: rgb(63 184 196 / .4); }
+  [data-rows] :global(td) { white-space: pre-wrap; overflow-wrap: anywhere; }
+</style>

@@ -1,5 +1,6 @@
 ---
 import Base from '../../../layouts/Base.astro';
+import ExpandSearch from '../../../components/ExpandSearch.astro';
 import { LANGS, path, t, type Lang } from '../../../i18n/ui';
 import { tools, categories, type Category } from '../../../data/tools';
 
@@ -10,14 +11,17 @@ const lang = (Astro.params.lang ?? 'en') as Lang;
 ---
 <Base lang={lang} title={`${t(lang, 'navTools')} · Galuin`} description={t(lang, 'toolsIntro')} current="tools">
   <section class="wrap page">
-    <h1 class="section-title">{t(lang, 'navTools')}</h1>
+    <div class="head">
+      <h1 class="section-title">{t(lang, 'navTools')}</h1>
+      <ExpandSearch label={t(lang, 'toolsSearch')} clear={t(lang, 'searchClear')} />
+    </div>
     <p class="meta intro">{t(lang, 'toolsLocal')}</p>
     {(Object.keys(categories) as Category[]).map((cat) => (
-      <section class="group" aria-labelledby={`cat-${cat}`}>
+      <section class="group" data-group aria-labelledby={`cat-${cat}`}>
         <h2 class="cat" id={`cat-${cat}`}>{categories[cat][lang]}</h2>
         <div class="grid">
           {tools.filter((x) => x.cat === cat).map((tool) => (
-            <a class="card tool" href={path(lang, `/tools/${tool.slug}/`)}>
+            <a class="card tool" href={path(lang, `/tools/${tool.slug}/`)} data-hay={[tool.name[lang], tool.blurb[lang], tool.tags ?? '', tool.slug, categories[cat][lang]].join(' ')}>
               <span class="icon"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d={tool.icon} fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
               <div class="text">
                 <h3>{tool.name[lang]}</h3>
@@ -28,10 +32,16 @@ const lang = (Astro.params.lang ?? 'en') as Lang;
         </div>
       </section>
     ))}
+    <p class="meta empty" data-ts-empty role="status" hidden>{t(lang, 'noResults')}</p>
   </section>
 </Base>
+<script>
+  import '../../../scripts/toolsearch.ts';
+</script>
 <style>
   .page { padding-block: clamp(32px, 6vw, 64px) 0; }
+  .head { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; margin-bottom: 16px; }
+  .head .section-title { margin: 0; }
   .intro { margin: -6px 0 24px; font-size: .95rem; }
   .group { margin-top: 36px; }
   .cat { margin: 0 0 14px; font-size: .8rem; font-family: var(--font); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
@@ -41,4 +51,6 @@ const lang = (Astro.params.lang ?? 'en') as Lang;
   .text { min-width: 0; }
   .tool h3 { margin: 0 0 8px; font-size: 1.1rem; }
   .tool p { margin: 0; color: var(--muted); font-size: .92rem; }
+  .tool[hidden], .group[hidden] { display: none; }
+  .empty { margin-top: 40px; text-align: center; }
 </style>

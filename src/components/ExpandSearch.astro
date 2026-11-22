@@ -1,0 +1,41 @@
+---
+// A round magnifier that grows into a search field. Behaviour (open, close, clear, "/" shortcut) lives in
+// src/scripts/xsearch.ts; whoever uses this listens to the input's `input` event and does the filtering.
+// Put it in a `position: relative` header row: on narrow screens the open field covers that row.
+// `list` marks the input for src/scripts/list.ts (blog); the tools page filters on its own.
+interface Props { label: string; clear: string; list?: boolean }
+const { label, clear, list = false } = Astro.props;
+---
+<form class="xsearch" role="search" data-xsearch hidden>
+  <button type="button" class="xs-toggle" data-xs-toggle aria-label={label} aria-expanded="false" aria-controls="xs-input">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8" /><path d="M15.5 15.5L20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
+  </button>
+  <input id="xs-input" type="search" tabindex="-1" placeholder={label} aria-label={label} autocomplete="off" spellcheck="false" {...(list ? { 'data-list-search': '' } : {})} />
+  <span class="xs-count" data-xs-count aria-hidden="true" hidden></span>
+  <button type="button" class="xs-clear" data-xs-clear aria-label={clear} hidden>
+    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+  </button>
+</form>
+<style>
+  /* A 44px round button that grows into a field. Same hard accent shadow as the cards when open. */
+  .xsearch { display: flex; align-items: center; flex: none; width: 44px; height: 44px; overflow: hidden; border: 1px solid var(--line); border-radius: 99px; background: var(--surface); transition: width .5s var(--ease), border-color .2s, box-shadow .3s var(--ease), transform .3s var(--ease); }
+  .xsearch:hover { border-color: var(--accent); }
+  .xsearch.open { width: min(380px, 100%); border-color: var(--accent); box-shadow: 3px 3px 0 var(--accent); transform: translate(-1px, -1px); }
+  .xsearch:focus-within { outline: 2px solid var(--accent-ink); outline-offset: 3px; }
+  .xs-toggle, .xs-clear { display: grid; place-items: center; flex: none; padding: 0; border: 0; background: none; color: var(--muted); cursor: pointer; transition: color .2s; }
+  .xs-toggle { width: 42px; height: 42px; }
+  .xsearch:hover .xs-toggle, .xsearch.open .xs-toggle { color: var(--accent-ink); }
+  .xs-clear { width: 32px; height: 32px; margin-right: 6px; border-radius: 50%; }
+  .xs-clear:hover { color: var(--fg); background: var(--surface-2); }
+  .xsearch input { flex: 1; min-width: 0; height: 100%; padding: 0; border: 0; outline: 0; background: transparent; color: var(--fg); font: 500 .95rem var(--font); opacity: 0; transition: opacity .25s ease; }
+  .xsearch input::placeholder { color: var(--muted); }
+  .xsearch input::-webkit-search-cancel-button { display: none; }
+  .xsearch.open input { opacity: 1; transition-delay: .18s; }
+  .xs-count { flex: none; margin-right: 8px; padding: 2px 8px; border-radius: 99px; background: var(--surface-2); color: var(--muted); font: 500 .75rem var(--font); font-variant-numeric: tabular-nums; }
+  @media (max-width: 560px) {
+    .xsearch.open { position: absolute; inset: 0 0 auto 0; width: auto; z-index: 2; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .xsearch.open { transform: none; }
+  }
+</style>

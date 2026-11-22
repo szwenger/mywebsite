@@ -1,0 +1,50 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { src: 'Subtitles (SRT or WebVTT)', open: 'Open a file', fmt: 'Convert to', offset: 'Shift (seconds, negative = earlier)', speed: 'Speed correction', none: 'None', out: 'Result', copy: 'Copy', save: 'Download', cues: '{n} subtitles', bad: 'No subtitles found. Paste the contents of an .srt or .vtt file.', note: 'Everything stays in your browser. Files are read as UTF-8.' },
+  de: { src: 'Untertitel (SRT oder WebVTT)', open: 'Datei öffnen', fmt: 'Umwandeln in', offset: 'Verschieben (Sekunden, negativ = früher)', speed: 'Geschwindigkeitskorrektur', none: 'Keine', out: 'Ergebnis', copy: 'Kopieren', save: 'Herunterladen', cues: '{n} Untertitel', bad: 'Keine Untertitel gefunden. Füge den Inhalt einer .srt- oder .vtt-Datei ein.', note: 'Alles bleibt in deinem Browser. Dateien werden als UTF-8 gelesen.' },
+  ru: { src: 'Субтитры (SRT или WebVTT)', open: 'Открыть файл', fmt: 'Преобразовать в', offset: 'Сдвиг (секунды, минус = раньше)', speed: 'Коррекция скорости', none: 'Нет', out: 'Результат', copy: 'Копировать', save: 'Скачать', cues: 'Субтитров: {n}', bad: 'Субтитры не найдены. Вставьте содержимое файла .srt или .vtt.', note: 'Всё остаётся в вашем браузере. Файлы читаются как UTF-8.' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="subs">
+  <div class="tl two" data-subs data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <label>{s.src}<textarea name="src" spellcheck="false" rows="14"></textarea></label>
+      <label class="btn alt open">{s.open}<input type="file" name="file" accept=".srt,.vtt,.txt,text/*" hidden /></label>
+      <div class="row">
+        <label>{s.fmt}<select name="fmt"><option value="srt">SRT</option><option value="vtt">WebVTT</option></select></label>
+        <label>{s.offset}<input name="offset" type="number" step="0.1" value="0" /></label>
+        <label>{s.speed}
+          <select name="speed">
+            <option value="1">{s.none}</option>
+            <option value={23.976 / 25}>23.976 → 25 fps</option>
+            <option value={25 / 23.976}>25 → 23.976 fps</option>
+            <option value={24 / 25}>24 → 25 fps</option>
+            <option value={25 / 24}>25 → 24 fps</option>
+          </select>
+        </label>
+      </div>
+    </div>
+    <div class="card pane">
+      <label>{s.out}<textarea name="out" spellcheck="false" rows="14" readonly></textarea></label>
+      <p class="note" data-status role="status" hidden></p>
+      <div class="actions">
+        <button type="button" class="btn" data-save>{s.save}</button>
+        <button type="button" class="btn alt" data-copy>{s.copy}</button>
+      </div>
+      <p class="meta">{s.note}</p>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/subs/subs.ts';
+</script>
+<style>
+  .open { justify-self: start; cursor: pointer; color: var(--fg); }
+</style>

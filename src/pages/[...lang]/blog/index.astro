@@ -2,6 +2,7 @@
 import Base from '../../../layouts/Base.astro';
 import NoteItem from '../../../components/NoteItem.astro';
 import PostCard from '../../../components/PostCard.astro';
+import ExpandSearch from '../../../components/ExpandSearch.astro';
 import { LANGS, t, type Lang } from '../../../i18n/ui';
 import { loadPosts } from '../../../lib/load-posts';
 import { normalize, plainText } from '../../../lib/list';
@@ -16,14 +17,13 @@ const haystack = (p: (typeof items)[number]['post']) => normalize([p.title, ...(
 ---
 <Base lang={lang} title={`${t(lang, 'navBlog')} · Galuin`} description={t(lang, 'blogIntro')} current="blog">
   <section class="wrap page">
-    <div class="column">
-      <h1 class="section-title">{t(lang, 'navBlog')}</h1>
+    <div class="column" data-list data-per="10">
+      <div class="head">
+        <h1 class="section-title">{t(lang, 'navBlog')}</h1>
+        <ExpandSearch label={t(lang, 'searchLabel')} clear={t(lang, 'searchClear')} list />
+      </div>
       <p class="meta intro">{t(lang, 'blogIntro')}</p>
-      <div data-list data-per="10">
-        <label class="search">
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5" /><path d="m20 20-4.2-4.2" /></svg>
-          <input type="search" data-list-search placeholder={t(lang, 'searchPlaceholder')} aria-label={t(lang, 'searchLabel')} autocomplete="off" spellcheck="false" />
-        </label>
+      <div>
         <div class="list">
           {items.map(({ post, Content }) => (
             <div data-item data-text={haystack(post)}>
@@ -40,17 +40,16 @@ const haystack = (p: (typeof items)[number]['post']) => normalize([p.title, ...(
   </section>
 </Base>
 <script>
+  import '../../../scripts/xsearch';
   import '../../../scripts/list';
 </script>
 <style>
   .page { padding-block: clamp(32px, 6vw, 64px) 0; }
   /* One reading column, centred like a post, so the list is not pushed to the left of a wide page. */
   .column { max-width: 760px; margin-inline: auto; }
+  .head { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; margin-bottom: 16px; }
+  .head .section-title { margin: 0; }
   .intro { margin: -6px 0 24px; font-size: .95rem; }
-  .search { display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 16px; margin-bottom: 24px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--muted); transition: border-color .15s; }
-  .search:focus-within { border-color: var(--accent); }
-  .search input { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: none; color: var(--fg); font: 400 1rem var(--font); }
-  .search input::placeholder { color: var(--muted); }
   .list { display: grid; gap: 20px; }
   .empty { margin: 8px 0 0; }
 </style>

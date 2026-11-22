@@ -1,6 +1,6 @@
 # galuin.com
 
-Personal site of Galuin: a news-style front page with blog posts, the latest YouTube videos and a Twitch card, plus pages for videos, hardware and 14 browser-only tools (QR codes, PDFs, images, metadata, checksums, JSON, diffs, a GGUF VRAM calculator and more). English, German and Russian. Hosted on GitHub Pages at [galuin.com](https://galuin.com).
+Personal site of Galuin: a news-style front page with blog posts, the latest YouTube videos and a Twitch card, plus pages for videos, hardware and 22 browser-only tools (QR codes, PDFs, images, metadata, checksums, JSON, regex, subtitles, ffmpeg commands, a GGUF VRAM calculator and more) with a search. English, German and Russian. Hosted on GitHub Pages at [galuin.com](https://galuin.com).
 
 ## Stack
 

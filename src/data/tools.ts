@@ -1,7 +1,7 @@
 import type { Lang } from '../i18n/ui';
 
 /** One entry per tool page at /tools/<slug>/. `icon` is SVG path data on a 24×24 viewBox, drawn with currentColor. */
-export interface Tool { slug: string; cat: Category; featured?: boolean; icon: string; name: Record<Lang, string>; blurb: Record<Lang, string> }
+export interface Tool { slug: string; cat: Category; featured?: boolean; /** extra English search words, matched in every language */ tags?: string; icon: string; name: Record<Lang, string>; blurb: Record<Lang, string> }
 
 export type Category = 'files' | 'text' | 'dev' | 'ai' | 'media';
 /** Order here is the order of the groups on the overview page. */
@@ -172,6 +172,102 @@ export const tools: Tool[] = [
       en: 'Compare two texts line by line and see what was added and removed.',
       de: 'Vergleiche zwei Texte Zeile für Zeile und sieh, was hinzugekommen und was weggefallen ist.',
       ru: 'Построчное сравнение двух текстов: что добавлено и что удалено.',
+    },
+  },
+  {
+    slug: 'subs',
+    cat: 'media',
+    tags: 'srt vtt webvtt subtitles captions sync shift timing fps',
+    icon: 'M4 5h16v11H4zM8 20h8M7 9h4M13 9h4M7 12.5h2M11 12.5h6',
+    name: { en: 'Subtitle converter and shifter', de: 'Untertitel-Konverter', ru: 'Конвертер субтитров' },
+    blurb: {
+      en: 'Convert SRT and WebVTT, shift the timing or fix a frame rate mismatch when subtitles drift out of sync.',
+      de: 'SRT und WebVTT umwandeln, Zeiten verschieben oder eine Bildraten-Abweichung korrigieren, wenn Untertitel auseinanderlaufen.',
+      ru: 'Преобразование SRT и WebVTT, сдвиг времени и исправление разницы частоты кадров, когда субтитры уезжают.',
+    },
+  },
+  {
+    slug: 'ics',
+    cat: 'text',
+    tags: 'calendar event ics ical invite appointment reminder',
+    icon: 'M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM4 10h16M8 3v4M16 3v4M9 14h2',
+    name: { en: 'Calendar event (.ics) maker', de: 'Kalendertermin (.ics) erstellen', ru: 'Создание события календаря (.ics)' },
+    blurb: {
+      en: 'Make a calendar file for any event with time zone, reminder and repeat. It opens in Apple, Google, Outlook and Thunderbird.',
+      de: 'Erstelle eine Kalenderdatei für jeden Termin mit Zeitzone, Erinnerung und Wiederholung. Sie öffnet sich in Apple, Google, Outlook und Thunderbird.',
+      ru: 'Файл календаря для любого события с часовым поясом, напоминанием и повтором. Открывается в Apple, Google, Outlook и Thunderbird.',
+    },
+  },
+  {
+    slug: 'regex',
+    cat: 'dev',
+    tags: 'regex regexp regular expression pattern match replace test',
+    icon: 'M10 4v8M6.5 6l7 4M13.5 6l-7 4M5 18h.01M10 18h9',
+    name: { en: 'Regex tester', de: 'Regex-Tester', ru: 'Тестер регулярных выражений' },
+    blurb: {
+      en: 'Try a regular expression on your text: highlighted matches, capture groups and a live replacement. A runaway pattern is stopped.',
+      de: 'Probiere einen regulären Ausdruck an deinem Text aus: markierte Treffer, Gruppen und eine Live-Ersetzung. Ein ausufernder Ausdruck wird gestoppt.',
+      ru: 'Проверка регулярного выражения на вашем тексте: подсветка совпадений, группы и замена на лету. Зависший шаблон останавливается.',
+    },
+  },
+  {
+    slug: 'encode',
+    cat: 'dev',
+    tags: 'base64 url encode decode hex html entities jwt token percent escape',
+    icon: 'M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 6l-3 12',
+    name: { en: 'Base64, URL and JWT decoder', de: 'Base64-, URL- und JWT-Dekoder', ru: 'Base64, URL и JWT' },
+    blurb: {
+      en: 'Encode and decode Base64, URLs, hex and HTML entities, and read what is inside a JWT.',
+      de: 'Base64, URLs, Hex und HTML-Entities kodieren und dekodieren und lesen, was in einem JWT steckt.',
+      ru: 'Кодирование и декодирование Base64, URL, hex и HTML-сущностей, а также просмотр содержимого JWT.',
+    },
+  },
+  {
+    slug: 'color',
+    cat: 'dev',
+    tags: 'color colour hex rgb hsl oklch contrast wcag accessibility converter picker',
+    icon: 'M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11zM9.5 14.5a2.5 2.5 0 0 0 2.5 2.5',
+    name: { en: 'Colour converter and contrast checker', de: 'Farb-Umrechner und Kontrast-Prüfer', ru: 'Конвертер цветов и проверка контраста' },
+    blurb: {
+      en: 'Convert between HEX, RGB, HSL and OKLCH and check the WCAG contrast of text on a background.',
+      de: 'Zwischen HEX, RGB, HSL und OKLCH umrechnen und den WCAG-Kontrast von Text auf einem Hintergrund prüfen.',
+      ru: 'Перевод между HEX, RGB, HSL и OKLCH и проверка контраста текста на фоне по WCAG.',
+    },
+  },
+  {
+    slug: 'cron',
+    cat: 'dev',
+    tags: 'cron crontab schedule job next run expression',
+    icon: 'M3.5 12a8.5 8.5 0 1 0 2.5-6M3 4v4h4M12 8v4l3 2',
+    name: { en: 'Cron expression explainer', de: 'Cron-Ausdruck erklärt', ru: 'Разбор выражений cron' },
+    blurb: {
+      en: 'Paste a cron expression, see what each field means and when it will run next.',
+      de: 'Füge einen Cron-Ausdruck ein und sieh, was jedes Feld bedeutet und wann er als Nächstes läuft.',
+      ru: 'Вставьте выражение cron: что означает каждое поле и когда оно сработает в следующий раз.',
+    },
+  },
+  {
+    slug: 'textkit',
+    cat: 'text',
+    tags: 'word count characters case converter slug sort lines duplicates uppercase lowercase camel snake',
+    icon: 'M4 18l4.5-12L13 18M5.8 14h5.4M15 18l3-8 3 8M16 16h4',
+    name: { en: 'Text counter and cleaner', de: 'Textzähler und Aufräumer', ru: 'Счётчик и очистка текста' },
+    blurb: {
+      en: 'Count words and characters, change case, make slugs, sort lines and remove duplicates.',
+      de: 'Wörter und Zeichen zählen, Groß-/Kleinschreibung ändern, Slugs bauen, Zeilen sortieren und Duplikate entfernen.',
+      ru: 'Подсчёт слов и символов, смена регистра, slug, сортировка строк и удаление дубликатов.',
+    },
+  },
+  {
+    slug: 'ffmpeg',
+    cat: 'media',
+    tags: 'ffmpeg video compress trim cut gif audio extract mp3 nvenc h264 h265 av1 command',
+    icon: 'M4 8h16v11H4zM4 8l3-4h4L8 8M11 8l3-4h4l-3 4M10 12.5v3l3-1.5z',
+    name: { en: 'ffmpeg command builder', de: 'ffmpeg-Befehlsgenerator', ru: 'Конструктор команд ffmpeg' },
+    blurb: {
+      en: 'Build the ffmpeg command for compressing to a size, cutting, extracting audio or making a GIF, with NVENC for NVIDIA cards.',
+      de: 'Baue den ffmpeg-Befehl zum Komprimieren auf eine Zielgröße, Schneiden, Audio-Extrahieren oder für ein GIF, mit NVENC für NVIDIA-Karten.',
+      ru: 'Команда ffmpeg для сжатия до нужного размера, нарезки, извлечения звука или GIF, с NVENC для карт NVIDIA.',
     },
   },
 ];

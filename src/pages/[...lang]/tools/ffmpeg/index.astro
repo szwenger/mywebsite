@@ -1,0 +1,70 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { task: 'What do you want to do?', tasks: { compress: 'Compress a video', size: 'Shrink to a target file size', trim: 'Cut a section', audio: 'Extract the audio', gif: 'Make a GIF' }, input: 'Input file name', encoder: 'Video encoder', gpu: 'NVIDIA GPU', quality: 'Quality (lower = better and bigger)', height: 'Height', original: 'Original', fps: 'Frame rate', start: 'Start (e.g. 00:01:30 or 90)', end: 'End', exact: 'Exact cut (re-encodes, slower). Without it the cut snaps to the nearest keyframe and nothing is re-encoded.', afmt: 'Audio format', kbps: 'Audio bitrate (kbit/s)', gw: 'Width (px)', gfps: 'Frames per second', mb: 'Target size (MiB)', dur: 'Video length (mm:ss or seconds)', command: 'Command', copy: 'Copy', tooSmall: 'That size is too small for this length: nothing would be left for the video. Raise the size or shorten the clip.', how: 'Run it in the folder that holds the file. Needs ffmpeg installed. To read a length from a file: ffprobe -v error -show_entries format=duration -of csv=p=0 FILE', note: 'The command is built in your browser. The video never leaves your computer, and this page never touches it.' },
+  de: { task: 'Was möchtest du tun?', tasks: { compress: 'Video komprimieren', size: 'Auf eine Zieldateigröße verkleinern', trim: 'Einen Abschnitt ausschneiden', audio: 'Audio extrahieren', gif: 'GIF erstellen' }, input: 'Name der Eingabedatei', encoder: 'Video-Encoder', gpu: 'NVIDIA-GPU', quality: 'Qualität (niedriger = besser und größer)', height: 'Höhe', original: 'Original', fps: 'Bildrate', start: 'Start (z. B. 00:01:30 oder 90)', end: 'Ende', exact: 'Exakter Schnitt (neu kodiert, langsamer). Ohne springt der Schnitt zum nächsten Keyframe, und nichts wird neu kodiert.', afmt: 'Audioformat', kbps: 'Audio-Bitrate (kbit/s)', gw: 'Breite (px)', gfps: 'Bilder pro Sekunde', mb: 'Zielgröße (MiB)', dur: 'Videolänge (mm:ss oder Sekunden)', command: 'Befehl', copy: 'Kopieren', tooSmall: 'Diese Größe ist für diese Länge zu klein: Für das Video bliebe nichts übrig. Erhöhe die Größe oder kürze den Clip.', how: 'Führe ihn im Ordner mit der Datei aus. ffmpeg muss installiert sein. Länge aus einer Datei lesen: ffprobe -v error -show_entries format=duration -of csv=p=0 DATEI', note: 'Der Befehl entsteht in deinem Browser. Das Video verlässt deinen Rechner nie, diese Seite berührt es gar nicht.' },
+  ru: { task: 'Что нужно сделать?', tasks: { compress: 'Сжать видео', size: 'Уменьшить до нужного размера файла', trim: 'Вырезать фрагмент', audio: 'Извлечь звук', gif: 'Сделать GIF' }, input: 'Имя входного файла', encoder: 'Видеокодек', gpu: 'GPU NVIDIA', quality: 'Качество (меньше = лучше и больше)', height: 'Высота', original: 'Как есть', fps: 'Частота кадров', start: 'Начало (например 00:01:30 или 90)', end: 'Конец', exact: 'Точная резка (с перекодированием, медленнее). Без неё разрез идёт по ближайшему ключевому кадру и ничего не перекодируется.', afmt: 'Формат звука', kbps: 'Битрейт звука (кбит/с)', gw: 'Ширина (px)', gfps: 'Кадров в секунду', mb: 'Нужный размер (МиБ)', dur: 'Длина видео (мм:сс или секунды)', command: 'Команда', copy: 'Копировать', tooSmall: 'Для такой длины этот размер слишком мал: на видео ничего не останется. Увеличьте размер или сократите ролик.', how: 'Запустите её в папке с файлом. Нужен установленный ffmpeg. Длину файла можно узнать так: ffprobe -v error -show_entries format=duration -of csv=p=0 ФАЙЛ', note: 'Команда строится в вашем браузере. Видео не покидает ваш компьютер, эта страница его не трогает.' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="ffmpeg">
+  <div class="tl two" data-ff data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <label>{s.task}<select name="task">{Object.entries(s.tasks).map(([k, v]) => <option value={k}>{v}</option>)}</select></label>
+      <label>{s.input}<input name="input" value="video.mp4" spellcheck="false" autocomplete="off" /></label>
+      <div class="stack" data-for="compress size trim">
+        <label>{s.encoder}
+          <select name="encoder">
+            <option value="libx264">H.264 (libx264)</option><option value="libx265">H.265 (libx265)</option><option value="libsvtav1">AV1 (SVT-AV1)</option>
+            <option value="h264_nvenc">H.264 · {s.gpu} (NVENC)</option><option value="hevc_nvenc">H.265 · {s.gpu} (NVENC)</option><option value="av1_nvenc">AV1 · {s.gpu} (NVENC)</option>
+          </select>
+        </label>
+      </div>
+      <div class="stack" data-for="compress trim">
+        <label data-for="compress trim"><span>{s.quality}: <output name="qOut">23</output></span><input name="quality" type="range" min="14" max="38" value="23" /></label>
+      </div>
+      <div class="row" data-for="compress trim">
+        <label>{s.height}<select name="height"><option value="0">{s.original}</option><option value="2160">2160p</option><option value="1440">1440p</option><option value="1080">1080p</option><option value="720">720p</option><option value="480">480p</option></select></label>
+        <label>{s.fps}<select name="fps"><option value="0">{s.original}</option><option value="60">60</option><option value="30">30</option><option value="24">24</option></select></label>
+      </div>
+      <div class="row" data-for="trim gif">
+        <label>{s.start}<input name="start" placeholder="00:00:00" spellcheck="false" /></label>
+        <label>{s.end}<input name="end" placeholder="00:00:30" spellcheck="false" /></label>
+      </div>
+      <label class="check" data-for="trim"><input type="checkbox" name="exact" /> {s.exact}</label>
+      <div class="row" data-for="size">
+        <label>{s.mb}<input name="sizeMB" type="number" min="1" step="1" value="10" /></label>
+        <label>{s.dur}<input name="dur" value="1:00" spellcheck="false" /></label>
+      </div>
+      <div class="row" data-for="audio">
+        <label>{s.afmt}<select name="audioFmt"><option value="mp3">MP3</option><option value="aac">AAC (.m4a)</option><option value="opus">Opus</option><option value="flac">FLAC</option></select></label>
+        <label>{s.kbps}<input name="audioKbps" type="number" min="32" max="512" step="32" value="192" /></label>
+      </div>
+      <div class="row" data-for="gif">
+        <label>{s.gw}<input name="gifWidth" type="number" min="64" max="1920" step="16" value="480" /></label>
+        <label>{s.gfps}<input name="gifFps" type="number" min="1" max="30" value="12" /></label>
+      </div>
+    </div>
+    <div class="card pane" aria-live="polite">
+      <h2 class="sub">{s.command}</h2>
+      <pre class="cmd" data-out></pre>
+      <p class="note bad" data-warn role="alert" hidden>{s.tooSmall}</p>
+      <div class="actions"><button type="button" class="btn" data-copy>{s.copy}</button></div>
+      <p class="meta">{s.how}</p>
+      <p class="meta">{s.note}</p>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/ffmpeg/ffmpeg.ts';
+</script>
+<style>
+  .sub { margin: 0; font-family: var(--font); font-size: .95rem; font-weight: 600; letter-spacing: 0; }
+  .stack { display: grid; gap: 14px; }
+  .cmd { word-break: break-all; user-select: all; }
+</style>

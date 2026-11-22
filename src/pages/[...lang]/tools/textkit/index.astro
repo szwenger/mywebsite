@@ -1,0 +1,50 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { text: 'Your text', words: 'Words', chars: 'Characters', noSpaces: 'Without spaces', lines: 'Lines', paragraphs: 'Paragraphs', sentences: 'Sentences', bytes: 'Bytes (UTF-8)', read: 'Reading time', min: 'min', undo: 'Undo', copy: 'Copy', gCase: 'Change case', gLines: 'Lines', gOther: 'Other',
+    t: { upper: 'UPPER CASE', lower: 'lower case', title: 'Title Case', sentence: 'Sentence case', camel: 'camelCase', pascal: 'PascalCase', snake: 'snake_case', kebab: 'kebab-case', constant: 'CONSTANT_CASE', sortAsc: 'Sort A–Z', sortDesc: 'Sort Z–A', unique: 'Remove duplicates', reverse: 'Reverse order', trim: 'Trim each line', noEmpty: 'Remove empty lines', slug: 'Make a URL slug', oneSpace: 'Collapse spaces' }, note: 'Everything stays in your browser.' },
+  de: { text: 'Dein Text', words: 'Wörter', chars: 'Zeichen', noSpaces: 'Ohne Leerzeichen', lines: 'Zeilen', paragraphs: 'Absätze', sentences: 'Sätze', bytes: 'Bytes (UTF-8)', read: 'Lesezeit', min: 'Min.', undo: 'Rückgängig', copy: 'Kopieren', gCase: 'Schreibweise ändern', gLines: 'Zeilen', gOther: 'Sonstiges',
+    t: { upper: 'GROSSBUCHSTABEN', lower: 'kleinbuchstaben', title: 'Titelschreibweise', sentence: 'Satzanfang groß', camel: 'camelCase', pascal: 'PascalCase', snake: 'snake_case', kebab: 'kebab-case', constant: 'CONSTANT_CASE', sortAsc: 'Sortieren A–Z', sortDesc: 'Sortieren Z–A', unique: 'Duplikate entfernen', reverse: 'Reihenfolge umkehren', trim: 'Zeilen trimmen', noEmpty: 'Leere Zeilen entfernen', slug: 'URL-Slug erzeugen', oneSpace: 'Leerzeichen zusammenfassen' }, note: 'Alles bleibt in deinem Browser.' },
+  ru: { text: 'Ваш текст', words: 'Слов', chars: 'Символов', noSpaces: 'Без пробелов', lines: 'Строк', paragraphs: 'Абзацев', sentences: 'Предложений', bytes: 'Байт (UTF-8)', read: 'Время чтения', min: 'мин.', undo: 'Отменить', copy: 'Копировать', gCase: 'Регистр', gLines: 'Строки', gOther: 'Прочее',
+    t: { upper: 'ВЕРХНИЙ РЕГИСТР', lower: 'нижний регистр', title: 'Каждое Слово С Заглавной', sentence: 'Как в предложении', camel: 'camelCase', pascal: 'PascalCase', snake: 'snake_case', kebab: 'kebab-case', constant: 'CONSTANT_CASE', sortAsc: 'Сортировать А–Я', sortDesc: 'Сортировать Я–А', unique: 'Убрать дубликаты', reverse: 'Обратный порядок', trim: 'Обрезать пробелы', noEmpty: 'Убрать пустые строки', slug: 'Сделать slug для URL', oneSpace: 'Сжать пробелы' }, note: 'Всё остаётся в вашем браузере.' },
+}[lang];
+const groups: [string, string[]][] = [[s.gCase, ['upper', 'lower', 'title', 'sentence', 'camel', 'pascal', 'snake', 'kebab', 'constant']], [s.gLines, ['sortAsc', 'sortDesc', 'unique', 'reverse', 'trim', 'noEmpty']], [s.gOther, ['slug', 'oneSpace']]];
+---
+<ToolLayout lang={lang} slug="textkit">
+  <div class="tl" data-textkit data-lang={lang} data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <label>{s.text}<textarea name="text" spellcheck="false" rows="12"></textarea></label>
+      <dl class="stats" data-stats>
+        {[['words', s.words], ['chars', s.chars], ['noSpaces', s.noSpaces], ['lines', s.lines], ['paragraphs', s.paragraphs], ['sentences', s.sentences], ['bytes', s.bytes], ['readMin', s.read]].map(([k, l]) => <div><dt>{l}</dt><dd data-stat={k}>0</dd></div>)}
+      </dl>
+    </div>
+    <div class="card pane">
+      {groups.map(([title, keys]) => (
+        <div class="grp">
+          <p class="meta">{title}</p>
+          <div class="actions">{keys.map((k) => <button type="button" class="btn alt chip" data-t={k}>{s.t[k as keyof typeof s.t]}</button>)}</div>
+        </div>
+      ))}
+      <div class="actions"><button type="button" class="btn alt" data-undo disabled>{s.undo}</button><button type="button" class="btn alt" data-copy>{s.copy}</button></div>
+      <p class="meta">{s.note}</p>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/textkit/textkit.ts';
+</script>
+<style>
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 0; }
+  .stats div { padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); }
+  .stats dt { color: var(--muted); font-size: .78rem; }
+  .stats dd { margin: 2px 0 0; font: 600 1.25rem/1.2 var(--display); letter-spacing: -.02em; }
+  .grp { display: grid; gap: 8px; }
+  .grp .meta { margin: 0; }
+  .chip { padding: 8px 14px; font-size: .85rem; font-weight: 500; }
+</style>

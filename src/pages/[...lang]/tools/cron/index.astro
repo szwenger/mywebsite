@@ -1,0 +1,54 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { expr: 'Cron expression', hint: 'minute hour day-of-month month day-of-week', presets: 'Examples', min: 'Minute', hour: 'Hour', dom: 'Day of month', mon: 'Month', dow: 'Day of week', every: 'every', fields: 'What each field means', next: 'Next runs', local: 'My time zone', utc: 'UTC', bad: 'Not a valid cron expression ({e}). Five fields are expected: minute, hour, day of month, month, day of week.', none: 'No run in the next eight years.', both: 'Day of month and day of week are both set: the job runs when either one matches.', note: 'Standard five-field cron. Names (MON, JAN) and @daily-style shortcuts work.',
+    p: ['Every minute', 'Every 15 minutes', 'Every hour', 'Every day at 09:00', 'Weekdays at 08:30', 'Mondays at 06:00', 'First of the month', 'Every Sunday at midnight'] },
+  de: { expr: 'Cron-Ausdruck', hint: 'Minute Stunde Tag-des-Monats Monat Wochentag', presets: 'Beispiele', min: 'Minute', hour: 'Stunde', dom: 'Tag des Monats', mon: 'Monat', dow: 'Wochentag', every: 'jede', fields: 'Was jedes Feld bedeutet', next: 'Nächste Ausführungen', local: 'Meine Zeitzone', utc: 'UTC', bad: 'Kein gültiger Cron-Ausdruck ({e}). Erwartet werden fünf Felder: Minute, Stunde, Tag des Monats, Monat, Wochentag.', none: 'Keine Ausführung in den nächsten acht Jahren.', both: 'Tag des Monats und Wochentag sind beide gesetzt: Der Job läuft, wenn eines von beiden passt.', note: 'Standard-Cron mit fünf Feldern. Namen (MON, JAN) und Kürzel wie @daily funktionieren.',
+    p: ['Jede Minute', 'Alle 15 Minuten', 'Jede Stunde', 'Täglich um 09:00', 'Werktags um 08:30', 'Montags um 06:00', 'Am Ersten des Monats', 'Jeden Sonntag um Mitternacht'] },
+  ru: { expr: 'Выражение cron', hint: 'минута час день-месяца месяц день-недели', presets: 'Примеры', min: 'Минута', hour: 'Час', dom: 'День месяца', mon: 'Месяц', dow: 'День недели', every: 'каждый', fields: 'Что значит каждое поле', next: 'Ближайшие запуски', local: 'Мой часовой пояс', utc: 'UTC', bad: 'Некорректное выражение cron ({e}). Нужны пять полей: минута, час, день месяца, месяц, день недели.', none: 'В ближайшие восемь лет запусков нет.', both: 'Заданы и день месяца, и день недели: задача запускается, если совпадает любой из них.', note: 'Стандартный cron из пяти полей. Работают имена (MON, JAN) и сокращения вроде @daily.',
+    p: ['Каждую минуту', 'Каждые 15 минут', 'Каждый час', 'Каждый день в 09:00', 'По будням в 08:30', 'По понедельникам в 06:00', 'Первого числа', 'Каждое воскресенье в полночь'] },
+}[lang];
+const presets: [string, string][] = ['* * * * *', '*/15 * * * *', '0 * * * *', '0 9 * * *', '30 8 * * 1-5', '0 6 * * 1', '0 0 1 * *', '0 0 * * 0'].map((e, i) => [e, s.p[i]]);
+---
+<ToolLayout lang={lang} slug="cron">
+  <div class="tl two" data-cron data-lang={lang} data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <label>{s.expr}<input name="expr" class="mono big" value="*/15 9-17 * * 1-5" spellcheck="false" autocomplete="off" /></label>
+      <p class="meta hint mono">{s.hint}</p>
+      <div class="row" role="group">
+        <label class="check"><input type="radio" name="tz" value="local" checked /> {s.local}</label>
+        <label class="check"><input type="radio" name="tz" value="utc" /> {s.utc}</label>
+      </div>
+      <p class="meta">{s.presets}</p>
+      <div class="actions">{presets.map(([e, l]) => <button type="button" class="btn alt chip" data-preset={e} title={e}>{l}</button>)}</div>
+      <p class="meta">{s.note}</p>
+    </div>
+    <div class="card pane" aria-live="polite">
+      <p class="note bad" data-error role="alert" hidden></p>
+      <div data-ok>
+        <h2 class="sub">{s.fields}</h2>
+        <table><tbody data-fields></tbody></table>
+        <p class="note" data-both hidden>{s.both}</p>
+        <h2 class="sub">{s.next}</h2>
+        <ol class="runs mono" data-runs></ol>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/cron/cron.ts';
+</script>
+<style>
+  .big { font-size: 1.1rem; }
+  .hint { margin: -6px 0 0; }
+  .sub { margin: 0 0 6px; font-family: var(--font); font-size: .95rem; font-weight: 600; letter-spacing: 0; }
+  .chip { padding: 7px 12px; font-size: .8rem; font-weight: 500; }
+  .runs { margin: 0; padding-left: 1.6em; display: grid; gap: 3px; font-size: .88rem; }
+  [data-ok] { display: grid; gap: 14px; }
+</style>

@@ -1,0 +1,58 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { mode: 'Format', enc: 'Encode', dec: 'Decode', input: 'Input', output: 'Output', copy: 'Copy', use: 'Use output as input', jwtNote: 'A JWT is only decoded here. The signature is not checked, so never treat the content as trusted.', header: 'Header', payload: 'Payload', times: 'Times (UTC)', claims: { exp: 'expires', nbf: 'not before', iat: 'issued' },
+    err: { base64: 'This is not valid Base64.', utf8: 'The data is valid, but it is not UTF-8 text.', url: 'This is not valid percent-encoding.', hex: 'This is not valid hex (pairs of 0-9 and a-f).', jwt: 'This is not a JWT: expected two or three parts separated by dots, each Base64URL-encoded JSON.' }, note: 'Text is handled as UTF-8, everything stays in your browser.' },
+  de: { mode: 'Format', enc: 'Kodieren', dec: 'Dekodieren', input: 'Eingabe', output: 'Ausgabe', copy: 'Kopieren', use: 'Ausgabe als Eingabe nutzen', jwtNote: 'Ein JWT wird hier nur dekodiert. Die Signatur wird nicht geprüft, behandle den Inhalt also nie als vertrauenswürdig.', header: 'Header', payload: 'Payload', times: 'Zeiten (UTC)', claims: { exp: 'läuft ab', nbf: 'gültig ab', iat: 'ausgestellt' },
+    err: { base64: 'Das ist kein gültiges Base64.', utf8: 'Die Daten sind gültig, aber kein UTF-8-Text.', url: 'Das ist keine gültige Prozent-Kodierung.', hex: 'Das ist kein gültiges Hex (Paare aus 0-9 und a-f).', jwt: 'Das ist kein JWT: erwartet werden zwei oder drei durch Punkte getrennte Teile, jeweils Base64URL-kodiertes JSON.' }, note: 'Text wird als UTF-8 behandelt, alles bleibt in deinem Browser.' },
+  ru: { mode: 'Формат', enc: 'Кодировать', dec: 'Декодировать', input: 'Ввод', output: 'Результат', copy: 'Копировать', use: 'Результат как ввод', jwtNote: 'JWT здесь только декодируется. Подпись не проверяется, поэтому не считайте содержимое доверенным.', header: 'Заголовок', payload: 'Данные', times: 'Время (UTC)', claims: { exp: 'истекает', nbf: 'не раньше', iat: 'выдан' },
+    err: { base64: 'Это не корректный Base64.', utf8: 'Данные корректны, но это не текст UTF-8.', url: 'Это не корректное процентное кодирование.', hex: 'Это не корректный hex (пары символов 0-9 и a-f).', jwt: 'Это не JWT: ожидаются две или три части через точку, каждая в виде JSON в Base64URL.' }, note: 'Текст обрабатывается как UTF-8, всё остаётся в вашем браузере.' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="encode">
+  <div class="tl two" data-encode data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <div class="row">
+        <label>{s.mode}
+          <select name="mode">
+            <option value="base64">Base64</option><option value="base64url">Base64 URL</option><option value="url">URL (percent)</option>
+            <option value="hex">Hex</option><option value="html">HTML entities</option><option value="jwt">JWT</option>
+          </select>
+        </label>
+        <div class="row" data-dir role="group">
+          <label class="check"><input type="radio" name="dir" value="enc" checked /> {s.enc}</label>
+          <label class="check"><input type="radio" name="dir" value="dec" /> {s.dec}</label>
+        </div>
+      </div>
+      <label>{s.input}<textarea name="input" spellcheck="false" rows="12"></textarea></label>
+    </div>
+    <div class="card pane" aria-live="polite">
+      <p class="note bad" data-error role="alert" hidden></p>
+      <div data-plain>
+        <label>{s.output}<textarea name="out" spellcheck="false" rows="12" readonly></textarea></label>
+        <div class="actions pad"><button type="button" class="btn alt" data-copy>{s.copy}</button><button type="button" class="btn alt" data-use>{s.use}</button></div>
+      </div>
+      <div data-jwt hidden>
+        <p class="note">{s.jwtNote}</p>
+        <h2 class="sub">{s.header}</h2><pre data-jwt-header></pre>
+        <h2 class="sub">{s.payload}</h2><pre data-jwt-payload></pre>
+        <h2 class="sub" data-times-title>{s.times}</h2>
+        <table><tbody data-jwt-times></tbody></table>
+      </div>
+      <p class="meta">{s.note}</p>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/encode/encode.ts';
+</script>
+<style>
+  .sub { margin: 14px 0 6px; font-family: var(--font); font-size: .95rem; font-weight: 600; letter-spacing: 0; }
+  .pad { margin-top: 10px; }
+</style>

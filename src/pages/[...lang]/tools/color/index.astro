@@ -1,0 +1,56 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { fg: 'Text colour', bg: 'Background colour', swap: 'Swap', formats: 'Formats of the text colour', contrast: 'Contrast', bad: 'Not a colour. Try #6a78d1, rgb(106 120 209) or hsl(231 53% 62%).', sample: 'The quick brown fox', large: 'Large text (18 pt or bold 14 pt)', normal: 'Normal text', pass: 'Pass', fail: 'Fail', copy: 'Copy', note: 'WCAG 2 contrast. Transparency is ignored.' },
+  de: { fg: 'Textfarbe', bg: 'Hintergrundfarbe', swap: 'Tauschen', formats: 'Formate der Textfarbe', contrast: 'Kontrast', bad: 'Keine Farbe. Versuche #6a78d1, rgb(106 120 209) oder hsl(231 53% 62%).', sample: 'Franz jagt im komplett verwahrlosten Taxi', large: 'Großer Text (18 pt oder fett 14 pt)', normal: 'Normaler Text', pass: 'Bestanden', fail: 'Nicht bestanden', copy: 'Kopieren', note: 'WCAG-2-Kontrast. Transparenz wird ignoriert.' },
+  ru: { fg: 'Цвет текста', bg: 'Цвет фона', swap: 'Поменять', formats: 'Форматы цвета текста', contrast: 'Контраст', bad: 'Это не цвет. Попробуйте #6a78d1, rgb(106 120 209) или hsl(231 53% 62%).', sample: 'Съешь же ещё этих мягких булок', large: 'Крупный текст (18 pt или полужирный 14 pt)', normal: 'Обычный текст', pass: 'Да', fail: 'Нет', copy: 'Копировать', note: 'Контраст по WCAG 2. Прозрачность не учитывается.' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="color">
+  <div class="tl two" data-color data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <div class="pick">
+        <label>{s.fg}<span class="in"><input name="fg" value="#6a78d1" spellcheck="false" autocomplete="off" /><input type="color" data-pick="fg" value="#6a78d1" aria-label={s.fg} /></span></label>
+        <button type="button" class="btn alt" data-swap>{s.swap}</button>
+        <label>{s.bg}<span class="in"><input name="bg" value="#0d0f14" spellcheck="false" autocomplete="off" /><input type="color" data-pick="bg" value="#0d0f14" aria-label={s.bg} /></span></label>
+      </div>
+      <p class="note bad" data-error role="alert" hidden>{s.bad}</p>
+      <h2 class="sub">{s.formats}</h2>
+      <table><tbody data-formats></tbody></table>
+    </div>
+    <div class="card pane" aria-live="polite">
+      <div class="sample" data-sample><b>{s.sample}</b><span>{s.sample}</span></div>
+      <p class="out-big" data-ratio></p>
+      <table>
+        <thead><tr><th></th><th>{s.normal}</th><th>{s.large}</th></tr></thead>
+        <tbody>
+          <tr><th>AA</th><td data-g="aaNormal"></td><td data-g="aaLarge"></td></tr>
+          <tr><th>AAA</th><td data-g="aaaNormal"></td><td data-g="aaaLarge"></td></tr>
+        </tbody>
+      </table>
+      <p class="meta">{s.note}</p>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/color/color.ts';
+</script>
+<style>
+  .sub { margin: 4px 0 0; font-family: var(--font); font-size: .95rem; font-weight: 600; letter-spacing: 0; }
+  .pick { display: grid; gap: 12px; }
+  .in { display: flex; gap: 8px; }
+  .in input[type='color'] { flex: none; width: 46px; height: 40px; padding: 2px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); cursor: pointer; }
+  .pick .btn { justify-self: start; }
+  .sample { display: grid; gap: 2px; padding: 22px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+  .sample b { font-size: 1.5rem; line-height: 1.2; }
+  .ok { color: #4fae7b; font-weight: 600; }
+  .no { color: #d65a5a; font-weight: 600; }
+  button.val { padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: copy; text-align: left; }
+  button.val:hover { color: var(--accent-ink); }
+</style>

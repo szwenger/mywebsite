@@ -1,0 +1,47 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { title: 'Title', allDay: 'All-day event', from: 'Starts', to: 'Ends', zone: 'Time zone', place: 'Location', desc: 'Description', url: 'Link', remind: 'Reminder', none: 'None', atStart: 'At the start', min: '{n} minutes before', hour: '{n} hour before', hours: '{n} hours before', day: '1 day before', repeat: 'Repeat', once: 'Does not repeat', daily: 'Every day', weekly: 'Every week', monthly: 'Every month', yearly: 'Every year', save: 'Download .ics file', badEnd: 'The end is not after the start.', badStart: 'Enter a title and a start date.', ready: 'Open the file with your calendar app (Apple, Google, Outlook, Thunderbird) to add the event.', note: 'The file is created in your browser. Nothing is sent anywhere.' },
+  de: { title: 'Titel', allDay: 'Ganztägiger Termin', from: 'Beginn', to: 'Ende', zone: 'Zeitzone', place: 'Ort', desc: 'Beschreibung', url: 'Link', remind: 'Erinnerung', none: 'Keine', atStart: 'Zum Beginn', min: '{n} Minuten vorher', hour: '{n} Stunde vorher', hours: '{n} Stunden vorher', day: '1 Tag vorher', repeat: 'Wiederholung', once: 'Keine Wiederholung', daily: 'Täglich', weekly: 'Wöchentlich', monthly: 'Monatlich', yearly: 'Jährlich', save: '.ics-Datei herunterladen', badEnd: 'Das Ende liegt nicht nach dem Beginn.', badStart: 'Gib einen Titel und ein Startdatum ein.', ready: 'Öffne die Datei mit deiner Kalender-App (Apple, Google, Outlook, Thunderbird), um den Termin hinzuzufügen.', note: 'Die Datei entsteht in deinem Browser. Nichts wird irgendwohin gesendet.' },
+  ru: { title: 'Название', allDay: 'Событие на весь день', from: 'Начало', to: 'Конец', zone: 'Часовой пояс', place: 'Место', desc: 'Описание', url: 'Ссылка', remind: 'Напоминание', none: 'Нет', atStart: 'В момент начала', min: 'За {n} мин.', hour: 'За {n} час', hours: 'За {n} ч.', day: 'За 1 день', repeat: 'Повтор', once: 'Не повторяется', daily: 'Каждый день', weekly: 'Каждую неделю', monthly: 'Каждый месяц', yearly: 'Каждый год', save: 'Скачать файл .ics', badEnd: 'Конец не позже начала.', badStart: 'Введите название и дату начала.', ready: 'Откройте файл в приложении календаря (Apple, Google, Outlook, Thunderbird), чтобы добавить событие.', note: 'Файл создаётся в вашем браузере. Ничего никуда не отправляется.' },
+}[lang];
+const reminders = [[-1, s.none], [0, s.atStart], [10, s.min.replace('{n}', '10')], [30, s.min.replace('{n}', '30')], [60, s.hour.replace('{n}', '1')], [180, s.hours.replace('{n}', '3')], [1440, s.day]] as const;
+---
+<ToolLayout lang={lang} slug="ics">
+  <div class="tl two" data-ics data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <label>{s.title}<input name="title" maxlength="200" autocomplete="off" /></label>
+      <label class="check"><input type="checkbox" name="allday" /> {s.allDay}</label>
+      <div class="row">
+        <label>{s.from}<input name="sd" type="date" /></label>
+        <label data-timed>&nbsp;<input name="st" type="time" value="19:00" /></label>
+      </div>
+      <div class="row">
+        <label>{s.to}<input name="ed" type="date" /></label>
+        <label data-timed>&nbsp;<input name="et" type="time" value="20:00" /></label>
+      </div>
+      <label data-timed>{s.zone}<select name="zone"></select></label>
+    </div>
+    <div class="card pane">
+      <label>{s.place}<input name="place" maxlength="200" autocomplete="off" /></label>
+      <label>{s.desc}<textarea name="desc" rows="4" spellcheck="true"></textarea></label>
+      <label>{s.url}<input name="url" type="url" placeholder="https://" autocomplete="off" /></label>
+      <div class="row">
+        <label>{s.remind}<select name="remind">{reminders.map(([v, l]) => <option value={v}>{l}</option>)}</select></label>
+        <label>{s.repeat}<select name="repeat"><option value="">{s.once}</option><option value="DAILY">{s.daily}</option><option value="WEEKLY">{s.weekly}</option><option value="MONTHLY">{s.monthly}</option><option value="YEARLY">{s.yearly}</option></select></label>
+      </div>
+      <p class="note" data-status role="status" hidden></p>
+      <div class="actions"><button type="button" class="btn" data-save>{s.save}</button></div>
+      <p class="meta">{s.note}</p>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/ics/ics.ts';
+</script>

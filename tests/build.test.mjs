@@ -495,7 +495,7 @@ test('post images become figures that link to the full image, and a lightbox dia
 // ---- Tool suite: every registered tool ships in every language, listed once on the overview ----
 test('every tool in tools.ts has a page per language, a title, and one card on its overview', async () => {
   const { tools, categories } = await import('../src/data/tools.ts');
-  assert.ok(tools.length >= 14);
+  assert.ok(tools.length >= 22);
   for (const [lang, f] of Object.entries(PAGES)) {
     const dir = f.replace(/index\.html$/, '');
     const overview = read(`${dir}tools/index.html`);
