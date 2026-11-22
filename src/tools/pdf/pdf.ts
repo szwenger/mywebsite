@@ -7,6 +7,7 @@ import { sortable } from './sortable';
 import { unlock } from './crypt';
 import { initPanels } from './panels';
 import { initEditor } from './editor';
+import { initViewer } from './viewer';
 
 const icon = (d: string) => `<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const ICONS = {
@@ -41,6 +42,8 @@ export interface Ctx {
   pdf(): Promise<PdfDoc>;
   /** Called after every change of the document or the page count. */
   onChange(fn: () => void): void;
+  /** Opens the full-screen viewer; `load` draws the pages large. */
+  view(title: string, load: () => Promise<HTMLCanvasElement[]>): void;
   /** Called when a tab is opened. */
   onTab(fn: (id: string) => void): void;
 }
@@ -122,33 +125,50 @@ function init(root: HTMLElement) {
     observe(token);
     stats();
     listeners.forEach((f) => f());
-    stripGen = -1;
+    stripKey = '';
     void strip();
   }
 
-  // ---- the result strip: a small row of the current pages, shown under every tab but Organize ----
-  let stripGen = -1;
+  // ---- the result strip: every page as a small picture, 100 at a time, shown under every tab but Organize ----
+  const BATCH = 100;
+  let stripKey = '';
+  let stripPage = 0;
   let tabId = 'organize';
   async function strip() {
     const box = q('[data-strip]');
     box.hidden = !doc || tabId === 'organize';
-    if (box.hidden || stripGen === gen) return;
-    const token = stripGen = gen;
+    if (box.hidden) return;
+    const batches = Math.max(1, Math.ceil(pageCount / BATCH));
+    stripPage = Math.min(stripPage, batches - 1);
+    const key = `${gen}:${stripPage}`;
+    if (key === stripKey) return;
+    stripKey = key;
+    const from = stripPage * BATCH, to = Math.min(pageCount, from + BATCH);
     const row = q('[data-striprow]');
     row.replaceChildren();
     q('[data-striptitle]').textContent = s.stripTitle.replace('{n}', String(pageCount));
-    const shown = Math.min(pageCount, 40);
-    for (let i = 0; i < shown; i++) {
+    const nav = q('[data-stripnav]');
+    nav.hidden = batches < 2;
+    q('[data-striprange]').textContent = s.stripRange.replace('{a}', String(from + 1)).replace('{b}', String(to));
+    q<HTMLButtonElement>('[data-stripprev]').disabled = stripPage === 0;
+    q<HTMLButtonElement>('[data-stripnext]').disabled = stripPage >= batches - 1;
+    for (let i = from; i < to; i++) {
       try {
         const page = await viewer!.getPage(i + 1);
         const canvas = await renderPage(page, 72 * (96 / page.getViewport({ scale: 1 }).height));
-        if (token !== stripGen || token !== gen) return;
-        canvas.title = `${s.page} ${i + 1}`;
-        row.append(canvas);
+        if (key !== stripKey) return;
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'pzoom';
+        b.title = `${s.enlarge}: ${s.page} ${i + 1}`;
+        b.addEventListener('click', () => view(`${s.page} ${i + 1}`, async () => { const pg = await viewer!.getPage(i + 1); return [await renderPage(pg, (72 * 1600) / pg.getViewport({ scale: 1 }).width)]; }));
+        b.append(canvas, Object.assign(document.createElement('span'), { className: 'pn', textContent: String(i + 1) }));
+        row.append(b);
       } catch { return; }
     }
-    if (pageCount > shown) row.append(Object.assign(document.createElement('span'), { className: 'meta', textContent: s.stripMore.replace('{n}', String(pageCount - shown)) }));
   }
+  q('[data-stripprev]').addEventListener('click', () => { stripPage--; void strip(); });
+  q('[data-stripnext]').addEventListener('click', () => { stripPage++; void strip(); });
 
   const clone = (c: HTMLCanvasElement) => { const n = document.createElement('canvas'); n.width = c.width; n.height = c.height; n.getContext('2d')!.drawImage(c, 0, 0); return n; };
 
@@ -361,12 +381,13 @@ function init(root: HTMLElement) {
   const setHash = (id: string) => { try { window.history.replaceState(null, '', `#${id}`); } catch { /* sandboxed frame */ } };
   tabs.forEach((b) => b.addEventListener('click', () => openTab(b.dataset.tab!, true)));
 
+  const view = initViewer(root, s);
   const ctx: Ctx = {
     s, root, q,
     doc: () => doc!, pageCount: () => pageCount, baseName: () => baseName, target, selected: () => [...sel].sort((a, b) => a - b),
     apply, run, error: showError, status: setStatus, progress, save, render: makeTextRenderer(),
     pdf: async () => viewer ?? (viewer = await openPdf(doc!)),
-    onChange: (f) => listeners.push(f), onTab: (f) => tabListeners.push(f),
+    view, onChange: (f) => listeners.push(f), onTab: (f) => tabListeners.push(f),
   };
   initPanels(ctx);
   initEditor(ctx);

@@ -209,7 +209,7 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
           <button type="button" class="btn alt sm" data-eclear>{s.eClear}</button>
           <span class="meta" data-ecount></span>
         </div>
-        <div class="stage" data-stage><div class="over" data-over></div></div>
+        <div class="stage" data-stage><div class="eover" data-over></div></div>
         <div class="actions"><button type="button" class="btn" data-do="apply" disabled>{s.apply}</button></div>
       </section>
 
@@ -343,10 +343,30 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
       </section>
 
       <div class="card strip" data-strip hidden>
-        <p class="meta" data-striptitle></p>
+        <div class="strip-head">
+          <p class="meta" data-striptitle></p>
+          <div class="strip-nav" data-stripnav hidden>
+            <button type="button" class="btn alt sm" data-stripprev aria-label={s.stripPrev}>‹</button>
+            <span class="meta" data-striprange></span>
+            <button type="button" class="btn alt sm" data-stripnext aria-label={s.stripNext}>›</button>
+          </div>
+        </div>
         <div class="strip-row" data-striprow></div>
       </div>
     </div>
+
+    <dialog class="pview" data-pview>
+      <div class="pv-bar">
+        <strong data-pvtitle></strong>
+        <span class="pv-hint">{s.zoomHint}</span>
+        <button type="button" class="btn alt sm" data-pvout aria-label={s.zoomOut}>−</button>
+        <span class="pv-pct" data-pvpct>100 %</span>
+        <button type="button" class="btn alt sm" data-pvin aria-label={s.zoomIn}>+</button>
+        <button type="button" class="btn alt sm" data-pvfit>{s.zoomFit}</button>
+        <button type="button" class="btn sm" data-pvclose>{s.closeView}</button>
+      </div>
+      <div class="pv-stage" data-pvstage tabindex="0"><div class="pv-pan" data-pvpan></div></div>
+    </dialog>
 
     <details class="card limits">
       <summary>{s.notPossibleTitle}</summary>
@@ -420,10 +440,31 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
   .pdf .prev canvas, .pdf .strip canvas { height: auto; max-width: 100%; background: #fff; border-radius: 2px; box-shadow: 0 1px 4px rgb(0 0 0 / .25); }
   .pdf .prev canvas { width: min(200px, 42vw); max-height: 260px; object-fit: contain; }
   .pdf .prev figcaption { font-size: .78rem; color: var(--muted); }
+  .pdf .pzoom { display: flex; gap: 6px; align-items: flex-start; padding: 0; border: 0; background: none; cursor: zoom-in; color: inherit; }
+  .pdf .pzoom:hover canvas, .pdf .pzoom:focus-visible canvas { outline: 2px solid var(--accent); }
+  .pdf .pview { width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 0; border: 0; background: rgb(5 6 10 / .96); color: #eceef5; }
+  .pdf .pview[open] { display: grid; grid-template-rows: auto 1fr; }
+  .pdf .pview::backdrop { background: transparent; }
+  .pdf .pv-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid #ffffff26; }
+  .pdf .pv-bar strong { margin-right: auto; }
+  .pdf .pv-hint { color: #aab0c4; font-size: .82rem; }
+  .pdf .pv-pct { min-width: 4.5ch; text-align: center; font-variant-numeric: tabular-nums; }
+  .pdf .pv-stage { position: relative; overflow: hidden; cursor: grab; touch-action: none; outline: none; user-select: none; -webkit-user-select: none; }
+  .pdf .pv-stage.drag { cursor: grabbing; }
+  .pdf .pv-pan { position: absolute; top: 0; left: 0; transform-origin: 0 0; display: flex; gap: 24px; align-items: flex-start; will-change: transform; }
+  .pdf .pv-pan canvas { flex: none; background: #fff; box-shadow: 0 4px 24px rgb(0 0 0 / .6); pointer-events: none; }
+  .pdf .pv-wait { margin: 40px; color: #aab0c4; }
+  body:has(dialog.pview[open]) { overflow: hidden; }
   .pdf .prev .arrow { color: var(--muted); font-size: 1.4rem; }
   .pdf .strip { display: grid; gap: 8px; padding: 12px; }
   .pdf .strip-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; align-items: flex-end; }
+  .pdf .strip .pzoom { flex: none; flex-direction: column; align-items: center; gap: 3px; }
   .pdf .strip canvas { width: auto; height: 96px; flex: none; }
+  .pdf .strip .pn { font-size: .7rem; color: var(--muted); }
+  .pdf .strip-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+  .pdf .strip-head p { margin: 0; }
+  .pdf .strip-nav { display: flex; align-items: center; gap: 8px; }
+  .pdf .strip-nav[hidden] { display: none !important; }
   .pdf .exh { display: flex; align-items: center; gap: 10px; }
   .pdf .ex { width: 64px; height: 40px; flex: none; fill: var(--surface-2); stroke: var(--muted); stroke-width: 1.5; }
   .pdf .ex .b { fill: color-mix(in srgb, var(--accent) 25%, transparent); stroke: var(--accent-strong); }
@@ -457,8 +498,8 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
   .pdf .sig canvas { width: 100%; height: auto; aspect-ratio: 600 / 220; background: #fff; border: 1px solid var(--line); border-radius: var(--radius-sm); touch-action: none; cursor: crosshair; }
   .pdf .stage { position: relative; justify-self: center; width: min(100%, 860px); background: var(--surface-2); border: 1px solid var(--line); border-radius: 4px; }
   .pdf .stage .epage { display: block; width: 100%; height: auto; background: #fff; }
-  .pdf .over { position: absolute; inset: 0; touch-action: none; cursor: crosshair; overflow: hidden; }
-  .pdf .over[data-tool='select'] { cursor: default; }
+  .pdf .eover { position: absolute; inset: 0; touch-action: none; cursor: crosshair; overflow: hidden; }
+  .pdf .eover[data-tool='select'] { cursor: default; }
   .pdf .eit { position: absolute; cursor: move; touch-action: none; }
   .pdf .eit.on { outline: 2px dashed var(--accent-strong); outline-offset: 2px; }
   .pdf .etext { white-space: pre; line-height: 1.1; transform: translateY(-82%); font-family: Helvetica, Arial, sans-serif; }
@@ -469,5 +510,5 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
   .pdf .epath svg { width: 100%; height: 100%; display: block; overflow: visible; }
   .pdf .grab { position: absolute; right: -7px; bottom: -7px; width: 14px; height: 14px; border-radius: 50%; background: var(--accent-strong); border: 2px solid #fff; cursor: nwse-resize; }
   .pdf .eit:not(.on) .grab { display: none; }
-  .pdf .stage .over { z-index: 1; }
+  .pdf .stage .eover { z-index: 1; }
 </style>

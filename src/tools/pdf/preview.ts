@@ -40,10 +40,14 @@ export function preview(c: Ctx, panel: HTMLElement, spec: PreviewSpec): void {
   let tick = 0;
   let timer: ReturnType<typeof setTimeout> | undefined;
 
-  const figure = (caption: string, canvases: HTMLCanvasElement[]) => {
+  const figure = (caption: string, canvases: HTMLCanvasElement[], bytes: Bytes) => {
     const f = document.createElement('figure');
-    const pics = document.createElement('div');
+    const pics = document.createElement('button');
+    pics.type = 'button';
+    pics.className = 'pzoom';
+    pics.title = `${c.s.enlarge}: ${caption}`;
     pics.append(...canvases);
+    pics.addEventListener('click', () => c.view(caption, () => drawPages(bytes, spec.show ?? 1, 1600)));
     f.append(pics, Object.assign(document.createElement('figcaption'), { textContent: caption }));
     return f;
   };
@@ -59,7 +63,7 @@ export function preview(c: Ctx, panel: HTMLElement, spec: PreviewSpec): void {
       if (!out) { if (mine === tick) host!.hidden = true; return; }
       const [a, b] = await Promise.all([drawPages(sample, spec.show ?? 1), drawPages(out, spec.show ?? 1)]);
       if (mine !== tick) return;
-      host!.replaceChildren(figure(c.s.before, a), Object.assign(document.createElement('span'), { className: 'arrow', textContent: '→', ariaHidden: 'true' }), figure(c.s.after, b));
+      host!.replaceChildren(figure(c.s.before, a, sample), Object.assign(document.createElement('span'), { className: 'arrow', textContent: '→', ariaHidden: 'true' }), figure(c.s.after, b, out));
       host!.hidden = false;
     } catch (e) {
       console.error('pdf preview', e);
