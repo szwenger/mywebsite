@@ -45,16 +45,33 @@ test('no private data in build', { skip: privateTerms.length ? false : `${PRIVAT
   }
 });
 
-test('nav links to sections (language-prefixed) and Twitch; footer to legal pages and YouTube', () => {
+test('nav links to sections and the Hangout page (language-prefixed); footer to legal pages and YouTube', () => {
   for (const [lang, f] of Object.entries(PAGES)) {
     const h = read(f);
     const nav = h.split('<nav')[1].split('</nav>')[0];
-    for (const p of ['/blog/', '/videos/', '/tools/', '/hardware/']) assert.ok(nav.includes(`href="${pre(lang)}${p}"`), `${p} in nav of ${f}`);
-    assert.ok(h.split('</header>')[0].includes('href="https://www.twitch.tv/galuin"'), `twitch in header of ${f}`);
+    for (const p of ['/blog/', '/videos/', '/tools/', '/hardware/', '/hangout/']) assert.ok(nav.includes(`href="${pre(lang)}${p}"`), `${p} in nav of ${f}`);
+    assert.ok(!h.split('</header>')[0].includes('href="https://www.twitch.tv/galuin"'), `header of ${f} should link to the Hangout page, not straight to Twitch`);
     const foot = h.split('<footer')[1];
     for (const p of ['/impressum/', '/privacy/']) assert.ok(foot.includes(`href="${pre(lang)}${p}"`), `${p} in footer of ${f}`);
     assert.ok(foot.includes('href="https://www.youtube.com/@Galuin"'), `youtube in footer of ${f}`);
     assert.ok(foot.includes('href="https://www.twitch.tv/galuin"'), `twitch in footer of ${f}`);
+  }
+});
+
+test('Hangout page exists in every language and links out to Twitch, YouTube and X', () => {
+  for (const f of ['hangout/index.html', 'de/hangout/index.html', 'ru/hangout/index.html']) {
+    const h = read(f);
+    for (const url of ['https://www.twitch.tv/galuin', 'https://www.youtube.com/@Galuin', 'https://x.com/GaluinGaming']) assert.ok(h.includes(`href="${url}"`), `${url} on ${f}`);
+  }
+});
+
+test('blog has a search box, every post is an item with search text, and a pager slot', () => {
+  for (const f of ['blog/index.html', 'de/blog/index.html', 'ru/blog/index.html']) {
+    const h = read(f);
+    assert.match(h, /<input[^>]*type="search"[^>]*data-list-search|<input[^>]*data-list-search[^>]*type="search"/, `search box on ${f}`);
+    assert.match(h, /data-list-pager/, `pager on ${f}`);
+    const items = [...h.matchAll(/<div[^>]*data-item[^>]*data-text="([^"]*)"/g)];
+    assert.ok(items.length >= 1 && items.every((m) => m[1].length > 0), `search text on every post of ${f}`);
   }
 });
 
@@ -187,11 +204,11 @@ test('front page has lead, notes, videos, Twitch and tools sections in every lan
   }
 });
 
-test('notes column shows the newest notes in full, at most 5', () => {
+test('notes column shows the newest notes in full, at most 3', () => {
   const notes = section(read('index.html'), 'notes');
   const ids = [...notes.matchAll(/data-post="([^"]+)"/g)].map((m) => m[1]);
   const all = POSTS.filter((p) => !p.long);
-  assert.equal(ids.length, Math.min(5, all.length), 'notes shown');
+  assert.equal(ids.length, Math.min(3, all.length), 'notes shown');
   for (const id of ids) assert.ok(all.some((p) => p.slug === id), `${id} is not a note`);
   const newest = all.reduce((a, b) => (b.date > a.date ? b : a));
   assert.ok(all.filter((p) => p.date === newest.date).some((p) => ids.includes(p.slug)), 'newest note missing');
@@ -207,6 +224,19 @@ test('videos row: at most 4 cards, none repeats the lead, local thumbnails, link
     const leadId = section(h, 'lead').match(/youtube\.com\/(?:watch\?v=|shorts\/)([\w-]+)/)?.[1];
     assert.ok(!ids.includes(leadId), `${f}: lead repeated in row`);
     assert.ok(row.includes(`href="${pre(lang)}/videos/"`), `${f}: link to videos page`);
+  }
+});
+
+test('Shorts stay off the front page and sit in their own section on the videos page', { skip: cachedVideos.some((v) => v.isShort) && cachedVideos.some((v) => !v.isShort) ? false : 'needs cached Shorts and regular videos' }, () => {
+  const shorts = cachedVideos.filter((v) => v.isShort).map((v) => v.id);
+  const regular = cachedVideos.filter((v) => !v.isShort).map((v) => v.id);
+  for (const f of Object.values(PAGES)) assert.doesNotMatch(read(f), /youtube\.com\/shorts\//, `${f}: a Short on the front page`);
+  for (const f of ['videos/index.html', 'de/videos/index.html', 'ru/videos/index.html']) {
+    const h = read(f);
+    const inShorts = section(h, 'shorts');
+    const inVideos = section(h, 'videos');
+    for (const id of shorts) { assert.ok(inShorts.includes(id), `${f}: Short ${id} missing`); assert.ok(!inVideos.includes(id), `${f}: Short ${id} in the regular section`); }
+    for (const id of regular) { assert.ok(inVideos.includes(id), `${f}: video ${id} missing`); assert.ok(!inShorts.includes(id), `${f}: video ${id} in the Shorts section`); }
   }
 });
 

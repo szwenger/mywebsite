@@ -26,9 +26,8 @@ test('no long post: the newest non-Short video leads', () => {
   assert.equal(lead.video.id, 'newer');
 });
 
-test('only Shorts: the newest Short leads', () => {
-  const lead = pickLead([], [video('a', '2025-06-01T00:00:00Z', true), video('b', '2025-06-02T00:00:00Z', true)]);
-  assert.equal(lead.video.id, 'b');
+test('only Shorts: nothing leads, Shorts never go on the front page', () => {
+  assert.equal(pickLead([], [video('a', '2025-06-01T00:00:00Z', true), video('b', '2025-06-02T00:00:00Z', true)]), null);
 });
 
 test('nothing to show: null', () => {

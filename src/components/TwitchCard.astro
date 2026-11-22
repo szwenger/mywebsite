@@ -24,14 +24,14 @@ const { lang } = Astro.props;
 <style>
   .twitch { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 24px; padding: 24px; align-items: center; }
   .handle { margin: 0 0 8px; font: 500 clamp(1.15rem, 2vw, 1.4rem)/1.2 var(--display); letter-spacing: -.02em; overflow-wrap: anywhere; }
-  .handle strong { color: var(--accent-ink); font-weight: 700; }
-  .note { margin: 0 0 18px; font-size: .9rem; max-width: 42ch; }
+  .handle strong { color: var(--accent-ink); font-weight: 600; }
+  .note { margin: 0 0 20px; font-size: .9rem; max-width: 42ch; }
   .watch { padding: 8px 16px; font-size: .9rem; text-decoration: none; color: var(--fg); }
   .watch:hover { border-color: var(--accent); color: var(--accent-ink); }
   .slot {
     display: grid; place-items: center; aspect-ratio: 16 / 9; border-radius: var(--radius-sm); overflow: hidden;
     border: 1px solid var(--line);
-    background: repeating-linear-gradient(135deg, var(--surface-2) 0 14px, var(--surface) 14px 28px);
+    background: repeating-linear-gradient(135deg, var(--surface-2) 0 16px, var(--surface) 16px 32px);
   }
   .slot :global(iframe) { width: 100%; height: 100%; border: 0; }
   @media (max-width: 760px) { .twitch { grid-template-columns: 1fr; padding: 20px; } }

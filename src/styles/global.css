@@ -5,7 +5,7 @@
   --display: 'Unbounded Variable', 'Onest Variable', system-ui, sans-serif;
   --max: 1200px;
   --gutter: clamp(16px, 4vw, 40px);
-  --radius: 14px;
+  --radius: 16px;
   --radius-sm: 8px;
   --ease: cubic-bezier(.22, 1, .36, 1);
   --accent: #6a78d1;
@@ -46,13 +46,13 @@ body::before {
 
 a { color: inherit; text-underline-offset: .2em; }
 img { max-width: 100%; height: auto; display: block; }
-h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; text-wrap: balance; }
+h1, h2, h3 { font-family: var(--display); font-weight: 500; letter-spacing: -.02em; line-height: 1.15; text-wrap: balance; }
 :focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 3px; border-radius: 4px; }
 ::selection { background: var(--accent); color: #fff; }
 
 .wrap { width: 100%; max-width: calc(var(--max) + 2 * var(--gutter)); margin-inline: auto; padding-inline: var(--gutter); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.skip { position: absolute; left: 12px; top: -60px; z-index: 50; padding: 10px 14px; border-radius: var(--radius-sm); background: var(--fg); color: var(--bg); font-weight: 600; }
+.skip { position: absolute; left: 12px; top: -60px; z-index: 50; padding: 12px 16px; border-radius: var(--radius-sm); background: var(--fg); color: var(--bg); font-weight: 600; }
 .skip:focus { top: 12px; }
 
 /* Cards. A linked card lifts up-left and leaves the logo's hard shadow behind. */
@@ -65,7 +65,7 @@ a.card:focus-visible, .card-link:focus-visible { box-shadow: 5px 5px 0 var(--acc
 
 /* Button: solid accent, same lift-and-shadow move as the cards. */
 .btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 20px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px;
   border: 0; border-radius: 99px; background: var(--accent-strong); color: #fff;
   font: 600 .95rem/1.2 var(--font); cursor: pointer; text-decoration: none;
   box-shadow: 3px 3px 0 var(--hard); transition: transform .15s var(--ease), box-shadow .15s var(--ease);
@@ -73,12 +73,22 @@ a.card:focus-visible, .card-link:focus-visible { box-shadow: 5px 5px 0 var(--acc
 @media (hover: hover) { .btn:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--hard); } }
 .btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--hard); }
 
-/* Section title: display face, a small logo-blue block in front. */
-.section-title { display: flex; align-items: center; gap: .55em; margin: 0 0 18px; font-size: clamp(1.05rem, 1.6vw, 1.3rem); }
-.section-title::before { content: ''; width: .62em; height: .62em; border-radius: 2px; background: var(--accent); box-shadow: 2px 2px 0 var(--hard); flex: none; }
+/* Section title: display face. Only a page's own h1 carries the small logo-blue block, sub-sections stay plain. */
+.section-title { display: flex; align-items: center; gap: .55em; margin: 0 0 16px; font-size: clamp(1.05rem, 1.6vw, 1.3rem); }
+h1.section-title::before { content: ''; width: .62em; height: .62em; border-radius: 2px; background: var(--accent); box-shadow: 2px 2px 0 var(--hard); flex: none; }
 
 .meta { color: var(--muted); font-size: .82rem; }
-.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border: 1px solid var(--line); border-radius: 99px; font-size: .78rem; color: var(--muted); }
+.chip { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border: 1px solid var(--line); border-radius: 99px; font-size: .78rem; color: var(--muted); }
+
+/* Author display rules would otherwise beat the hidden attribute. */
+[hidden] { display: none !important; }
+
+/* Pager, built by src/scripts/list.ts. */
+.pager { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin-top: 32px; color: var(--muted); }
+.pager button { min-width: 40px; height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: transparent; color: var(--muted); font: 500 .9rem/1 var(--font); cursor: pointer; transition: color .15s, background-color .15s, border-color .15s; }
+.pager button:hover:not(:disabled) { color: var(--fg); background: var(--surface); }
+.pager button[aria-current='page'] { color: var(--fg); background: var(--surface-2); border-color: var(--accent); }
+.pager button:disabled { opacity: .4; cursor: default; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }

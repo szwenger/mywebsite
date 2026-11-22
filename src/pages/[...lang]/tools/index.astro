@@ -15,9 +15,11 @@ const lang = (Astro.params.lang ?? 'en') as Lang;
     <div class="grid">
       {tools.map((tool) => (
         <a class="card tool" href={path(lang, `/tools/${tool.slug}/`)}>
-          <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d={tool.icon} fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
-          <h2>{tool.name[lang]}</h2>
-          <p>{tool.blurb[lang]}</p>
+          <span class="icon"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d={tool.icon} fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+          <div class="text">
+            <h2>{tool.name[lang]}</h2>
+            <p>{tool.blurb[lang]}</p>
+          </div>
         </a>
       ))}
     </div>
@@ -26,9 +28,11 @@ const lang = (Astro.params.lang ?? 'en') as Lang;
 <style>
   .page { padding-block: clamp(32px, 6vw, 64px) 0; }
   .intro { margin: -6px 0 24px; font-size: .95rem; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 20px; }
-  .tool { padding: 22px; }
-  .tool svg { color: var(--accent-ink); }
-  .tool h2 { margin: 12px 0 6px; font-size: 1.1rem; }
+  /* Four tools: two wide rows read better than four narrow cards. */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); gap: 20px; }
+  .tool { display: flex; align-items: flex-start; gap: 20px; padding: 24px; }
+  .icon { display: grid; place-items: center; flex: none; width: 48px; height: 48px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); color: var(--accent-ink); }
+  .text { min-width: 0; }
+  .tool h2 { margin: 0 0 8px; font-size: 1.1rem; }
   .tool p { margin: 0; color: var(--muted); font-size: .92rem; }
 </style>

@@ -6,28 +6,34 @@ import { LANGS, localize, path, t, type Lang } from '../i18n/ui';
 interface Props { lang: Lang; current?: string; alternates?: Record<Lang, string> }
 const { lang, current } = Astro.props;
 const alternates = Astro.props.alternates ?? Object.fromEntries(LANGS.map((l) => [l, localize(Astro.url.pathname, l)])) as Record<Lang, string>;
-const items = [['blog', 'navBlog', 'blog'], ['videos', 'navVideos', 'videos'], ['tools', 'navTools', 'tools'], ['hardware', 'navSetup', 'setup']] as const;
+const items = [['blog', 'navBlog', 'blog'], ['videos', 'navVideos', 'videos'], ['tools', 'navTools', 'tools'], ['hardware', 'navSetup', 'setup'], ['hangout', 'navHangout', 'hangout']] as const;
 ---
 <header class="site-head">
   <div class="wrap bar">
-    <a class="brand" href={path(lang, '/')}>
+    <a class="brand" href={path(lang, '/')} aria-label="Galuin">
       <Image src={logo} alt="" width={30} height={30} densities={[1, 2]} loading="eager" />
-      <span>Galuin</span>
+      <span aria-hidden="true">aluin</span>
     </a>
     <nav aria-label={t(lang, 'navLabel')}>
       <ul>
         {items.map(([id, key, ic]) => (
           <li><a href={path(lang, `/${id}/`)} aria-current={current === id ? 'page' : undefined}><Icon name={ic} size={17} />{t(lang, key)}</a></li>
         ))}
-        <li><a href="https://www.twitch.tv/galuin" rel="noopener"><Icon name="twitch" size={17} />{t(lang, 'navTwitch')}<span aria-hidden="true" class="ext">↗</span></a></li>
       </ul>
     </nav>
     <div class="controls">
-      <div class="langs" role="group" aria-label={t(lang, 'langLabel')}>
-        {LANGS.map((l) => l === lang
-          ? <span aria-current="true" title={t(l, 'langName')}>{l.toUpperCase()}</span>
-          : <a data-lang={l} href={alternates[l]} hreflang={l} lang={l} title={t(l, 'langName')} aria-label={t(l, 'langName')}>{l.toUpperCase()}</a>)}
-      </div>
+      <details class="langmenu">
+        <summary aria-label={`${t(lang, 'langLabel')}: ${t(lang, 'langName')}`}>
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z" /></svg>
+          <span>{lang.toUpperCase()}</span>
+          <svg class="chev" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+        </summary>
+        <ul>
+          {LANGS.map((l) => l === lang
+            ? <li><span aria-current="true" lang={l}>{t(l, 'langName')}<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg></span></li>
+            : <li><a data-lang={l} href={alternates[l]} hreflang={l} lang={l}>{t(l, 'langName')}<small aria-hidden="true">{l.toUpperCase()}</small></a></li>)}
+        </ul>
+      </details>
       <button type="button" class="theme" data-theme-toggle aria-label={t(lang, 'themeToggle')}>
         <svg class="moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="currentColor" /></svg>
         <svg class="sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="currentColor" /><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" /></g></svg>
@@ -38,25 +44,41 @@ const items = [['blog', 'navBlog', 'blog'], ['videos', 'navVideos', 'videos'], [
 <script>
   import { initTheme } from '../scripts/theme';
   initTheme();
+
+  // Language menu: native <details>, closed by an outside click or Escape.
+  const menu = document.querySelector<HTMLDetailsElement>('.langmenu');
+  document.addEventListener('click', (e) => { if (menu?.open && !menu.contains(e.target as Node)) menu.open = false; });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu?.open) { menu.open = false; menu.querySelector('summary')?.focus(); }
+  });
 </script>
 <style>
   .site-head { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
   .bar { display: flex; align-items: center; gap: 28px; min-height: 64px; }
-  .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font: 800 1.05rem/1 var(--display); letter-spacing: -.01em; }
+  .brand { display: inline-flex; align-items: center; gap: 4px; text-decoration: none; font: 600 1.05rem/1 var(--display); letter-spacing: -.01em; }
   .brand img { width: 30px; height: 30px; }
   nav { flex: 1; }
   ul { display: flex; gap: 4px; margin: 0; padding: 0; list-style: none; }
-  nav a { display: flex; align-items: center; gap: 7px; padding: 8px 12px; border-radius: var(--radius-sm); text-decoration: none; color: var(--muted); font-weight: 500; font-size: .95rem; white-space: nowrap; transition: color .15s, background-color .15s; }
+  nav a { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: var(--radius-sm); text-decoration: none; color: var(--muted); font-weight: 500; font-size: .95rem; white-space: nowrap; transition: color .15s, background-color .15s; }
   nav a:hover { color: var(--fg); background: var(--surface); }
   nav a[aria-current='page'] { color: var(--fg); box-shadow: inset 0 -2px 0 var(--accent); border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
   nav a :global(.icon) { flex: none; opacity: .75; }
   nav a[aria-current='page'] :global(.icon), nav a:hover :global(.icon) { opacity: 1; color: var(--accent-ink, var(--accent)); }
-  .ext { margin-left: 3px; font-size: .8em; }
-  .controls { display: flex; align-items: center; gap: 10px; }
-  .langs { display: flex; padding: 3px; border: 1px solid var(--line); border-radius: 99px; font-size: .74rem; font-weight: 600; letter-spacing: .02em; }
-  .langs > * { padding: 4px 9px; border-radius: 99px; text-decoration: none; color: var(--muted); }
-  .langs a:hover { color: var(--fg); }
-  .langs [aria-current] { background: var(--surface-2); color: var(--fg); }
+  .controls { display: flex; align-items: center; gap: 12px; }
+
+  .langmenu { position: relative; }
+  .langmenu summary { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 99px; color: var(--fg); font: 500 .85rem/1 var(--font); cursor: pointer; list-style: none; user-select: none; transition: background-color .15s; }
+  .langmenu summary::-webkit-details-marker { display: none; }
+  .langmenu summary:hover, .langmenu[open] summary { background: var(--surface); }
+  .langmenu summary svg:first-child { color: var(--muted); }
+  .langmenu .chev { color: var(--muted); transition: transform .15s var(--ease); }
+  .langmenu[open] .chev { transform: rotate(180deg); }
+  .langmenu ul { position: absolute; top: calc(100% + 8px); right: 0; z-index: 30; display: grid; gap: 0; min-width: 176px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px rgb(0 0 0 / .24); }
+  .langmenu li > * { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 12px; border-radius: 8px; text-decoration: none; font-size: .92rem; color: var(--muted); }
+  .langmenu li a:hover { background: var(--surface-2); color: var(--fg); }
+  .langmenu li [aria-current] { color: var(--fg); }
+  .langmenu li svg { color: var(--accent-ink); }
+  .langmenu small { font-size: .78rem; color: var(--muted); }
   .theme { display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 99px; background: none; color: var(--fg); cursor: pointer; }
   .theme:hover { background: var(--surface); }
   :global([data-theme='dark']) .sun, :global([data-theme='light']) .moon { display: none; }

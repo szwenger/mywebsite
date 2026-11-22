@@ -11,19 +11,19 @@ interface Props { lang: Lang }
 const { lang } = Astro.props;
 
 const items = await loadPosts(lang);
-const notes = items.filter(({ post }) => post.kind === 'note').slice(0, 5);
+const notes = items.filter(({ post }) => post.kind === 'note').slice(0, 3);
 const videos = loadVideos();
 const lead = pickLead(items.map(({ post }) => post), videos);
 const leadVideoId = lead?.type === 'video' ? lead.video.id : undefined;
-const row = videos.filter((v) => v.id !== leadVideoId).slice(0, 4);
+const row = videos.filter((v) => !v.isShort && v.id !== leadVideoId).slice(0, 4);
 
 const card = lead?.type === 'post'
   ? { href: path(lang, `/blog/${lead.post.slug}/`), img: lead.post.cover, title: lead.post.title, kicker: t(lang, 'leadPost'),
       date: dateLabel(lead.post.date, lang), iso: lead.post.date.toISOString().slice(0, 10), tags: lead.post.tags ?? [],
-      textLang: lead.post.shownIn, fallback: lead.post.fallback, short: false }
+      textLang: lead.post.shownIn, fallback: lead.post.fallback }
   : lead?.type === 'video'
   ? { href: lead.video.url, img: lead.video.thumb, title: lead.video.title, kicker: t(lang, 'leadVideo'),
-      date: videoDate(lead.video.published, lang), iso: lead.video.published, tags: [], textLang: undefined, fallback: false, short: lead.video.isShort }
+      date: videoDate(lead.video.published, lang), iso: lead.video.published, tags: [], textLang: undefined, fallback: false }
   : null;
 ---
 <h1 class="sr-only">Galuin</h1>
@@ -33,7 +33,6 @@ const card = lead?.type === 'post'
       <a class="card lead" data-section="lead" href={card.href} rel={lead?.type === 'video' ? 'noopener' : undefined}>
         <div class="media">
           {card.img && <img src={card.img} alt="" width="1280" height="720" loading="eager" />}
-          {card.short && <span class="badge">{t(lang, 'shortBadge')}</span>}
           {lead?.type === 'video' && <span class="play" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" /></svg></span>}
         </div>
         <div class="body">
@@ -72,42 +71,41 @@ const card = lead?.type === 'post'
 <style>
   .front { display: grid; gap: clamp(40px, 6vw, 64px); padding-top: clamp(24px, 4vw, 44px); }
 
-  .top { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 32px); align-items: start; }
+  .top { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 32px); align-items: stretch; }
   .top.solo { grid-template-columns: minmax(0, 1fr); }
   .top.solo .stack { grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
 
-  .lead { overflow: hidden; position: sticky; top: 20px; }
+  /* The lead card stretches to the Notes column; the headline stays on top, the tags settle at the bottom edge. */
+  .lead { overflow: hidden; display: flex; flex-direction: column; }
   .media { position: relative; aspect-ratio: 16 / 9; background: var(--surface-2); border-bottom: 1px solid var(--line); overflow: hidden; }
   .media img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s var(--ease); }
   @media (hover: hover) { .lead:hover .media img { transform: scale(1.03); } }
-  .badge { position: absolute; top: 14px; left: 14px; padding: 3px 11px; border-radius: 99px; background: var(--accent-strong); color: #fff; font-size: .78rem; font-weight: 700; box-shadow: 2px 2px 0 var(--hard); }
   .play {
     position: absolute; left: 18px; bottom: 18px; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%;
     background: var(--accent-strong); color: #fff; box-shadow: 3px 3px 0 var(--hard); padding-left: 3px;
   }
-  .body { padding: clamp(18px, 2.4vw, 28px); }
-  .kicker { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin: 0 0 10px; color: var(--muted); font-size: .85rem; }
+  .body { flex: 1; display: flex; flex-direction: column; padding: clamp(20px, 2.4vw, 28px); }
+  .kicker { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin: 0 0 12px; color: var(--muted); font-size: .85rem; }
   .kicker span:first-child { color: var(--accent-ink); font-weight: 600; }
   .lead h2 { margin: 0; font-size: clamp(1.35rem, 2.8vw, 2.1rem); overflow-wrap: anywhere; }
-  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; padding: 0; list-style: none; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: auto 0 0; padding: 16px 0 0; list-style: none; }
 
-  .notes .stack { display: grid; gap: 14px; }
-  .notes :global(.note) { padding: 18px 20px; }
+  .notes .stack { display: grid; gap: 16px; }
+  .notes :global(.note) { padding: 20px; }
   .notes :global(.note h2) { font-size: 1.02rem; }
   .notes :global(.note .prose) { font-size: .94rem; }
   .more { display: inline-flex; gap: 6px; margin-top: 16px; color: var(--muted); font-size: .9rem; font-weight: 500; text-decoration: none; }
   .more:hover { color: var(--accent-ink); }
 
   .row-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
-  .row-head .more { margin: 0 0 18px; }
-  .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+  .row-head .more { margin: 0 0 16px; }
+  .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
 
   @media (max-width: 1000px) {
     .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 860px) {
     .top { grid-template-columns: minmax(0, 1fr); }
-    .lead { position: static; }
   }
   @media (max-width: 520px) {
     .grid { grid-template-columns: minmax(0, 1fr); }

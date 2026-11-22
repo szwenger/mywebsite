@@ -1,0 +1,46 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Icon from '../../../components/Icon.astro';
+import { LANGS, t, type Lang } from '../../../i18n/ui';
+import { spots } from '../../../data/hangout';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { intro: 'Where I stream, upload and post.' },
+  de: { intro: 'Wo ich streame, hochlade und poste.' },
+  ru: { intro: 'Где я стримлю, выкладываю видео и пишу.' },
+}[lang];
+---
+<Base lang={lang} title={`${t(lang, 'navHangout')} · Galuin`} description={s.intro} current="hangout">
+  <section class="wrap page">
+    <h1 class="section-title">{t(lang, 'navHangout')}</h1>
+    <p class="meta intro">{s.intro}</p>
+    <div class="grid" data-section="hangout">
+      {spots.map((spot) => (
+        <a class="card spot" href={spot.url} rel="noopener" data-spot={spot.id}>
+          <span class="icon"><Icon name={spot.icon} size={24} /></span>
+          <div class="text">
+            <h2>{spot.name} <span class="arrow" aria-hidden="true">↗</span></h2>
+            <p class="handle">{spot.handle}</p>
+            <p class="blurb">{spot.blurb[lang]}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+</Base>
+<style>
+  .page { padding-block: clamp(32px, 6vw, 64px) 0; }
+  .intro { margin: -6px 0 24px; font-size: .95rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 20px; }
+  .spot { display: flex; align-items: flex-start; gap: 20px; padding: 24px; }
+  .icon { display: grid; place-items: center; flex: none; width: 48px; height: 48px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); color: var(--accent-ink); }
+  .text { min-width: 0; }
+  .spot h2 { margin: 0 0 4px; font-size: 1.1rem; }
+  .arrow { color: var(--muted); font: 400 .9rem var(--font); }
+  .handle { margin: 0 0 8px; color: var(--accent-ink); font-size: .92rem; overflow-wrap: anywhere; }
+  .blurb { margin: 0; color: var(--muted); font-size: .92rem; }
+</style>
