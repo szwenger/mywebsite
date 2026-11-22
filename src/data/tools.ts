@@ -3,20 +3,32 @@ import type { Lang } from '../i18n/ui';
 /** One entry per tool page at /tools/<slug>/. `icon` is SVG path data on a 24×24 viewBox, drawn with currentColor. */
 export interface Tool { slug: string; cat: Category; featured?: boolean; /** extra English search words, matched in every language */ tags?: string; icon: string; name: Record<Lang, string>; blurb: Record<Lang, string> }
 
-export type Category = 'files' | 'text' | 'dev' | 'ai' | 'media';
-/** Order here is the order of the groups on the overview page. */
+export type Category = 'pdf' | 'images' | 'files' | 'text' | 'dev' | 'ai' | 'media';
+/** Order here is the order of the groups on the overview page and of the filter row above them. */
 export const categories: Record<Category, Record<Lang, string>> = {
-  files: { en: 'Files & documents', de: 'Dateien & Dokumente', ru: 'Файлы и документы' },
+  pdf: { en: 'PDF', de: 'PDF', ru: 'PDF' },
+  images: { en: 'Images & codes', de: 'Bilder & Codes', ru: 'Изображения и коды' },
+  files: { en: 'Files & privacy', de: 'Dateien & Datenschutz', ru: 'Файлы и приватность' },
   text: { en: 'Text & time', de: 'Text & Zeit', ru: 'Текст и время' },
   dev: { en: 'Developer', de: 'Entwickler', ru: 'Разработка' },
   ai: { en: 'Local AI', de: 'Lokale KI', ru: 'Локальный ИИ' },
   media: { en: 'Streaming & video', de: 'Streaming & Video', ru: 'Стриминг и видео' },
 };
+/** Icon path data (24×24, currentColor) for each category chip. */
+export const categoryIcons: Record<Category, string> = {
+  pdf: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h4',
+  images: 'M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM8.5 9.5v.01M4 17l5-5 4 4 3-3 4 4',
+  files: 'M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6zM9 12l2 2 4-4',
+  text: 'M4 18l4.5-12L13 18M5.8 14h5.4M15 18l3-8 3 8M16 16h4',
+  dev: 'M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 6l-3 12',
+  ai: 'M7 7h10v10H7zM10 10h4v4h-4zM9 3v4M15 3v4M9 17v4M15 17v4M3 9h4M3 15h4M17 9h4M17 15h4',
+  media: 'M4 8h16v11H4zM4 8l3-4h4L8 8M11 8l3-4h4l-3 4M10 12.5v3l3-1.5z',
+};
 
 export const tools: Tool[] = [
   {
     slug: 'qr',
-    cat: 'files',
+    cat: 'images',
     featured: true,
     icon: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h3v3h-3zM20 14v.01M14 20h.01M20 20v.01M17 17v3',
     name: { en: 'QR code generator', de: 'QR-Code-Generator', ru: 'Генератор QR-кодов' },
@@ -28,7 +40,7 @@ export const tools: Tool[] = [
   },
   {
     slug: 'pdf',
-    cat: 'files',
+    cat: 'pdf',
     featured: true,
     icon: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h4',
     name: { en: 'PDF tools', de: 'PDF-Werkzeuge', ru: 'PDF-инструменты' },
@@ -41,7 +53,7 @@ export const tools: Tool[] = [
   },
   {
     slug: 'image',
-    cat: 'files',
+    cat: 'images',
     featured: true,
     icon: 'M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM8.5 9.5v.01M4 17l5-5 4 4 3-3 4 4',
     name: { en: 'Image converter', de: 'Bild-Konverter', ru: 'Конвертер изображений' },
@@ -53,7 +65,7 @@ export const tools: Tool[] = [
   },
   {
     slug: 'presenter',
-    cat: 'files',
+    cat: 'pdf',
     featured: true,
     icon: 'M3 4h18v12H3zM12 16v4M8 20h8M10 8.5v3l3-1.5z',
     name: { en: 'PDF presenter', de: 'PDF-Präsentator', ru: 'PDF-презентатор' },
@@ -133,7 +145,7 @@ export const tools: Tool[] = [
   },
   {
     slug: 'favicon',
-    cat: 'files',
+    cat: 'images',
     icon: 'M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z',
     name: { en: 'Favicon generator', de: 'Favicon-Generator', ru: 'Генератор favicon' },
     blurb: {
@@ -333,7 +345,7 @@ export const tools: Tool[] = [
   },
   {
     slug: 'barcode',
-    cat: 'files',
+    cat: 'images',
     tags: 'barcode code128 ean13 ean8 upc ean generator label product',
     icon: 'M4 5v14M7 5v14M11 5v14M14 5v14M17 5v14M20 5v14',
     name: { en: 'Barcode generator', de: 'Barcode-Generator', ru: 'Генератор штрихкодов' },
@@ -345,7 +357,7 @@ export const tools: Tool[] = [
   },
   {
     slug: 'crop',
-    cat: 'files',
+    cat: 'images',
     tags: 'image crop resize rotate aspect ratio photo thumbnail square avatar',
     icon: 'M7 3v14h14M3 7h14v14',
     name: { en: 'Image crop and resize', de: 'Bild zuschneiden und skalieren', ru: 'Обрезка и изменение размера' },
@@ -357,7 +369,7 @@ export const tools: Tool[] = [
   },
   {
     slug: 'pdf2img',
-    cat: 'files',
+    cat: 'pdf',
     tags: 'pdf to image jpg png convert pages screenshot render zip',
     icon: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 17l2-3 2 2 2-3',
     name: { en: 'PDF to images', de: 'PDF in Bilder', ru: 'PDF в изображения' },

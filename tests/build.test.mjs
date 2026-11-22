@@ -522,6 +522,18 @@ test('every tool in tools.ts has a page per language, a title, and one card on i
   }
 });
 
+test('the tools overview has a filter chip for every category, each with at least one tool', async () => {
+  const { tools, categories, categoryIcons } = await import('../src/data/tools.ts');
+  for (const [lang, f] of Object.entries(PAGES)) {
+    const html = read(`${f.replace(/index\.html$/, '')}tools/index.html`);
+    for (const cat of Object.keys(categories)) {
+      assert.ok(tools.some((t) => t.cat === cat), `${cat} has a tool`);
+      assert.ok(categoryIcons[cat], `${cat} has an icon`);
+      assert.ok(html.includes(`data-chip="${cat}"`) && html.includes(`data-cat="${cat}"`), `${cat} chip and group in ${lang}`);
+    }
+  }
+});
+
 test('simple tool pages do not pull in the PDF or QR code libraries', () => {
   for (const slug of ['vram', 'checksum', 'tz', 'bitrate', 'compose', 'json', 'gen', 'diff', 'favicon', 'epoch', 'csv', 'subnet', 'chmod', 'utm', 'barcode', 'crop']) {
     for (const dir of Object.values(LANG_DIRS)) {

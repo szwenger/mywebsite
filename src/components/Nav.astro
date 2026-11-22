@@ -25,7 +25,7 @@ const items = [['blog', 'navBlog', 'blog'], ['videos', 'navVideos', 'videos'], [
       <details class="langmenu">
         <summary aria-label={`${t(lang, 'langLabel')}: ${t(lang, 'langName')}`}>
           <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z" /></svg>
-          <span>{lang.toUpperCase()}</span>
+          <span class="code" data-langcode>{lang.toUpperCase()}</span>
           <svg class="chev" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
         </summary>
         <ul>
@@ -44,6 +44,7 @@ const items = [['blog', 'navBlog', 'blog'], ['videos', 'navVideos', 'videos'], [
 <script>
   import { initTheme } from '../scripts/theme';
   initTheme();
+  import '../scripts/langroll';
 
   // Language menu: native <details>, closed by an outside click or Escape.
   const menu = document.querySelector<HTMLDetailsElement>('.langmenu');
@@ -71,6 +72,12 @@ const items = [['blog', 'navBlog', 'blog'], ['videos', 'navVideos', 'videos'], [
   .langmenu summary::-webkit-details-marker { display: none; }
   .langmenu summary:hover, .langmenu[open] summary { background: var(--surface); }
   .langmenu summary svg:first-child { color: var(--muted); }
+  /* the code letters are rebuilt by scripts/langroll.ts: each letter is a clipped slot holding the old and new letter */
+  .code :global(.slot) { display: inline-block; height: 1em; overflow: hidden; vertical-align: top; }
+  .code :global(.col) { display: flex; flex-direction: column; transition: transform .36s var(--ease); }
+  .code :global(.col > span) { display: block; height: 1em; }
+  .code.go :global(.col) { transform: translateY(-50%); }
+  .code { display: inline-block; height: 1em; }
   .langmenu .chev { color: var(--muted); transition: transform .15s var(--ease); }
   .langmenu[open] .chev { transform: rotate(180deg); }
   .langmenu ul { position: absolute; top: calc(100% + 8px); right: 0; z-index: 30; display: grid; gap: 0; min-width: 176px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px rgb(0 0 0 / .24); }
