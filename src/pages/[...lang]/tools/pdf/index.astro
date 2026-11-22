@@ -1,102 +1,473 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
 import { LANGS, type Lang } from '../../../../i18n/ui';
+import { pdfStrings, TABS } from '../../../../tools/pdf/strings';
+import '../../../../styles/tools.css';
 
 export function getStaticPaths() {
   return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
 }
 const lang = (Astro.params.lang ?? 'en') as Lang;
-const s = {
-  en: {
-    drop: 'Drop PDFs or images here', or: 'or', browse: 'Choose files', hint: 'PDF, PNG and JPEG. Files you add are appended in order, so adding several PDFs merges them.',
-    pages: 'pages', page: 'Page', rotate: 'Rotate 90°', del: 'Delete', earlier: 'Move earlier', later: 'Move later',
-    rangeLabel: 'Keep only these pages', rangePlaceholder: 'e.g. 1-3, 5', rangeBtn: 'Keep pages', undo: 'Undo', reset: 'Start over', download: 'Download PDF',
-    busy: 'Working…', pagesLabel: 'Pages', actions: 'Actions',
-    encrypted: 'This PDF is password-protected. Remove the password first, then add it again.',
-    invalid: 'This file could not be read as a PDF.', badType: 'Only PDF, PNG and JPEG files are supported.',
-    badImage: 'This image could not be read.', empty: 'Range is empty. Enter pages such as 1-3, 5.',
-    syntax: 'Could not read the range. Use page numbers such as 1-3, 5.', 'out-of-range': 'A page number is outside this document.',
-    lastPage: 'A PDF needs at least one page.',
-  },
-  de: {
-    drop: 'PDFs oder Bilder hier ablegen', or: 'oder', browse: 'Dateien wählen', hint: 'PDF, PNG und JPEG. Hinzugefügte Dateien werden der Reihe nach angehängt, mehrere PDFs werden so zusammengefügt.',
-    pages: 'Seiten', page: 'Seite', rotate: 'Um 90° drehen', del: 'Löschen', earlier: 'Nach vorn', later: 'Nach hinten',
-    rangeLabel: 'Nur diese Seiten behalten', rangePlaceholder: 'z. B. 1-3, 5', rangeBtn: 'Seiten behalten', undo: 'Rückgängig', reset: 'Neu beginnen', download: 'PDF herunterladen',
-    busy: 'Wird verarbeitet…', pagesLabel: 'Seiten', actions: 'Aktionen',
-    encrypted: 'Dieses PDF ist passwortgeschützt. Entferne zuerst das Passwort und füge es dann erneut hinzu.',
-    invalid: 'Diese Datei konnte nicht als PDF gelesen werden.', badType: 'Nur PDF-, PNG- und JPEG-Dateien werden unterstützt.',
-    badImage: 'Dieses Bild konnte nicht gelesen werden.', empty: 'Der Bereich ist leer. Gib Seiten wie 1-3, 5 ein.',
-    syntax: 'Der Bereich ist nicht lesbar. Nutze Seitenzahlen wie 1-3, 5.', 'out-of-range': 'Eine Seitenzahl liegt außerhalb des Dokuments.',
-    lastPage: 'Ein PDF braucht mindestens eine Seite.',
-  },
-  ru: {
-    drop: 'Перетащите сюда PDF или картинки', or: 'или', browse: 'Выбрать файлы', hint: 'PDF, PNG и JPEG. Добавленные файлы подряд дописываются в конец, так несколько PDF объединяются.',
-    pages: 'стр.', page: 'Страница', rotate: 'Повернуть на 90°', del: 'Удалить', earlier: 'Переместить раньше', later: 'Переместить позже',
-    rangeLabel: 'Оставить только эти страницы', rangePlaceholder: 'например, 1-3, 5', rangeBtn: 'Оставить страницы', undo: 'Отменить', reset: 'Начать заново', download: 'Скачать PDF',
-    busy: 'Обработка…', pagesLabel: 'Страницы', actions: 'Действия',
-    encrypted: 'Этот PDF защищён паролем. Сначала снимите пароль, затем добавьте файл снова.',
-    invalid: 'Не удалось прочитать файл как PDF.', badType: 'Поддерживаются только PDF, PNG и JPEG.',
-    badImage: 'Не удалось прочитать это изображение.', empty: 'Диапазон пуст. Введите страницы, например 1-3, 5.',
-    syntax: 'Не удалось разобрать диапазон. Используйте номера страниц, например 1-3, 5.', 'out-of-range': 'Номер страницы выходит за пределы документа.',
-    lastPage: 'В PDF должна остаться хотя бы одна страница.',
-  },
-}[lang];
+const s = pdfStrings[lang];
+// Tabs that share the page editor open the "edit" panel.
+const panelOf = (id: string) => (id === 'sign' || id === 'redact' ? 'edit' : id);
+const SEL = ['all', 'none', 'odd', 'even', 'invert', 'rotr', 'rotl', 'del', 'keep', 'dup', 'first', 'last', 'save'];
+const NEEDS = ['del', 'keep', 'dup', 'first', 'last', 'save'];
+const POS = ['tl', 'tc', 'tr', 'bl', 'bc', 'br'];
+const SHEETS = ['A4', 'A3', 'A5', 'A6', 'Letter', 'Legal', 'Tabloid'];
+const TPL = ['{n}', 'Page {n} of {total}', '{n} / {total}', '– {n} –'];
+const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
 ---
 <ToolLayout lang={lang} slug="pdf">
   <div class="pdf" data-pdf data-strings={JSON.stringify(s)}>
-    <div class="drop card" data-drop>
+    <div class="dropzone card" data-drop>
       <p class="big">{s.drop}</p>
-      <p class="meta">{s.or}</p>
-      <label class="btn pick">{s.browse}<input type="file" accept="application/pdf,image/png,image/jpeg,.pdf,.png,.jpg,.jpeg" multiple data-file class="sr-only" /></label>
+      <div class="picks">
+        <label class="btn pick">{s.browse}<input type="file" accept="application/pdf,image/*,.pdf" multiple data-file class="sr-only" /></label>
+        <label class="btn alt pick camera">{s.camera}<input type="file" accept="image/*" capture="environment" data-camera class="sr-only" /></label>
+      </div>
       <p class="meta hint">{s.hint}</p>
     </div>
 
     <p class="warn" role="alert" data-error hidden></p>
     <p class="meta" role="status" data-status></p>
 
+    <form class="unlock card" data-unlock hidden>
+      <label>{s.unlockLabel}<input type="password" name="pw" autocomplete="off" required /></label>
+      <button type="submit" class="btn">{s.unlockBtn}</button>
+    </form>
+
+    <nav class="tabs" aria-label={s.tabsLabel}>
+      {TABS.map((id) => (
+        <button type="button" class="tab" data-tab={id} data-to={panelOf(id)} aria-selected="false">
+          <strong>{s[`t_${id}`]}</strong>
+          <span>{s[`d_${id}`]}</span>
+        </button>
+      ))}
+    </nav>
+
     <div class="work" data-work hidden>
       <div class="bar card">
-        <label class="range">{s.rangeLabel}
-          <span class="row"><input data-range placeholder={s.rangePlaceholder} autocomplete="off" /><button type="button" class="btn alt" data-keep>{s.rangeBtn}</button></span>
-        </label>
+        <p class="meta stats" data-stats></p>
         <div class="row end">
           <button type="button" class="btn alt" data-undo disabled>{s.undo}</button>
           <button type="button" class="btn alt" data-reset>{s.reset}</button>
           <button type="button" class="btn" data-download>{s.download}</button>
         </div>
       </div>
-      <h2 class="sr-only">{s.pagesLabel}</h2>
-      <ol class="pages" data-pages></ol>
+
+      <section class="card panel tl" data-panel="organize" hidden>
+        <p class="meta">{s.selHelp}</p>
+        <div class="selbar" role="toolbar" aria-label={s.pagesLabel}>
+          {SEL.map((k) => <button type="button" class="btn alt sm" data-sel={k} data-needsel={NEEDS.includes(k) ? '' : undefined} disabled={NEEDS.includes(k)}>{s[`sel_${k}`]}</button>)}
+        </div>
+        <label class="range">{s.rangeLabel}
+          <span class="row"><input data-range placeholder={s.rangePlaceholder} autocomplete="off" /><button type="button" class="btn alt" data-range-keep>{s.rangeBtn}</button></span>
+        </label>
+        <h2 class="sr-only">{s.pagesLabel}</h2>
+        <ol class="pages" data-pages></ol>
+      </section>
+
+      <section class="card panel tl" data-panel="split" hidden>
+        <fieldset class="opts"><legend>{s.splitMode}</legend>
+          <label class="check"><input type="radio" name="mode" value="each" checked />{s.mode_each}</label>
+          <label class="check"><input type="radio" name="mode" value="every" />{s.mode_every}</label>
+          <label class="check"><input type="radio" name="mode" value="ranges" />{s.mode_ranges}</label>
+        </fieldset>
+        <div class="row">
+          <label>{s.everyLabel}<input type="number" name="every" min="1" value="2" /></label>
+          <label>{s.rangesLabel}<input name="ranges" placeholder={s.rangesPlaceholder} autocomplete="off" /></label>
+        </div>
+        <div class="actions"><button type="button" class="btn" data-do="split">{s.splitBtn}</button></div>
+        <p class="note" data-out hidden></p>
+      </section>
+
+      <section class="card panel tl" data-panel="arrange" hidden>
+        <div class="actions">
+          <button type="button" class="btn alt" data-do="reverse">{s.reverse}</button>
+          <button type="button" class="btn alt" data-do="odd">{s.oddOnly}</button>
+          <button type="button" class="btn alt" data-do="even">{s.evenOnly}</button>
+        </div>
+        <h3>{s.blankInsertTitle}</h3>
+        <div class="row">
+          <label>{s.blankAfter}<input name="after" autocomplete="off" /></label>
+          <button type="button" class="btn alt" data-do="blank-insert">{s.blankInsertBtn}</button>
+        </div>
+        <h3>{s.blankRemoveTitle}</h3>
+        <fieldset class="opts">
+          <label class="check"><input type="radio" name="sens" value="0.0003" />{s.sens_low}</label>
+          <label class="check"><input type="radio" name="sens" value="0.002" checked />{s.sens_mid}</label>
+          <label class="check"><input type="radio" name="sens" value="0.01" />{s.sens_high}</label>
+        </fieldset>
+        <div class="actions"><button type="button" class="btn alt" data-do="blank-remove">{s.blankRemoveBtn}</button></div>
+        <p class="note" data-out hidden></p>
+      </section>
+
+      <section class="card panel tl" data-panel="compress" hidden>
+        <fieldset class="opts levels">
+          {(['light', 'balanced', 'strong', 'max'] as const).map((k) => (
+            <label class="check lvl"><input type="radio" name="level" value={k} checked={k === 'balanced'} /><span><strong>{s[`lvl_${k}`]}</strong><br />{s[`lvl_${k}_d`]}</span></label>
+          ))}
+        </fieldset>
+        <div class="actions"><button type="button" class="btn" data-do="compress">{s.compressBtn}</button></div>
+        <p class="note" data-out hidden></p>
+      </section>
+
+      <section class="card panel tl" data-panel="convert" hidden>
+        <h3>{s.toImages}</h3>
+        <div class="row">
+          <label>{s.fmt}<select name="fmt"><option value="png">PNG</option><option value="jpeg">JPEG</option><option value="webp">WebP</option></select></label>
+          <label>{s.dpiLabel}<input type="number" name="dpi" min="36" max="400" value="150" /></label>
+          <button type="button" class="btn" data-do="images">{s.imagesBtn}</button>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn alt" data-do="text">{s.toText}</button>
+          <button type="button" class="btn alt" data-do="docx">{s.toDocx}</button>
+          <button type="button" class="btn alt" data-do="extimg">{s.extImg}</button>
+        </div>
+        <p class="meta">{s.convertNote}</p>
+        <div class="actions">
+          <button type="button" class="btn alt" data-do="gray">{s.toGray}</button>
+          <button type="button" class="btn alt" data-do="invert">{s.toInvert}</button>
+          <button type="button" class="btn alt" data-do="flat">{s.toFlat}</button>
+        </div>
+        <p class="note" data-out hidden></p>
+      </section>
+
+      <section class="card panel tl" data-panel="number" hidden>
+        <fieldset class="opts grid3"><legend>{s.posLabel}</legend>
+          {POS.map((p) => <label class="check"><input type="radio" name="pos" value={p} checked={p === 'bc'} />{s[`pos_${p}`]}</label>)}
+        </fieldset>
+        <label>{s.tplLabel}<input name="template" value="{n}" autocomplete="off" /></label>
+        <div class="actions">{TPL.map((t) => <button type="button" class="btn alt sm" data-tpl={t}>{t}</button>)}</div>
+        <div class="row">
+          <label>{s.startLabel}<input type="number" name="start" value="1" /></label>
+          <label>{s.firstLabel}<input type="number" name="first" min="1" value="1" /></label>
+          <label>{s.sizeLabel}<input type="number" name="size" min="4" max="72" value="11" /></label>
+          <label>{s.marginLabel}<input type="number" name="margin" min="0" max="200" value="28" /></label>
+          <label>{s.colorLabel}<input type="color" name="color" value="#000000" /></label>
+        </div>
+        <div class="prev" data-prev="number" hidden></div>
+        <div class="actions"><button type="button" class="btn" data-do="number">{s.numberBtn}</button></div>
+      </section>
+
+      <section class="card panel tl" data-panel="watermark" hidden>
+        <fieldset class="opts">
+          <label class="check"><input type="radio" name="wmkind" value="text" checked />{s.wmText}</label>
+          <label class="check"><input type="radio" name="wmkind" value="image" />{s.wmImage}</label>
+        </fieldset>
+        <label>{s.wmTextLabel}<input name="text" value="CONFIDENTIAL" autocomplete="off" /></label>
+        <div class="row">
+          <label>{s.sizeLabel}<input type="number" name="size" min="8" max="300" value="64" /></label>
+          <label>{s.angleLabel}<input type="number" name="angle" min="-90" max="90" value="45" /></label>
+          <label>{s.opacityLabel}<input type="number" name="opacity" min="1" max="100" value="20" /></label>
+          <label>{s.colorLabel}<input type="color" name="color" value="#808080" /></label>
+        </div>
+        <div class="row">
+          <label>{s.wmFile}<input type="file" name="wmimg" accept="image/*" /></label>
+          <label>{s.wmWidth}<input type="number" name="imgsize" min="5" max="100" value="50" /></label>
+          <label>{s.opacityLabel}<input type="number" name="imgopacity" min="1" max="100" value="30" /></label>
+        </div>
+        <label>{s.pagesField}<input name="pages" placeholder={s.rangePlaceholder} autocomplete="off" /></label>
+        <div class="prev" data-prev="watermark" hidden></div>
+        <div class="actions"><button type="button" class="btn" data-do="watermark">{s.wmBtn}</button></div>
+      </section>
+
+      <section class="card panel tl" data-panel="edit" hidden>
+        <div class="etools" role="toolbar" aria-label={s.t_edit}>
+          {TOOLS.map((k) => <button type="button" class="btn alt sm" data-etool={k} aria-pressed="false">{s[`tool_${k}`]}</button>)}
+          <button type="button" class="btn alt sm" data-etool="sign" aria-pressed="false">{s.tool_sign}</button>
+          <button type="button" class="btn alt sm" data-etool="redact" aria-pressed="false">{s.tool_redact}</button>
+        </div>
+        <p class="meta" data-hint></p>
+        <div class="row efields">
+          <label data-for="text select">{s.eText}<input name="etext" autocomplete="off" /></label>
+          <label data-for="text select">{s.eSize}<input type="number" name="esize" min="4" max="200" value="18" /></label>
+          <label data-for="text draw select">{s.eColor}<input type="color" name="ecolor" value="#d62828" /></label>
+          <label data-for="draw select">{s.eWidth}<input type="number" name="ewidth" min="1" max="30" value="2" /></label>
+        </div>
+        <div data-imgbox hidden><label>{s.eImage}<input type="file" name="eimg" accept="image/*" /></label></div>
+        <div class="sig" data-sigbox hidden>
+          <p class="meta">{s.sigDraw}</p>
+          <canvas data-pad width="600" height="220" aria-label={s.sigDraw}></canvas>
+          <div class="actions">
+            <button type="button" class="btn alt sm" data-sigclear>{s.sigClear}</button>
+            <button type="button" class="btn sm" data-siguse>{s.sigUse}</button>
+          </div>
+          <div class="row">
+            <label>{s.sigTyped}<input name="sigtext" autocomplete="off" /></label>
+            <button type="button" class="btn alt sm" data-sigtype>{s.sigType}</button>
+          </div>
+          <label>{s.sigUpload}<input type="file" name="sigimg" accept="image/*" /></label>
+          <p class="note good" data-sigok hidden>{s.sigReady}</p>
+        </div>
+        <div class="enav">
+          <button type="button" class="btn alt sm" data-eprev aria-label={s.ePrev}>‹</button>
+          <label class="inl">{s.ePage}<input type="number" name="epage" min="1" value="1" /></label>
+          <button type="button" class="btn alt sm" data-enext aria-label={s.eNext}>›</button>
+          <button type="button" class="btn alt sm" data-edel disabled>{s.eDel}</button>
+          <button type="button" class="btn alt sm" data-eclear>{s.eClear}</button>
+          <span class="meta" data-ecount></span>
+        </div>
+        <div class="stage" data-stage><div class="over" data-over></div></div>
+        <div class="actions"><button type="button" class="btn" data-do="apply" disabled>{s.apply}</button></div>
+      </section>
+
+      <section class="card panel tl" data-panel="crop" hidden>
+        <h3>{s.cropTitle}</h3>
+        <div class="row">
+          <label>{s.top}<input type="number" name="top" min="0" value="0" /></label>
+          <label>{s.right}<input type="number" name="right" min="0" value="0" /></label>
+          <label>{s.bottom}<input type="number" name="bottom" min="0" value="0" /></label>
+          <label>{s.left}<input type="number" name="left" min="0" value="0" /></label>
+        </div>
+        <label>{s.pagesField}<input name="pages" placeholder={s.rangePlaceholder} autocomplete="off" /></label>
+        <div class="prev" data-prev="crop" hidden></div>
+        <div class="actions"><button type="button" class="btn" data-do="crop">{s.cropBtn}</button></div>
+        <h3>{s.autoTitle}</h3>
+        <div class="row">
+          <label>{s.padLabel}<input type="number" name="pad" min="0" max="100" value="8" /></label>
+          <button type="button" class="btn alt" data-do="autocrop">{s.autoBtn}</button>
+        </div>
+        <div class="prev" data-prev="autocrop" hidden></div>
+        <h3>{s.resizeTitle}</h3>
+        <div class="row">
+          <label>{s.sheetLabel}<select name="psize">{SHEETS.map((k) => <option value={k} selected={k === 'A4'}>{k}</option>)}</select></label>
+          <label>{s.orientLabel}<select name="orient"><option value="portrait">{s.orient_p}</option><option value="landscape">{s.orient_l}</option></select></label>
+          <label>{s.marginLabel}<input type="number" name="pmargin" min="0" value="0" /></label>
+          <button type="button" class="btn alt" data-do="resize">{s.resizeBtn}</button>
+        </div>
+        <div class="prev" data-prev="resize" hidden></div>
+      </section>
+
+      <section class="card panel tl" data-panel="nup" hidden>
+        <h3>{s.nupTitle}</h3>
+        <div class="row">
+          <label>{s.perLabel}<select name="per">{['2', '4', '6', '8', '9'].map((k) => <option value={k} selected={k === '2'}>{k}</option>)}</select></label>
+          <label>{s.sheetLabel}<select name="sheet"><option value="first">{s.sheetFirst}</option>{SHEETS.map((k) => <option value={k}>{k}</option>)}</select></label>
+          <label>{s.orientLabel}<select name="orient"><option value="portrait">{s.orient_p}</option><option value="landscape">{s.orient_l}</option></select></label>
+        </div>
+        <div class="row">
+          <label>{s.marginLabel.replace('pt', 'mm')}<input type="number" name="margin" min="0" value="8" /></label>
+          <label>{s.gapLabel}<input type="number" name="gap" min="0" value="4" /></label>
+          <label class="check"><input type="checkbox" name="border" />{s.borderLabel}</label>
+        </div>
+        <div class="prev" data-prev="nup" hidden></div>
+        <div class="actions"><button type="button" class="btn" data-do="nup">{s.nupBtn}</button></div>
+        <h3>{s.bookletTitle}</h3>
+        <p class="meta">{s.bookletNote}</p>
+        <div class="row">
+          <label>{s.sheetLabel}<select name="sheet"><option value="first">{s.sheetFirst}</option>{SHEETS.map((k) => <option value={k}>{k}</option>)}</select></label>
+          <button type="button" class="btn alt" data-do="booklet">{s.bookletBtn}</button>
+        </div>
+        <div class="prev" data-prev="booklet" hidden></div>
+      </section>
+
+      <section class="card panel tl" data-panel="forms" hidden>
+        <p class="note" data-nofields hidden>{s.noFields}</p>
+        <div data-hasfields hidden class="tl">
+          <div class="fields" data-fields></div>
+          <label class="check"><input type="checkbox" name="flatten" />{s.flattenLabel}</label>
+          <div class="actions">
+            <button type="button" class="btn" data-do="fill">{s.fillBtn}</button>
+            <button type="button" class="btn alt" data-do="flatten">{s.flattenBtn}</button>
+          </div>
+        </div>
+        <p class="note" data-out hidden></p>
+      </section>
+
+      <section class="card panel tl" data-panel="protect" hidden>
+        <div class="row">
+          <label>{s.upw}<input type="password" name="upw" autocomplete="new-password" /></label>
+          <label>{s.opw}<input type="password" name="opw" autocomplete="new-password" /></label>
+        </div>
+        <fieldset class="opts"><legend>{s.allowTitle}</legend>
+          <label class="check"><input type="checkbox" name="aprint" checked />{s.aprint}</label>
+          <label class="check"><input type="checkbox" name="acopy" checked />{s.acopy}</label>
+          <label class="check"><input type="checkbox" name="amodify" />{s.amodify}</label>
+          <label class="check"><input type="checkbox" name="aannot" checked />{s.aannot}</label>
+        </fieldset>
+        <p class="meta">{s.protectNote}</p>
+        <div class="actions"><button type="button" class="btn" data-do="protect">{s.protectBtn}</button></div>
+        <p class="note good" data-out hidden></p>
+      </section>
+
+      <section class="card panel tl" data-panel="info" hidden>
+        <div class="row">
+          <label>{s.title}<input name="title" autocomplete="off" /></label>
+          <label>{s.author}<input name="author" autocomplete="off" /></label>
+          <label>{s.subject}<input name="subject" autocomplete="off" /></label>
+        </div>
+        <div class="row">
+          <label>{s.keywords}<input name="keywords" autocomplete="off" /></label>
+          <label>{s.creator}<input name="creator" autocomplete="off" /></label>
+          <label>{s.producer}<input name="producer" autocomplete="off" /></label>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn" data-do="save">{s.saveInfo}</button>
+          <button type="button" class="btn alt" data-do="strip">{s.stripInfo}</button>
+        </div>
+        <h3>{s.annotsTitle}</h3>
+        <div class="row">
+          <label>{s.pagesField}<input name="apages" placeholder={s.rangePlaceholder} autocomplete="off" /></label>
+          <button type="button" class="btn alt" data-do="annots">{s.annotsBtn}</button>
+        </div>
+      </section>
+
+      <section class="card panel tl" data-panel="mix" hidden>
+        <h3 class="exh"><svg class="ex" viewBox="0 0 64 40" aria-hidden="true"><rect x="8" y="5" width="26" height="30" rx="2"/><rect x="22" y="9" width="26" height="30" rx="2" class="b"/></svg>{s.overlayTitle}</h3>
+        <div class="row">
+          <label>{s.overlayFile}<input type="file" data-mixfile="overlay" accept="application/pdf,.pdf" /></label>
+          <label>{s.opacityLabel}<input type="number" name="oopacity" min="1" max="100" value="100" /></label>
+        </div>
+        <fieldset class="opts"><legend>{s.whereLabel}</legend>
+          <label class="check"><input type="radio" name="where" value="over" checked />{s.where_over}</label>
+          <label class="check"><input type="radio" name="where" value="under" />{s.where_under}</label>
+          <label class="check"><input type="checkbox" name="cycle" />{s.cycleLabel}</label>
+        </fieldset>
+        <div class="prev" data-prev="overlay" hidden></div>
+        <div class="actions"><button type="button" class="btn alt" data-do="overlay">{s.overlayBtn}</button></div>
+        <h3 class="exh"><svg class="ex" viewBox="0 0 64 40" aria-hidden="true"><rect x="3" y="8" width="12" height="24" rx="2"/><rect x="19" y="8" width="12" height="24" rx="2" class="b"/><rect x="35" y="8" width="12" height="24" rx="2"/><rect x="51" y="8" width="12" height="24" rx="2" class="b"/></svg>{s.altTitle}</h3>
+        <div class="row">
+          <label>{s.altFile}<input type="file" data-mixfile="alternate" accept="application/pdf,.pdf" /></label>
+          <label class="check"><input type="checkbox" name="revb" />{s.revLabel}</label>
+          <button type="button" class="btn alt" data-do="alternate">{s.altBtn}</button>
+        </div>
+        <div class="prev" data-prev="alternate" hidden></div>
+        <h3 class="exh"><svg class="ex" viewBox="0 0 64 40" aria-hidden="true"><rect x="4" y="5" width="25" height="30" rx="2"/><rect x="35" y="5" width="25" height="30" rx="2" class="b"/><path d="M9 13h15M9 20h15M9 27h9M40 13h15M40 20h15M40 27h12" /></svg>{s.cmpTitle}</h3>
+        <div class="row">
+          <label>{s.cmpFile}<input type="file" data-mixfile="compare" accept="application/pdf,.pdf" /></label>
+          <button type="button" class="btn alt" data-do="compare">{s.cmpBtn}</button>
+        </div>
+        <div class="diff" data-diff hidden></div>
+      </section>
+
+      <div class="card strip" data-strip hidden>
+        <p class="meta" data-striptitle></p>
+        <div class="strip-row" data-striprow></div>
+      </div>
     </div>
+
+    <details class="card limits">
+      <summary>{s.notPossibleTitle}</summary>
+      <p>{s.notPossible}</p>
+    </details>
   </div>
 </ToolLayout>
 <script>
   import '../../../../tools/pdf/pdf.ts';
 </script>
-<style>
-  .pdf { display: grid; gap: 18px; }
-  .drop { display: grid; justify-items: center; gap: 8px; padding: clamp(24px, 4vw, 40px); text-align: center; border-style: dashed; }
-  .drop.over { border-color: var(--accent); }
-  .big { margin: 0; font-family: var(--font-display, inherit); font-size: 1.15rem; }
-  .hint { max-width: 56ch; margin: 4px 0 0; }
-  .pick { cursor: pointer; }
-  .pick:focus-within { outline: 2px solid var(--accent); outline-offset: 3px; }
-  .warn { margin: 0; padding: 9px 12px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface-2); font-size: .9rem; }
-  .bar { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: end; justify-content: space-between; padding: 16px 20px; }
-  .range { display: grid; gap: 6px; font-size: .88rem; color: var(--muted); }
-  .row { display: flex; flex-wrap: wrap; gap: 10px; }
-  .row.end { justify-content: flex-end; }
-  input[data-range] { width: 14ch; padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); color: var(--fg); font: inherit; font-size: .95rem; }
-  .btn.alt { background: transparent; color: var(--fg); border: 1px solid var(--line); box-shadow: none; }
-  .btn[disabled] { opacity: .45; cursor: not-allowed; }
-  .pages { list-style: none; margin: 20px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; align-items: start; }
-  :global(.pdf .pg) { display: grid; gap: 8px; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); }
-  :global(.pdf .pg.dragging) { opacity: .45; }
-  :global(.pdf .pg.target) { border-color: var(--accent); }
-  :global(.pdf .pg canvas) { width: 100%; height: auto; background: #fff; border-radius: 4px; cursor: grab; }
-  :global(.pdf .pg .num) { font-size: .8rem; color: var(--muted); text-align: center; }
-  :global(.pdf .pg .tools) { display: flex; justify-content: center; gap: 4px; }
-  :global(.pdf .pg .tools button) { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--fg); cursor: pointer; }
-  :global(.pdf .pg .tools button:hover:not([disabled])) { border-color: var(--accent); }
-  :global(.pdf .pg .tools button[disabled]) { opacity: .35; cursor: not-allowed; }
+<style is:global>
+  .pdf { display: grid; gap: 18px; min-width: 0; }
+  .pdf .dropzone { display: grid; justify-items: center; gap: 10px; padding: clamp(24px, 4vw, 40px); text-align: center; border-style: dashed; transition: padding .2s var(--ease); }
+  .pdf .dropzone.over { border-color: var(--accent); }
+  .pdf .dropzone.compact { padding: 14px 18px; gap: 6px; }
+  .pdf .dropzone.compact .hint { display: none; }
+  .pdf .big { margin: 0; font-family: var(--display, inherit); font-size: 1.1rem; }
+  .pdf .picks { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  /* capture=environment only opens the camera on phones and tablets, so the button is for touch devices */
+  .pdf .camera { display: none; }
+  @media (pointer: coarse) { .pdf .camera { display: inline-flex; } }
+  .pdf .hint { max-width: 60ch; margin: 0; }
+  .pdf .pick { cursor: pointer; }
+  .pdf .pick:focus-within { outline: 2px solid var(--accent-ink); outline-offset: 3px; }
+  .pdf .warn { margin: 0; padding: 9px 12px; border-radius: var(--radius-sm); border: 1px solid #d65a5a; background: var(--surface-2); font-size: .9rem; }
+  .pdf .unlock { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; padding: 14px 18px; }
+  .pdf .unlock[hidden], .pdf .work[hidden], .pdf .panel[hidden], .pdf [data-hasfields][hidden] { display: none !important; }
+  .pdf .unlock label { display: grid; gap: 6px; font-size: .88rem; color: var(--muted); flex: 1 1 220px; }
+  .pdf input:not([type='checkbox'], [type='radio'], [type='color'], [type='file']), .pdf select { padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); color: var(--fg); font: inherit; font-size: .95rem; }
+
+  /* tool tabs */
+  .pdf .tabs { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+  .pdf .tab { display: grid; gap: 3px; align-content: start; text-align: left; padding: 11px 13px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--fg); font: inherit; cursor: pointer; transition: border-color .15s, background .15s; }
+  .pdf .tab strong { font-weight: 600; font-size: .95rem; }
+  .pdf .tab span { font-size: .78rem; color: var(--muted); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .pdf .tab:hover { border-color: var(--accent); }
+  .pdf .tab[aria-selected='true'] { border-color: var(--accent-strong); background: var(--surface-2); box-shadow: inset 3px 0 0 var(--accent-strong); }
+  .pdf .tab:focus-visible { outline: 2px solid var(--accent-ink); outline-offset: 2px; }
+
+  .pdf .bar { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; padding: 12px 18px; }
+  .pdf .bar .stats { margin: 0; }
+  .pdf .row { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: end; }
+  .pdf .row.end { justify-content: flex-end; }
+  .pdf .btn.alt { background: transparent; color: var(--fg); border: 1px solid var(--line); box-shadow: none; }
+  .pdf .btn.sm { padding: 6px 12px; font-size: .85rem; }
+  .pdf .btn[disabled] { opacity: .45; cursor: not-allowed; }
+
+  /* panels */
+  .pdf .panel { padding: clamp(14px, 2.2vw, 22px); min-width: 0; }
+  .pdf .panel h3 { margin: 6px 0 0; font-size: 1rem; }
+  .pdf .panel .meta { margin: 0; }
+  .pdf .opts { display: flex; flex-wrap: wrap; gap: 8px 22px; border: 0; padding: 0; margin: 0; }
+  .pdf .opts legend { font-size: .88rem; color: var(--muted); padding: 0 0 6px; }
+  .pdf .opts.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 460px; }
+  .pdf .opts.levels { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+  .pdf .lvl { align-items: start; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+  .pdf .lvl:has(input:checked) { border-color: var(--accent-strong); background: var(--surface-2); }
+  .pdf .lvl strong { color: var(--fg); }
+  .pdf .fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px 16px; }
+  .pdf .limits { padding: 12px 18px; }
+  .pdf .limits summary { cursor: pointer; font-weight: 500; }
+  .pdf .limits p { margin: 10px 0 0; color: var(--muted); font-size: .9rem; max-width: 70ch; }
+  .pdf .selbar { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  /* page grid */
+  .pdf .pages { list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 18px 16px; align-items: start; position: relative; }
+  .pdf .prev { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); }
+  .pdf .prev[hidden], .pdf .strip[hidden] { display: none !important; }
+  .pdf .prev figure { margin: 0; display: grid; gap: 4px; justify-items: center; }
+  .pdf .prev figure > div { display: flex; gap: 6px; align-items: flex-start; }
+  .pdf .prev canvas, .pdf .strip canvas { height: auto; max-width: 100%; background: #fff; border-radius: 2px; box-shadow: 0 1px 4px rgb(0 0 0 / .25); }
+  .pdf .prev canvas { width: min(200px, 42vw); max-height: 260px; object-fit: contain; }
+  .pdf .prev figcaption { font-size: .78rem; color: var(--muted); }
+  .pdf .prev .arrow { color: var(--muted); font-size: 1.4rem; }
+  .pdf .strip { display: grid; gap: 8px; padding: 12px; }
+  .pdf .strip-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; align-items: flex-end; }
+  .pdf .strip canvas { width: auto; height: 96px; flex: none; }
+  .pdf .exh { display: flex; align-items: center; gap: 10px; }
+  .pdf .ex { width: 64px; height: 40px; flex: none; fill: var(--surface-2); stroke: var(--muted); stroke-width: 1.5; }
+  .pdf .ex .b { fill: color-mix(in srgb, var(--accent) 25%, transparent); stroke: var(--accent-strong); }
+  .pdf .pg { position: relative; display: grid; gap: 6px; padding: 8px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); user-select: none; -webkit-user-select: none; cursor: pointer; touch-action: pan-y; }
+  .pdf .pg .thumb { height: 190px; display: grid; place-items: center; overflow: hidden; border-radius: 4px; background: repeating-conic-gradient(var(--line) 0 25%, transparent 0 50%) 50% / 14px 14px; }
+  .pdf .pg .thumb canvas { max-width: 100%; max-height: 100%; width: auto; height: auto; background: #fff; border-radius: 2px; box-shadow: 0 1px 4px rgb(0 0 0 / .25); pointer-events: none; }
+  .pdf .pg .num { font-size: .8rem; color: var(--muted); text-align: center; }
+  .pdf .pg .tools { display: flex; justify-content: center; gap: 4px; }
+  .pdf .pg .tools button { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--fg); cursor: pointer; }
+  .pdf .pg .tools button:hover:not([disabled]) { border-color: var(--accent); }
+  .pdf .pg .tools button[disabled] { opacity: .3; cursor: not-allowed; }
+  .pdf .pg .grip { position: absolute; top: 12px; left: 12px; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 6px; background: rgb(0 0 0 / .55); color: #fff; cursor: grab; touch-action: none; opacity: 0; transition: opacity .15s; }
+  .pdf .pg:hover .grip, .pdf .pg:focus-within .grip { opacity: 1; }
+  @media (hover: none) { .pdf .pg .grip { opacity: .9; } }
+  .pdf .pg .tick { position: absolute; top: 12px; right: 12px; width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: var(--accent-strong); color: #fff; font-size: .8rem; transform: scale(0); transition: transform .15s var(--ease); }
+  .pdf .pg.sel { border-color: var(--accent-strong); box-shadow: 0 0 0 2px var(--accent-strong); }
+  .pdf .pg.sel .tick { transform: scale(1); }
+  .pdf .pg.grabbed { z-index: 5; cursor: grabbing; box-shadow: 0 14px 34px rgb(0 0 0 / .45); transition: box-shadow .15s; opacity: .96; }
+  .pdf .pages.sorting .pg:not(.grabbed) { cursor: grabbing; }
+  @media (prefers-reduced-motion: reduce) { .pdf .pg { transition: none !important; } }
+
+  /* editor */
+  .pdf .efields { min-height: 0; }
+  .pdf .efields [data-for] { display: none; }
+  .pdf [data-tool='text'] [data-for~='text'], .pdf [data-tool='draw'] [data-for~='draw'], .pdf [data-tool='select'] [data-for~='select'] { display: grid; }
+  .pdf .etools, .pdf .enav { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .pdf .etools [aria-pressed='true'] { background: var(--accent-strong); border-color: var(--accent-strong); color: #fff; }
+  .pdf .enav .inl { display: flex; align-items: center; gap: 8px; }
+  .pdf .enav .inl input { width: 5.5ch; padding: 6px 8px; }
+  .pdf .sig { display: grid; gap: 10px; max-width: 620px; }
+  .pdf .sig canvas { width: 100%; height: auto; aspect-ratio: 600 / 220; background: #fff; border: 1px solid var(--line); border-radius: var(--radius-sm); touch-action: none; cursor: crosshair; }
+  .pdf .stage { position: relative; justify-self: center; width: min(100%, 860px); background: var(--surface-2); border: 1px solid var(--line); border-radius: 4px; }
+  .pdf .stage .epage { display: block; width: 100%; height: auto; background: #fff; }
+  .pdf .over { position: absolute; inset: 0; touch-action: none; cursor: crosshair; overflow: hidden; }
+  .pdf .over[data-tool='select'] { cursor: default; }
+  .pdf .eit { position: absolute; cursor: move; touch-action: none; }
+  .pdf .eit.on { outline: 2px dashed var(--accent-strong); outline-offset: 2px; }
+  .pdf .etext { white-space: pre; line-height: 1.1; transform: translateY(-82%); font-family: Helvetica, Arial, sans-serif; }
+  .pdf .erect.redact { outline: 1px solid #fff; }
+  .pdf .eimg img { display: block; width: 100%; height: auto; pointer-events: none; }
+  .pdf .epath { inset: 0; pointer-events: none; }
+  .pdf .epath polyline { pointer-events: stroke; cursor: move; }
+  .pdf .epath svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .pdf .grab { position: absolute; right: -7px; bottom: -7px; width: 14px; height: 14px; border-radius: 50%; background: var(--accent-strong); border: 2px solid #fff; cursor: nwse-resize; }
+  .pdf .eit:not(.on) .grab { display: none; }
+  .pdf .stage .over { z-index: 1; }
 </style>

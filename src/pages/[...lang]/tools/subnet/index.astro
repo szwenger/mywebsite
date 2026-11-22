@@ -1,0 +1,48 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { input: 'IPv4 address with prefix', hint: '192.168.1.10/24, 10.0.0.1 255.255.0.0 or a single address.', ip: 'Address', mask: 'Netmask', wild: 'Wildcard', net: 'Network', bc: 'Broadcast', range: 'Usable range', hosts: 'Usable hosts', total: 'Addresses in total', kind: 'Type', split: 'Split into subnets', splitTo: 'New prefix', splitBtn: 'Split', count: '{n} subnets', more: 'Showing the first {n}.',
+    kinds: { private: 'Private (RFC 1918)', loopback: 'Loopback', linklocal: 'Link-local', cgnat: 'Carrier-grade NAT (100.64.0.0/10)', multicast: 'Multicast', reserved: 'Reserved', this: 'This network (0.0.0.0/8)', public: 'Public' },
+    format: 'Not an IPv4 address. Use four numbers from 0 to 255, for example 192.168.1.10/24.', prefix: 'The prefix must be a whole number from 0 to 32, and longer than the current one when splitting.', mask: 'That is not a valid netmask (ones followed by zeros).' },
+  de: { input: 'IPv4-Adresse mit Präfix', hint: '192.168.1.10/24, 10.0.0.1 255.255.0.0 oder eine einzelne Adresse.', ip: 'Adresse', mask: 'Netzmaske', wild: 'Wildcard', net: 'Netzwerk', bc: 'Broadcast', range: 'Nutzbarer Bereich', hosts: 'Nutzbare Hosts', total: 'Adressen insgesamt', kind: 'Art', split: 'In Subnetze teilen', splitTo: 'Neues Präfix', splitBtn: 'Teilen', count: '{n} Subnetze', more: 'Die ersten {n} werden angezeigt.',
+    kinds: { private: 'Privat (RFC 1918)', loopback: 'Loopback', linklocal: 'Link-Local', cgnat: 'Carrier-grade NAT (100.64.0.0/10)', multicast: 'Multicast', reserved: 'Reserviert', this: 'Dieses Netz (0.0.0.0/8)', public: 'Öffentlich' },
+    format: 'Keine IPv4-Adresse. Nutze vier Zahlen von 0 bis 255, zum Beispiel 192.168.1.10/24.', prefix: 'Das Präfix muss eine ganze Zahl von 0 bis 32 sein, beim Teilen länger als das aktuelle.', mask: 'Das ist keine gültige Netzmaske (erst Einsen, dann Nullen).' },
+  ru: { input: 'Адрес IPv4 с префиксом', hint: '192.168.1.10/24, 10.0.0.1 255.255.0.0 или один адрес.', ip: 'Адрес', mask: 'Маска сети', wild: 'Обратная маска', net: 'Сеть', bc: 'Широковещательный', range: 'Диапазон хостов', hosts: 'Доступных хостов', total: 'Всего адресов', kind: 'Тип', split: 'Разбить на подсети', splitTo: 'Новый префикс', splitBtn: 'Разбить', count: 'Подсетей: {n}', more: 'Показаны первые {n}.',
+    kinds: { private: 'Частный (RFC 1918)', loopback: 'Loopback', linklocal: 'Link-local', cgnat: 'Carrier-grade NAT (100.64.0.0/10)', multicast: 'Multicast', reserved: 'Зарезервирован', this: 'Эта сеть (0.0.0.0/8)', public: 'Публичный' },
+    format: 'Это не адрес IPv4. Нужны четыре числа от 0 до 255, например 192.168.1.10/24.', prefix: 'Префикс — целое число от 0 до 32, а при разбиении длиннее текущего.', mask: 'Это недопустимая маска сети (сначала единицы, потом нули).' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="subnet">
+  <div class="tl two" data-subnet data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <label>{s.input}<input name="cidr" class="mono big" value="192.168.1.10/24" spellcheck="false" autocomplete="off" /></label>
+      <p class="meta">{s.hint}</p>
+      <h2 class="sub">{s.split}</h2>
+      <div class="row">
+        <label>{s.splitTo}<input name="to" type="number" min="1" max="32" inputmode="numeric" value="26" /></label>
+        <button type="button" class="btn alt" data-split>{s.splitBtn}</button>
+      </div>
+      <p class="meta" data-split-note></p>
+      <ul class="subs mono" data-subs></ul>
+    </div>
+    <div class="card pane" aria-live="polite">
+      <p class="note bad" data-error role="alert" hidden></p>
+      <table data-ok><tbody data-rows></tbody></table>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/subnet/subnet.ts';
+</script>
+<style>
+  .big { font-size: 1.15rem; }
+  .sub { margin: 4px 0 0; font-family: var(--font); font-size: .95rem; font-weight: 600; letter-spacing: 0; }
+  .subs { margin: 0; padding-left: 1.2em; display: grid; gap: 2px; font-size: .86rem; max-height: 22rem; overflow: auto; }
+  .row button { align-self: end; }
+</style>

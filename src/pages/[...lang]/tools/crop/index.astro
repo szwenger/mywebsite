@@ -1,0 +1,78 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+import { PRESETS } from '../../../../tools/crop/logic';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { drop: 'Drop an image here', or: 'or', browse: 'Choose an image', hint: 'PNG, JPEG, WebP, GIF or BMP. Nothing is uploaded.', ratio: 'Shape', orig: 'Original', custom: 'Custom', customPh: 'e.g. 5:4', zoom: 'Zoom', width: 'Output width (px)', widthHint: 'Empty keeps the cropped size.', fmt: 'Format', quality: 'Quality', left: 'Turn left', right: 'Turn right', download: 'Download', size: 'Result: {w} × {h} px', dragHint: 'Drag on the picture to move the crop.', other: 'Choose another image', badType: 'Not a PNG, JPEG, WebP, GIF or BMP image.', failed: 'This image could not be read.', tooBig: 'Too large to process in the browser.', unsupported: 'This browser cannot export that format.' },
+  de: { drop: 'Bild hier ablegen', or: 'oder', browse: 'Bild wählen', hint: 'PNG, JPEG, WebP, GIF oder BMP. Nichts wird hochgeladen.', ratio: 'Form', orig: 'Original', custom: 'Eigene', customPh: 'z. B. 5:4', zoom: 'Zoom', width: 'Ausgabebreite (px)', widthHint: 'Leer behält die Größe des Ausschnitts.', fmt: 'Format', quality: 'Qualität', left: 'Nach links drehen', right: 'Nach rechts drehen', download: 'Herunterladen', size: 'Ergebnis: {w} × {h} px', dragHint: 'Auf dem Bild ziehen, um den Ausschnitt zu verschieben.', other: 'Anderes Bild wählen', badType: 'Kein PNG-, JPEG-, WebP-, GIF- oder BMP-Bild.', failed: 'Dieses Bild konnte nicht gelesen werden.', tooBig: 'Zu groß für die Verarbeitung im Browser.', unsupported: 'Dieser Browser kann das Format nicht exportieren.' },
+  ru: { drop: 'Перетащите сюда изображение', or: 'или', browse: 'Выбрать изображение', hint: 'PNG, JPEG, WebP, GIF или BMP. Ничего не загружается.', ratio: 'Форма', orig: 'Исходная', custom: 'Своя', customPh: 'например, 5:4', zoom: 'Масштаб', width: 'Ширина результата (px)', widthHint: 'Пусто — размер обрезанной области.', fmt: 'Формат', quality: 'Качество', left: 'Повернуть влево', right: 'Повернуть вправо', download: 'Скачать', size: 'Результат: {w} × {h} px', dragHint: 'Перетаскивайте по картинке, чтобы сдвинуть рамку.', other: 'Выбрать другое изображение', badType: 'Это не изображение PNG, JPEG, WebP, GIF или BMP.', failed: 'Не удалось прочитать это изображение.', tooBig: 'Слишком большое изображение для обработки в браузере.', unsupported: 'Этот браузер не умеет сохранять в этот формат.' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="crop">
+  <div class="crop" data-crop data-s={JSON.stringify(s)}>
+    <div class="drop card" data-drop>
+      <p class="big">{s.drop}</p>
+      <p class="meta">{s.or}</p>
+      <label class="btn pick">{s.browse}<input type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp" class="sr-only" data-file /></label>
+      <p class="meta">{s.hint}</p>
+    </div>
+    <p class="warn" role="alert" data-error hidden></p>
+    <div class="work" data-work hidden>
+      <div class="stage card">
+        <div class="view" data-view>
+          <canvas data-preview></canvas>
+          <div class="box" data-box></div>
+        </div>
+        <p class="meta">{s.dragHint}</p>
+      </div>
+      <div class="card opts">
+        <label>{s.ratio}
+          <select name="ratio"><option value="">{s.orig}</option>{PRESETS.map((p) => <option value={p}>{p}</option>)}<option value="custom">{s.custom}</option></select>
+        </label>
+        <label data-custom hidden>{s.custom}<input name="custom" placeholder={s.customPh} autocomplete="off" /></label>
+        <label>{s.zoom}<input name="zoom" type="range" min="1" max="8" step="0.05" value="1" /></label>
+        <label>{s.width}<input name="width" type="number" min="1" inputmode="numeric" /></label>
+        <label>{s.fmt}<select name="fmt"><option value="png">PNG</option><option value="jpeg">JPG</option><option value="webp">WebP</option></select></label>
+        <label>{s.quality}<input name="quality" type="range" min="40" max="100" step="5" value="90" /></label>
+        <div class="row">
+          <button type="button" class="btn alt" data-turn="-90">↺ {s.left}</button>
+          <button type="button" class="btn alt" data-turn="90">↻ {s.right}</button>
+        </div>
+        <p class="meta full" data-size></p>
+        <div class="row full">
+          <button type="button" class="btn" data-download>{s.download}</button>
+          <button type="button" class="btn alt" data-other>{s.other}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/crop/crop.ts';
+</script>
+<style>
+  .crop { display: grid; gap: 18px; }
+  .drop { display: grid; justify-items: center; gap: 8px; padding: clamp(24px, 4vw, 40px); text-align: center; border-style: dashed; }
+  .drop.over { border-color: var(--accent); }
+  .big { margin: 0; font-size: 1.15rem; }
+  .pick { cursor: pointer; }
+  .warn { margin: 0; padding: 9px 12px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface-2); font-size: .9rem; }
+  .work { display: grid; gap: 18px; }
+  .stage { padding: 14px; display: grid; gap: 8px; justify-items: center; }
+  .view { position: relative; max-width: 100%; overflow: hidden; touch-action: none; cursor: crosshair; line-height: 0; border-radius: 4px; background: repeating-conic-gradient(#8883 0 25%, transparent 0 50%) 0 0 / 16px 16px; }
+  .view canvas { display: block; max-width: 100%; height: auto; }
+  .box { position: absolute; border: 2px solid #fff; outline: 1px solid #0008; box-shadow: 0 0 0 9999px rgb(0 0 0 / .55); pointer-events: none; }
+  .opts { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: end; padding: 16px 20px; }
+  .opts label { display: grid; gap: 6px; font-size: .88rem; color: var(--muted); }
+  .opts select, .opts input:not([type='range']) { padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); color: var(--fg); font: inherit; }
+  .opts input[type='number'] { width: 11ch; }
+  .opts input[type='range'] { accent-color: var(--accent-strong); width: 150px; }
+  .opts .full { flex-basis: 100%; margin: 0; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .btn.alt { background: transparent; color: var(--fg); border: 1px solid var(--line); box-shadow: none; }
+</style>

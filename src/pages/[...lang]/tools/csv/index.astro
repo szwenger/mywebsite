@@ -1,0 +1,44 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { dir: 'Direction', toJson: 'CSV to JSON', toCsv: 'JSON to CSV', input: 'Input', output: 'Output', delim: 'Delimiter', auto: 'Detect', comma: 'Comma', semi: 'Semicolon', tab: 'Tab', pipe: 'Pipe', header: 'First row is the header', infer: 'Turn numbers, true and false into JSON types', copy: 'Copy', download: 'Download', file: 'Open a file', rows: 'rows', cols: 'columns',
+    quote: 'A quoted cell is never closed.', shape: 'Expected a JSON array of objects (or one object).', json: 'Not valid JSON: {e}', note: 'Leading zeros ("007") and numbers beyond 2^53 stay text so nothing is changed silently. Nested objects become columns like a.b.', csvEx: 'name,age\nAnn,31\nBob,28' },
+  de: { dir: 'Richtung', toJson: 'CSV zu JSON', toCsv: 'JSON zu CSV', input: 'Eingabe', output: 'Ausgabe', delim: 'Trennzeichen', auto: 'Erkennen', comma: 'Komma', semi: 'Semikolon', tab: 'Tabulator', pipe: 'Senkrechter Strich', header: 'Erste Zeile ist die Kopfzeile', infer: 'Zahlen, true und false in JSON-Typen umwandeln', copy: 'Kopieren', download: 'Herunterladen', file: 'Datei öffnen', rows: 'Zeilen', cols: 'Spalten',
+    quote: 'Ein Wert in Anführungszeichen wird nie geschlossen.', shape: 'Erwartet wird ein JSON-Array aus Objekten (oder ein einzelnes Objekt).', json: 'Kein gültiges JSON: {e}', note: 'Führende Nullen („007“) und Zahlen über 2^53 bleiben Text, damit nichts stillschweigend verändert wird. Verschachtelte Objekte werden zu Spalten wie a.b.', csvEx: 'name,alter\nAnn,31\nBob,28' },
+  ru: { dir: 'Направление', toJson: 'CSV в JSON', toCsv: 'JSON в CSV', input: 'Ввод', output: 'Результат', delim: 'Разделитель', auto: 'Определить', comma: 'Запятая', semi: 'Точка с запятой', tab: 'Табуляция', pipe: 'Вертикальная черта', header: 'Первая строка — заголовок', infer: 'Превращать числа, true и false в типы JSON', copy: 'Копировать', download: 'Скачать', file: 'Открыть файл', rows: 'строк', cols: 'столбцов',
+    quote: 'Значение в кавычках не закрыто.', shape: 'Нужен массив объектов JSON (или один объект).', json: 'Некорректный JSON: {e}', note: 'Ведущие нули («007») и числа больше 2^53 остаются текстом, чтобы ничего не менялось молча. Вложенные объекты становятся столбцами вида a.b.', csvEx: 'name,age\nAnn,31\nBob,28' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="csv">
+  <div class="tl two" data-csv data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <div class="row">
+        <label>{s.dir}<select name="dir"><option value="toJson">{s.toJson}</option><option value="toCsv">{s.toCsv}</option></select></label>
+        <label>{s.delim}<select name="delim"><option value="">{s.auto}</option><option value=",">{s.comma}</option><option value=";">{s.semi}</option><option value={'\t'}>{s.tab}</option><option value="|">{s.pipe}</option></select></label>
+      </div>
+      <label class="check" data-opt="toJson"><input type="checkbox" name="header" checked /> {s.header}</label>
+      <label class="check" data-opt="toJson"><input type="checkbox" name="infer" /> {s.infer}</label>
+      <label>{s.input}<textarea name="in" spellcheck="false" rows="12">{s.csvEx}</textarea></label>
+      <div class="actions"><label class="btn alt pick">{s.file}<input type="file" accept=".csv,.tsv,.txt,.json,text/csv,application/json" class="sr-only" data-file /></label></div>
+      <p class="meta">{s.note}</p>
+    </div>
+    <div class="card pane" aria-live="polite">
+      <p class="note bad" data-error role="alert" hidden></p>
+      <label>{s.output}<textarea name="out" readonly rows="12" spellcheck="false"></textarea></label>
+      <p class="meta" data-count></p>
+      <div class="actions"><button type="button" class="btn" data-copy>{s.copy}</button><button type="button" class="btn alt" data-download>{s.download}</button></div>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/csv/csv.ts';
+</script>
+<style>
+  .pick { cursor: pointer; }
+</style>

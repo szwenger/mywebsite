@@ -1,0 +1,66 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { drop: 'Drop a PDF here', or: 'or', browse: 'Choose a PDF', hint: 'Every page becomes an image. Nothing is uploaded.', fmt: 'Format', dpi: 'Resolution', dpiHint: '150 is sharp on screen, 300 for print.', quality: 'Quality', pages: 'Pages', pagesPh: 'all, or e.g. 1-3, 5', convert: 'Convert', zip: 'Download all as ZIP', save: 'Download', working: 'Rendering page {n} of {t}…', done: '{n} images ready.', capped: 'Large page: rendered at {d} dpi so the browser can draw it.',
+    invalid: 'This file could not be read as a PDF.', password: 'This PDF is password-protected.', pw: 'Password', unlock: 'Open', wrongPw: 'Wrong password.', empty: 'Enter pages such as 1-3, 5.', syntax: 'Could not read the range. Use page numbers such as 1-3, 5.', 'out-of-range': 'A page number is outside this document.', unsupported: 'This browser cannot export that format. Choose another.' },
+  de: { drop: 'PDF hier ablegen', or: 'oder', browse: 'PDF wählen', hint: 'Jede Seite wird ein Bild. Nichts wird hochgeladen.', fmt: 'Format', dpi: 'Auflösung', dpiHint: '150 ist am Bildschirm scharf, 300 für den Druck.', quality: 'Qualität', pages: 'Seiten', pagesPh: 'alle, oder z. B. 1-3, 5', convert: 'Umwandeln', zip: 'Alle als ZIP laden', save: 'Herunterladen', working: 'Seite {n} von {t} wird erzeugt…', done: '{n} Bilder fertig.', capped: 'Große Seite: mit {d} dpi erzeugt, damit der Browser sie zeichnen kann.',
+    invalid: 'Diese Datei konnte nicht als PDF gelesen werden.', password: 'Dieses PDF ist passwortgeschützt.', pw: 'Passwort', unlock: 'Öffnen', wrongPw: 'Falsches Passwort.', empty: 'Gib Seiten wie 1-3, 5 ein.', syntax: 'Der Bereich ist nicht lesbar. Nutze Seitenzahlen wie 1-3, 5.', 'out-of-range': 'Eine Seitenzahl liegt außerhalb des Dokuments.', unsupported: 'Dieser Browser kann das Format nicht exportieren. Wähle ein anderes.' },
+  ru: { drop: 'Перетащите сюда PDF', or: 'или', browse: 'Выбрать PDF', hint: 'Каждая страница станет картинкой. Ничего не загружается.', fmt: 'Формат', dpi: 'Разрешение', dpiHint: '150 чётко на экране, 300 для печати.', quality: 'Качество', pages: 'Страницы', pagesPh: 'все или, например, 1-3, 5', convert: 'Преобразовать', zip: 'Скачать всё в ZIP', save: 'Скачать', working: 'Страница {n} из {t}…', done: 'Готово изображений: {n}.', capped: 'Большая страница: отрисована с {d} dpi, чтобы браузер смог её нарисовать.',
+    invalid: 'Не удалось прочитать файл как PDF.', password: 'Этот PDF защищён паролем.', pw: 'Пароль', unlock: 'Открыть', wrongPw: 'Неверный пароль.', empty: 'Введите страницы, например 1-3, 5.', syntax: 'Не удалось разобрать диапазон. Используйте номера страниц, например 1-3, 5.', 'out-of-range': 'Номер страницы выходит за пределы документа.', unsupported: 'Этот браузер не умеет сохранять в этот формат. Выберите другой.' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="pdf2img">
+  <div class="p2i" data-p2i data-s={JSON.stringify(s)}>
+    <div class="drop card" data-drop>
+      <p class="big">{s.drop}</p>
+      <p class="meta">{s.or}</p>
+      <label class="btn pick">{s.browse}<input type="file" accept="application/pdf,.pdf" class="sr-only" data-file /></label>
+      <p class="meta">{s.hint}</p>
+    </div>
+    <form class="card opts" data-unlock hidden>
+      <label>{s.pw}<input type="password" name="pw" autocomplete="off" /></label>
+      <button class="btn" type="submit">{s.unlock}</button>
+    </form>
+    <div class="card opts" data-options hidden>
+      <label>{s.fmt}<select name="fmt"><option value="png">PNG</option><option value="jpeg">JPG</option><option value="webp">WebP</option></select></label>
+      <label>{s.dpi}<select name="dpi"><option>72</option><option>96</option><option selected>150</option><option>200</option><option>300</option><option>600</option></select></label>
+      <label>{s.quality} <output data-q-out>90</output><input type="range" name="quality" min="40" max="100" step="5" value="90" /></label>
+      <label>{s.pages}<input name="range" placeholder={s.pagesPh} autocomplete="off" /></label>
+      <button type="button" class="btn" data-go>{s.convert}</button>
+      <p class="meta full">{s.dpiHint}</p>
+    </div>
+    <p class="warn" role="alert" data-error hidden></p>
+    <p class="meta" role="status" data-status></p>
+    <div data-results hidden>
+      <div class="actions"><button type="button" class="btn" data-zip>{s.zip}</button></div>
+      <ul class="shots" data-list></ul>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/pdf2img/pdf2img.ts';
+</script>
+<style>
+  .p2i { display: grid; gap: 18px; }
+  .drop { display: grid; justify-items: center; gap: 8px; padding: clamp(24px, 4vw, 40px); text-align: center; border-style: dashed; }
+  .drop.over { border-color: var(--accent); }
+  .big { margin: 0; font-size: 1.15rem; }
+  .pick { cursor: pointer; }
+  .opts { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: end; padding: 16px 20px; }
+  .opts label { display: grid; gap: 6px; font-size: .88rem; color: var(--muted); }
+  .opts input[type='range'] { accent-color: var(--accent-strong); }
+  .btn[disabled] { opacity: .45; cursor: not-allowed; }
+  .opts .full { flex-basis: 100%; margin: 0; }
+  .opts select, .opts input:not([type='range']) { padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); color: var(--fg); font: inherit; }
+  .warn { margin: 0; padding: 9px 12px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface-2); font-size: .9rem; }
+  .shots { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; }
+  :global(.p2i .shots li) { display: grid; gap: 8px; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); }
+  :global(.p2i .shots img) { width: 100%; height: auto; background: #fff; border-radius: 4px; }
+  :global(.p2i .shots .nm) { font-size: .78rem; color: var(--muted); overflow-wrap: anywhere; }
+</style>

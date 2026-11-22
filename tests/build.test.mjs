@@ -433,6 +433,17 @@ test('the PDF libraries are reachable only from the PDF pages and the metadata t
   assert.equal(pdfPages, 3);
 });
 
+test('the PDF page ships every tool panel, the tab buttons and the not-possible note in each language', () => {
+  const ids = ['organize', 'split', 'arrange', 'compress', 'convert', 'number', 'watermark', 'edit', 'crop', 'nup', 'forms', 'protect', 'info', 'mix'];
+  for (const dir of Object.values(LANG_DIRS)) {
+    const html = read(`${dir}tools/pdf/index.html`);
+    for (const id of ids) assert.match(html, new RegExp(`data-panel="${id}"`), `${dir} panel ${id}`);
+    assert.equal((html.match(/data-tab="/g) ?? []).length, 16, `${dir} tabs`);
+    assert.match(html, /data-pages/, `${dir} grid`);
+    assert.match(html, /<details class="card limits"/, `${dir} limits note`);
+  }
+});
+
 test('no built script loads from a CDN, and the pdf.js worker ships with the site', () => {
   const scripts = readdirSync(jsDir).filter((n) => /\.m?js$/.test(n));
   assert.ok(scripts.some((n) => n.includes('pdf.worker')), 'worker file present');
@@ -495,7 +506,7 @@ test('post images become figures that link to the full image, and a lightbox dia
 // ---- Tool suite: every registered tool ships in every language, listed once on the overview ----
 test('every tool in tools.ts has a page per language, a title, and one card on its overview', async () => {
   const { tools, categories } = await import('../src/data/tools.ts');
-  assert.ok(tools.length >= 22);
+  assert.ok(tools.length >= 30);
   for (const [lang, f] of Object.entries(PAGES)) {
     const dir = f.replace(/index\.html$/, '');
     const overview = read(`${dir}tools/index.html`);
@@ -512,7 +523,7 @@ test('every tool in tools.ts has a page per language, a title, and one card on i
 });
 
 test('simple tool pages do not pull in the PDF or QR code libraries', () => {
-  for (const slug of ['vram', 'checksum', 'tz', 'bitrate', 'compose', 'json', 'gen', 'diff', 'favicon']) {
+  for (const slug of ['vram', 'checksum', 'tz', 'bitrate', 'compose', 'json', 'gen', 'diff', 'favicon', 'epoch', 'csv', 'subnet', 'chmod', 'utm', 'barcode', 'crop']) {
     for (const dir of Object.values(LANG_DIRS)) {
       const html = read(`${dir}tools/${slug}/index.html`);
       const entries = [...html.matchAll(/\/_astro\/([^"'`\s]+\.js)/g)].map((m) => m[1]);

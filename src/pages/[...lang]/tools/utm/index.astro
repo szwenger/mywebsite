@@ -1,0 +1,38 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { url: 'Page address', source: 'Source (required)', medium: 'Medium', campaign: 'Campaign', term: 'Term', content: 'Content', ph: { source: 'newsletter', medium: 'email', campaign: 'spring_launch', term: 'running shoes', content: 'header_button' },
+    hint: { source: 'Where the visit comes from: google, newsletter, twitter', medium: 'The channel: cpc, email, social', campaign: 'Your campaign name', term: 'Paid search keyword', content: 'Tells two links in the same campaign apart' },
+    lower: 'Convert values to lower case (GA4 treats "Email" and "email" as different)', result: 'Tagged link', copy: 'Copy', open: 'Open', url_: 'Enter a web address, for example example.com/offer.', required: 'The source is required.' },
+  de: { url: 'Seitenadresse', source: 'Quelle (Pflicht)', medium: 'Medium', campaign: 'Kampagne', term: 'Begriff', content: 'Inhalt', ph: { source: 'newsletter', medium: 'email', campaign: 'fruehjahrsaktion', term: 'laufschuhe', content: 'header_button' },
+    hint: { source: 'Woher der Besuch kommt: google, newsletter, twitter', medium: 'Der Kanal: cpc, email, social', campaign: 'Name deiner Kampagne', term: 'Suchbegriff bei bezahlter Suche', content: 'Unterscheidet zwei Links derselben Kampagne' },
+    lower: 'Werte in Kleinbuchstaben umwandeln (GA4 unterscheidet „Email“ und „email“)', result: 'Getaggter Link', copy: 'Kopieren', open: 'Öffnen', url_: 'Gib eine Webadresse ein, zum Beispiel example.com/angebot.', required: 'Die Quelle ist erforderlich.' },
+  ru: { url: 'Адрес страницы', source: 'Источник (обязательно)', medium: 'Канал', campaign: 'Кампания', term: 'Ключевое слово', content: 'Содержание', ph: { source: 'newsletter', medium: 'email', campaign: 'spring_launch', term: 'кроссовки', content: 'header_button' },
+    hint: { source: 'Откуда пришёл визит: google, newsletter, twitter', medium: 'Тип канала: cpc, email, social', campaign: 'Название кампании', term: 'Ключевое слово платного поиска', content: 'Различает две ссылки одной кампании' },
+    lower: 'Приводить значения к нижнему регистру (GA4 считает «Email» и «email» разными)', result: 'Ссылка с метками', copy: 'Копировать', open: 'Открыть', url_: 'Введите веб-адрес, например example.com/offer.', required: 'Источник обязателен.' },
+}[lang];
+const keys = ['source', 'medium', 'campaign', 'term', 'content'] as const;
+---
+<ToolLayout lang={lang} slug="utm">
+  <div class="tl two" data-utm data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <label>{s.url}<input name="url" type="url" inputmode="url" placeholder="https://example.com/offer" autocomplete="off" spellcheck="false" /></label>
+      {keys.map((k) => <label>{s[k]}<input name={k} placeholder={s.ph[k]} autocomplete="off" spellcheck="false" /><span class="meta">{s.hint[k]}</span></label>)}
+      <label class="check"><input type="checkbox" name="lower" checked /> {s.lower}</label>
+    </div>
+    <div class="card pane" aria-live="polite">
+      <p class="note bad" data-error role="alert" hidden></p>
+      <label>{s.result}<textarea name="out" readonly rows="6" spellcheck="false" class="mono"></textarea></label>
+      <div class="actions"><button type="button" class="btn" data-copy>{s.copy}</button><a class="btn alt" data-open target="_blank" rel="noopener noreferrer" hidden>{s.open}</a></div>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/utm/utm.ts';
+</script>

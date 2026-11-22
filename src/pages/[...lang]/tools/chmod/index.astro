@@ -1,0 +1,68 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { owner: 'Owner', group: 'Group', other: 'Others', r: 'Read', w: 'Write', x: 'Execute', special: 'Special bits', suid: 'Setuid (run as the file owner)', sgid: 'Setgid (run as the group, or inherit it on directories)', sticky: 'Sticky (only the owner may delete in a directory)',
+    mode: 'Octal or symbolic', modeHint: '755, 0644, 4755 or rwxr-xr-x', octal: 'Octal', sym: 'Symbolic', cmd: 'Command', copy: 'Copy', bad: 'Not a mode. Use three or four octal digits (755) or nine letters (rwxr-xr-x).', presets: 'Common modes',
+    p: ['Private file (owner only)', 'Normal file', 'Script or program', 'Private directory', 'Shared directory (sticky)', 'Everything open'] },
+  de: { owner: 'Besitzer', group: 'Gruppe', other: 'Andere', r: 'Lesen', w: 'Schreiben', x: 'Ausführen', special: 'Spezialbits', suid: 'Setuid (als Dateibesitzer ausführen)', sgid: 'Setgid (als Gruppe ausführen, bei Ordnern vererben)', sticky: 'Sticky (im Ordner darf nur der Besitzer löschen)',
+    mode: 'Oktal oder symbolisch', modeHint: '755, 0644, 4755 oder rwxr-xr-x', octal: 'Oktal', sym: 'Symbolisch', cmd: 'Befehl', copy: 'Kopieren', bad: 'Kein Modus. Nutze drei oder vier Oktalziffern (755) oder neun Buchstaben (rwxr-xr-x).', presets: 'Häufige Modi',
+    p: ['Private Datei (nur Besitzer)', 'Normale Datei', 'Skript oder Programm', 'Privater Ordner', 'Gemeinsamer Ordner (Sticky)', 'Alles offen'] },
+  ru: { owner: 'Владелец', group: 'Группа', other: 'Остальные', r: 'Чтение', w: 'Запись', x: 'Выполнение', special: 'Особые биты', suid: 'Setuid (запуск от имени владельца файла)', sgid: 'Setgid (запуск от имени группы, наследование в каталогах)', sticky: 'Sticky (в каталоге удалять может только владелец)',
+    mode: 'Восьмеричный или символьный', modeHint: '755, 0644, 4755 или rwxr-xr-x', octal: 'Восьмеричный', sym: 'Символьный', cmd: 'Команда', copy: 'Копировать', bad: 'Это не режим. Нужны три-четыре восьмеричные цифры (755) или девять букв (rwxr-xr-x).', presets: 'Частые режимы',
+    p: ['Личный файл (только владелец)', 'Обычный файл', 'Скрипт или программа', 'Личный каталог', 'Общий каталог (sticky)', 'Всё открыто'] },
+}[lang];
+const who = [['u', s.owner], ['g', s.group], ['o', s.other]] as const;
+const bits = [['r', s.r], ['w', s.w], ['x', s.x]] as const;
+const presets = ['600', '644', '755', '700', '1777', '777'].map((m, i) => [m, s.p[i]]);
+---
+<ToolLayout lang={lang} slug="chmod">
+  <div class="tl two" data-chmod data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <table class="grid">
+        <thead><tr><th></th>{bits.map(([, l]) => <th>{l}</th>)}</tr></thead>
+        <tbody>
+          {who.map(([w, l], g) => (
+            <tr><th>{l}</th>{bits.map(([b], i) => <td><input type="checkbox" data-bit={8 - g * 3 - i} aria-label={`${l}: ${b}`} /></td>)}</tr>
+          ))}
+        </tbody>
+      </table>
+      <fieldset>
+        <legend class="meta">{s.special}</legend>
+        <label class="check"><input type="checkbox" data-bit="11" /> {s.suid}</label>
+        <label class="check"><input type="checkbox" data-bit="10" /> {s.sgid}</label>
+        <label class="check"><input type="checkbox" data-bit="9" /> {s.sticky}</label>
+      </fieldset>
+    </div>
+    <div class="card pane" aria-live="polite">
+      <label>{s.mode}<input name="mode" class="mono big" value="755" spellcheck="false" autocomplete="off" /></label>
+      <p class="meta">{s.modeHint}</p>
+      <p class="note bad" data-error role="alert" hidden>{s.bad}</p>
+      <table data-ok>
+        <tbody>
+          <tr><th>{s.octal}</th><td class="mono" data-octal></td></tr>
+          <tr><th>{s.sym}</th><td class="mono" data-sym></td></tr>
+          <tr><th>{s.cmd}</th><td class="mono" data-cmd></td></tr>
+        </tbody>
+      </table>
+      <p class="meta">{s.presets}</p>
+      <div class="actions">{presets.map(([m, l]) => <button type="button" class="btn alt chip" data-preset={m} title={m}>{l}</button>)}</div>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/chmod/chmod.ts';
+</script>
+<style>
+  .big { font-size: 1.15rem; }
+  .grid { max-width: 22rem; }
+  .grid th, .grid td { text-align: center; }
+  .grid tbody th { text-align: left; }
+  fieldset { margin: 0; padding: 0; border: 0; display: grid; gap: 8px; }
+  .chip { padding: 7px 12px; font-size: .8rem; font-weight: 500; }
+</style>

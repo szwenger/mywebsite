@@ -1,0 +1,48 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { input: 'Timestamp or date', hint: 'A Unix timestamp (seconds, milliseconds, microseconds or nanoseconds) or a date such as 2026-03-01 14:30 or 2026-03-01T14:30:00Z.', unit: 'Unit', auto: 'Detect', now: 'Now', current: 'Current Unix time',
+    sec: 'Seconds', ms: 'Milliseconds', us: 'Microseconds', ns: 'Nanoseconds', utc: 'ISO 8601 (UTC)', local: 'Local time', rel: 'Relative', week: 'ISO week', day: 'Weekday', copy: 'Copy', copied: 'Copied',
+    bad: 'Not a timestamp or a date this tool understands.', unitNote: 'Detected as {u}.', in: 'in', ago: 'ago' },
+  de: { input: 'Zeitstempel oder Datum', hint: 'Ein Unix-Zeitstempel (Sekunden, Millisekunden, Mikrosekunden oder Nanosekunden) oder ein Datum wie 2026-03-01 14:30 oder 2026-03-01T14:30:00Z.', unit: 'Einheit', auto: 'Erkennen', now: 'Jetzt', current: 'Aktuelle Unix-Zeit',
+    sec: 'Sekunden', ms: 'Millisekunden', us: 'Mikrosekunden', ns: 'Nanosekunden', utc: 'ISO 8601 (UTC)', local: 'Lokale Zeit', rel: 'Relativ', week: 'ISO-Woche', day: 'Wochentag', copy: 'Kopieren', copied: 'Kopiert',
+    bad: 'Kein Zeitstempel und kein Datum, das dieses Werkzeug versteht.', unitNote: 'Erkannt als {u}.', in: 'in', ago: 'vor' },
+  ru: { input: 'Метка времени или дата', hint: 'Unix-время (секунды, миллисекунды, микросекунды или наносекунды) либо дата вроде 2026-03-01 14:30 или 2026-03-01T14:30:00Z.', unit: 'Единица', auto: 'Определить', now: 'Сейчас', current: 'Текущее Unix-время',
+    sec: 'Секунды', ms: 'Миллисекунды', us: 'Микросекунды', ns: 'Наносекунды', utc: 'ISO 8601 (UTC)', local: 'Местное время', rel: 'Относительно', week: 'Неделя ISO', day: 'День недели', copy: 'Копировать', copied: 'Скопировано',
+    bad: 'Это не метка времени и не дата, которую понимает инструмент.', unitNote: 'Определено как {u}.', in: 'через', ago: 'назад' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="epoch">
+  <div class="tl two" data-epoch data-lang={lang} data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <p class="meta">{s.current}: <strong class="mono" data-tick></strong></p>
+      <label>{s.input}<input name="v" class="mono big" spellcheck="false" autocomplete="off" /></label>
+      <p class="meta">{s.hint}</p>
+      <div class="row">
+        <label>{s.unit}
+          <select name="unit"><option value="">{s.auto}</option><option value="s">{s.sec}</option><option value="ms">{s.ms}</option><option value="us">{s.us}</option><option value="ns">{s.ns}</option></select>
+        </label>
+      </div>
+      <div class="actions"><button type="button" class="btn alt" data-now>{s.now}</button></div>
+      <p class="meta" data-unit-note></p>
+    </div>
+    <div class="card pane" aria-live="polite">
+      <p class="note bad" data-error role="alert" hidden>{s.bad}</p>
+      <table data-ok><tbody data-rows></tbody></table>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/epoch/epoch.ts';
+</script>
+<style>
+  .big { font-size: 1.15rem; }
+  :global(.tl td .cp) { margin-left: 8px; padding: 2px 8px; border: 1px solid var(--line); border-radius: 6px; background: transparent; color: var(--muted); font: inherit; font-size: .75rem; cursor: pointer; }
+  :global(.tl td.val) { overflow-wrap: anywhere; }
+</style>
