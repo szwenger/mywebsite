@@ -1,6 +1,6 @@
 ---
 title: "Sprachausgabe auf der CPU: Die Thread-Zahl war wichtiger als die Engine"
-date: 2026-11-22T21:25:00Z
+date: 2026-11-22T20:25:00Z
 cover: /posts/tts-benchmark.jpg
 tags: [tts, benchmark, cpu, local-ai]
 ---

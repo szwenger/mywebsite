@@ -1,6 +1,6 @@
 ---
 title: "Синтез речи на процессоре: число потоков оказалось важнее движка"
-date: 2026-11-22T21:25:00Z
+date: 2026-11-22T20:25:00Z
 cover: /posts/tts-benchmark.jpg
 tags: [tts, benchmark, cpu, local-ai]
 ---

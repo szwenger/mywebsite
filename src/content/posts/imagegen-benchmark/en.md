@@ -1,6 +1,6 @@
 ---
 title: "Image generation without a GPU: 12 seconds on the CPU"
-date: 2026-11-22T20:10:00Z
+date: 2026-11-22T19:10:00Z
 cover: /posts/imagegen-benchmark.jpg
 tags: [image-generation, benchmark, cpu, local-ai]
 ---
