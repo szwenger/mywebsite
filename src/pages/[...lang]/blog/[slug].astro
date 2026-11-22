@@ -32,4 +32,68 @@ const canonical = post.fallback ? `https://galuin.com${path(post.originalLang, `
   .meta .chip { margin-left: 10px; }
   .prose { margin-top: 24px; font-size: 1.05rem; }
   .prose :global(p) { max-width: 65ch; }
+  .prose :global(.player) { margin: 20px 0 8px; padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+  .prose :global(.tabs) { display: inline-flex; gap: 4px; padding: 4px; margin-bottom: 16px; background: var(--surface-2); border-radius: 999px; }
+  .prose :global(.tabs button) { padding: 6px 16px; border: 0; border-radius: 999px; background: none; color: var(--muted); font: inherit; font-size: .9rem; cursor: pointer; }
+  .prose :global(.tabs button[aria-selected='true']) { background: var(--accent-strong); color: #fff; }
+  .prose :global(.player.on .panel:not(.active)) { display: none; }
+  .prose :global(.said) { margin: 0 0 14px; color: var(--muted); font-size: .95rem; font-style: italic; }
+  .prose :global(.track) { display: grid; grid-template-columns: 40px 1fr auto; gap: 14px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+  .prose :global(.play) { width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--surface-2); color: var(--accent-ink); cursor: pointer; transition: background .2s var(--ease), color .2s var(--ease); }
+  .prose :global(.play:hover), .prose :global(.track.playing .play) { background: var(--accent-strong); color: #fff; }
+  .prose :global(.play::before) { content: ''; width: 12px; height: 12px; background: currentColor; clip-path: polygon(20% 0, 100% 50%, 20% 100%); }
+  .prose :global(.track.playing .play::before) { clip-path: none; width: 11px; height: 11px; border-radius: 2px; }
+  .prose :global(.info) { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .prose :global(.who) { font-size: .95rem; line-height: 1.2; }
+  .prose :global(.bar) { display: block; height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; cursor: pointer; }
+  .prose :global(.bar i) { display: block; height: 100%; width: 0; background: var(--accent); }
+  .prose :global(.dur) { color: var(--muted); font-size: .85rem; font-variant-numeric: tabular-nums; }
+  .prose :global(.caption) { color: var(--muted); font-size: .88rem; }
 </style>
+<script>
+  const fmt = (n: number) => (isFinite(n) ? `${Math.floor(n / 60)}:${String(Math.floor(n % 60)).padStart(2, '0')}` : '');
+  const all = () => [...document.querySelectorAll<HTMLAudioElement>('.player audio')];
+  document.querySelectorAll<HTMLElement>('.player').forEach((player) => {
+    const panels = [...player.querySelectorAll<HTMLElement>('.panel')];
+    const tabs = document.createElement('div');
+    tabs.className = 'tabs';
+    tabs.setAttribute('role', 'tablist');
+    const show = (i: number) => panels.forEach((p, j) => {
+      p.classList.toggle('active', i === j);
+      tabs.children[j].setAttribute('aria-selected', String(i === j));
+    });
+    panels.forEach((p, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('role', 'tab');
+      b.textContent = p.dataset.label ?? '';
+      b.onclick = () => show(i);
+      tabs.append(b);
+    });
+    player.prepend(tabs);
+    player.classList.add('on');
+    show(0);
+    player.querySelectorAll<HTMLElement>('.track').forEach((track) => {
+      const audio = track.querySelector('audio')!;
+      const fill = track.querySelector<HTMLElement>('.bar i')!;
+      const dur = track.querySelector<HTMLElement>('.dur')!;
+      const reset = () => { track.classList.remove('playing'); fill.style.width = '0'; };
+      const setDur = () => { dur.textContent = fmt(audio.duration); };
+      audio.addEventListener('loadedmetadata', setDur);
+      if (audio.readyState > 0) setDur();
+      audio.addEventListener('timeupdate', () => { fill.style.width = `${(audio.currentTime / audio.duration) * 100}%`; });
+      audio.addEventListener('ended', reset);
+      audio.addEventListener('pause', () => track.classList.remove('playing'));
+      track.querySelector('.play')!.addEventListener('click', () => {
+        if (!audio.paused) { audio.pause(); audio.currentTime = 0; reset(); return; }
+        all().forEach((a) => { a.pause(); a.currentTime = 0; });
+        track.classList.add('playing');
+        audio.play();
+      });
+      track.querySelector('.bar')!.addEventListener('click', (e) => {
+        const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+        audio.currentTime = ((e as MouseEvent).clientX - r.left) / r.width * audio.duration;
+      });
+    });
+  });
+</script>
