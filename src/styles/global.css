@@ -14,12 +14,12 @@
 html[data-theme='dark'] {
   color-scheme: dark;
   --bg: #0d0f14; --surface: #151821; --surface-2: #1c2030; --line: #272c3b;
-  --fg: #eceef5; --muted: #959cb0; --accent-ink: #a5aef0; --hard: #000;
+  --fg: #eceef5; --muted: #959cb0; --accent-ink: #a5aef0; --hard: #000; --beam: 1;
 }
 html[data-theme='light'] {
   color-scheme: light;
   --bg: #f3f4f8; --surface: #ffffff; --surface-2: #e9ebf3; --line: #d6d9e5;
-  --fg: #11141d; --muted: #565d72; --accent-ink: #3e4bab; --hard: #11141d;
+  --fg: #11141d; --muted: #565d72; --accent-ink: #3e4bab; --hard: #11141d; --beam: .6;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -30,6 +30,20 @@ body {
   font-feature-settings: 'ss01'; text-rendering: optimizeLegibility;
 }
 main { flex: 1; }
+/* Background: three soft light shafts (logo blue, violet, teal) behind the page, swaying slowly.
+   Fixed and behind everything, so it never scrolls, never takes clicks and costs no layout. */
+body::before {
+  content: ''; position: fixed; inset: -20% -10%; z-index: -1; pointer-events: none; filter: blur(14px); will-change: transform;
+  background:
+    linear-gradient(103deg, transparent 22%, rgb(106 120 209 / calc(.34 * var(--beam))) 30%, transparent 40%),
+    linear-gradient(103deg, transparent 52%, rgb(163 91 214 / calc(.26 * var(--beam))) 60%, transparent 70%),
+    linear-gradient(103deg, transparent 74%, rgb(63 184 196 / calc(.22 * var(--beam))) 80%, transparent 88%);
+  -webkit-mask-image: linear-gradient(#000, transparent 80%); mask-image: linear-gradient(#000, transparent 80%);
+  animation: beams 18s ease-in-out infinite alternate;
+}
+@keyframes beams { from { transform: translateX(-4%); } to { transform: translateX(4%); } }
+@media print { body::before { display: none; } }
+
 a { color: inherit; text-underline-offset: .2em; }
 img { max-width: 100%; height: auto; display: block; }
 h1, h2, h3 { font-family: var(--display); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; text-wrap: balance; }

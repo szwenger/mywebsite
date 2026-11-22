@@ -8,6 +8,9 @@ export function getStaticPaths() {
   return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
 }
 const lang = (Astro.params.lang ?? 'en') as Lang;
+// Three columns: PC parts, peripherals, and audio with VR underneath it.
+const by = (id: string) => hardware.find((g) => g.id === id)!;
+const columns = [[by('pc')], [by('peripherals')], [by('audio'), by('vr')]];
 ---
 <Base lang={lang} title={`${t(lang, 'navSetup')} · Galuin`} description={t(lang, 'hardwareIntro')} current="hardware">
   <section class="wrap page">
@@ -16,18 +19,22 @@ const lang = (Astro.params.lang ?? 'en') as Lang;
     <HardwareDesk lang={lang} />
     <h2 class="all">{t(lang, 'hwAll')}</h2>
     <div class="groups">
-      {hardware.map((group) => (
-        <section class="card group">
-          <h2>{group.title[lang]}</h2>
-          <ul>
-            {group.items.map((item) => (
-              <li data-hw={group.id}>
-                <span class="label">{item.label[lang]}</span>
-                {item.href ? <a href={item.href} rel="noopener">{item.name}</a> : <span>{item.name}</span>}
-              </li>
-            ))}
-          </ul>
-        </section>
+      {columns.map((col) => (
+        <div class="col">
+          {col.map((group) => (
+            <section class="card group">
+              <h2>{group.title[lang]}</h2>
+              <ul>
+                {group.items.map((item) => (
+                  <li data-hw={group.id}>
+                    <span class="label">{item.label[lang]}</span>
+                    {item.href ? <a href={item.href} rel="noopener">{item.name}</a> : <span>{item.name}</span>}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
       ))}
     </div>
   </section>
@@ -37,6 +44,7 @@ const lang = (Astro.params.lang ?? 'en') as Lang;
   .intro { margin: -6px 0 24px; font-size: .95rem; max-width: 60ch; }
   .all { margin: 8px 0 16px; font-size: 1.1rem; }
   .groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: 20px; align-items: start; }
+  .col { display: grid; gap: 20px; align-content: start; }
   .group { padding: clamp(18px, 2.4vw, 26px); }
   .group h2 { margin: 0 0 12px; font-size: 1.1rem; }
   ul { margin: 0; padding: 0; list-style: none; }

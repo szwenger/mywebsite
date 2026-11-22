@@ -1,0 +1,141 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: {
+    drop: 'Drop your slides here', or: 'or', browse: 'Choose a PDF', hint: 'Any PDF presentation. It stays on your device.',
+    current: 'Current slide', next: 'Next slide', end: 'End of presentation', timer: 'Timer', target: 'Target (min)',
+    start: 'Start', pause: 'Pause', reset: 'Reset', prev: 'Previous slide', nextBtn: 'Next slide', slide: 'Slide',
+    beamer: 'Open beamer window', blank: 'Blank beamer', open: 'Open another PDF',
+    keys: 'navigate', keyBlank: 'blank beamer', keyFocus: 'focus beamer', keyOpen: 'open PDF',
+    badType: 'Only PDF files are supported.', invalid: 'This file could not be read as a PDF.',
+    encrypted: 'This PDF is password-protected. Remove the password first, then open it again.',
+    popup: 'The beamer window was blocked. Allow pop-ups for this site and try again.',
+  },
+  de: {
+    drop: 'Folien hier ablegen', or: 'oder', browse: 'PDF wählen', hint: 'Jede PDF-Präsentation. Sie bleibt auf deinem Gerät.',
+    current: 'Aktuelle Folie', next: 'Nächste Folie', end: 'Ende der Präsentation', timer: 'Timer', target: 'Ziel (Min.)',
+    start: 'Start', pause: 'Pause', reset: 'Zurücksetzen', prev: 'Vorherige Folie', nextBtn: 'Nächste Folie', slide: 'Folie',
+    beamer: 'Beamer-Fenster öffnen', blank: 'Beamer abdunkeln', open: 'Andere PDF öffnen',
+    keys: 'blättern', keyBlank: 'Beamer abdunkeln', keyFocus: 'Beamer fokussieren', keyOpen: 'PDF öffnen',
+    badType: 'Nur PDF-Dateien werden unterstützt.', invalid: 'Diese Datei konnte nicht als PDF gelesen werden.',
+    encrypted: 'Dieses PDF ist passwortgeschützt. Entferne zuerst das Passwort und öffne es dann erneut.',
+    popup: 'Das Beamer-Fenster wurde blockiert. Erlaube Pop-ups für diese Seite und versuche es erneut.',
+  },
+  ru: {
+    drop: 'Перетащите сюда слайды', or: 'или', browse: 'Выбрать PDF', hint: 'Любая презентация в PDF. Она остаётся на вашем устройстве.',
+    current: 'Текущий слайд', next: 'Следующий слайд', end: 'Конец презентации', timer: 'Таймер', target: 'Цель (мин.)',
+    start: 'Старт', pause: 'Пауза', reset: 'Сброс', prev: 'Предыдущий слайд', nextBtn: 'Следующий слайд', slide: 'Слайд',
+    beamer: 'Открыть окно проектора', blank: 'Затемнить проектор', open: 'Открыть другой PDF',
+    keys: 'листать', keyBlank: 'затемнить проектор', keyFocus: 'фокус на проектор', keyOpen: 'открыть PDF',
+    badType: 'Поддерживаются только файлы PDF.', invalid: 'Не удалось прочитать файл как PDF.',
+    encrypted: 'Этот PDF защищён паролем. Сначала снимите пароль, затем откройте файл снова.',
+    popup: 'Окно проектора заблокировано. Разрешите всплывающие окна для этого сайта и повторите.',
+  },
+}[lang];
+---
+<ToolLayout lang={lang} slug="presenter">
+  <div class="pres" data-presenter data-strings={JSON.stringify(s)}>
+    <div class="drop card" data-drop>
+      <p class="big">{s.drop}</p>
+      <p class="meta">{s.or}</p>
+      <label class="btn pick">{s.browse}<input type="file" accept="application/pdf,.pdf" data-file class="sr-only" /></label>
+      <p class="meta">{s.hint}</p>
+    </div>
+
+    <p class="warn" role="alert" data-error hidden></p>
+
+    <div class="stage" data-stage hidden>
+      <div class="top card">
+        <span class="name" data-name></span>
+        <div class="row">
+          <button type="button" class="btn alt" data-blank aria-pressed="false">{s.blank}</button>
+          <button type="button" class="btn" data-beamer>{s.beamer} ↗</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <section class="card cur" aria-label={s.current}>
+          <h2 class="label">{s.current}</h2>
+          <div class="view" data-curwrap><canvas data-cur></canvas></div>
+        </section>
+
+        <aside class="side">
+          <section class="card box" aria-label={s.timer}>
+            <h2 class="label">{s.timer}</h2>
+            <div class="clock" data-timer>00:00</div>
+            <label class="target">{s.target} <input type="number" min="1" max="180" inputmode="numeric" data-target /></label>
+            <div class="row">
+              <button type="button" class="btn alt" data-start>{s.start}</button>
+              <button type="button" class="btn alt" data-reset>{s.reset}</button>
+            </div>
+          </section>
+
+          <section class="card box nav" aria-label={s.slide}>
+            <div class="count" aria-live="polite">{s.slide} <span data-num>1</span> / <span class="muted" data-total>1</span></div>
+            <div class="row">
+              <button type="button" class="step" data-prev aria-label={s.prev}>←</button>
+              <button type="button" class="step" data-nextbtn aria-label={s.nextBtn}>→</button>
+            </div>
+          </section>
+
+          <section class="card box" aria-label={s.next}>
+            <h2 class="label">{s.next}</h2>
+            <div class="view small" data-nextwrap><canvas data-next></canvas><p class="meta" data-end hidden>{s.end}</p></div>
+          </section>
+        </aside>
+      </div>
+
+      <p class="meta keys">
+        <span><kbd>←</kbd> <kbd>→</kbd> <kbd>Space</kbd> {s.keys}</span>
+        <span><kbd>B</kbd> {s.keyBlank}</span>
+        <span><kbd>F</kbd> {s.keyFocus}</span>
+        <span><kbd>O</kbd> {s.keyOpen}</span>
+      </p>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/presenter/presenter.ts';
+</script>
+<style>
+  .pres { display: grid; gap: 18px; }
+  .pres [hidden] { display: none !important; }
+  .drop { display: grid; justify-items: center; gap: 8px; padding: clamp(24px, 4vw, 40px); text-align: center; border-style: dashed; }
+  .drop.over { border-color: var(--accent); }
+  .big { margin: 0; font-family: var(--display, inherit); font-size: 1.15rem; }
+  .pick { cursor: pointer; }
+  .pick:focus-within { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .warn { margin: 0; padding: 9px 12px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface-2); font-size: .9rem; }
+  .stage { display: grid; gap: 16px; }
+  .top { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between; padding: 12px 18px; }
+  .name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; }
+  .btn.alt { background: transparent; color: var(--fg); border: 1px solid var(--line); box-shadow: none; }
+  .btn.alt[aria-pressed='true'], .btn.alt.on { background: var(--accent-strong); border-color: var(--accent-strong); color: #fff; }
+  button[disabled] { opacity: .35; cursor: not-allowed; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 16px; align-items: start; }
+  @media (max-width: 800px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+  .cur, .box { padding: 14px; display: grid; gap: 10px; }
+  .side { display: grid; gap: 16px; }
+  .label { margin: 0; font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .view { height: clamp(260px, 62vh, 640px); display: grid; place-items: center; background: #000; border-radius: var(--radius-sm); overflow: hidden; }
+  .view.small { height: 150px; background: var(--surface-2); }
+  .view canvas { display: block; max-width: 100%; }
+  .clock { font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace; font-size: 2.8rem; line-height: 1; color: var(--accent-ink); }
+  .clock.over { color: #e05252; }
+  .target { display: flex; align-items: center; gap: 8px; font-size: .85rem; color: var(--muted); }
+  .target input { width: 6ch; padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-2); color: var(--fg); font: inherit; text-align: center; }
+  .nav { grid-auto-flow: column; align-items: center; justify-content: space-between; }
+  .count { font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace; font-size: 1.1rem; }
+  .muted { color: var(--muted); }
+  .step { width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--fg); font-size: 1.1rem; cursor: pointer; }
+  .step:hover:not([disabled]) { border-color: var(--accent); }
+  .keys { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 0; font-size: .82rem; }
+  kbd { padding: 1px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface-2); font: .75rem ui-monospace, Consolas, monospace; }
+</style>

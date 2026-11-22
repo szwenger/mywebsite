@@ -234,7 +234,7 @@ test('hardware, impressum and privacy exist in every language', () => {
   }
 });
 
-test('hardware lists 12 PC items, 3 audio items, the Quest 2 and the 12 kept original links', () => {
+test('hardware lists 6 PC parts, 6 peripherals, 3 audio items, the Quest 2 and the 12 kept original links', () => {
   const ORIGINAL = [
     'https://amzn.eu/d/4hkrHid', 'https://amzn.eu/d/9HwxtbE', 'https://amzn.eu/d/5oOMUjF', 'https://amzn.eu/d/4JcwcsO',
     'https://amzn.eu/d/b3DLYPB', 'https://www.microsoft.com/de-de/d/windows-11-pro/dg7gmgf0d8h4/000P',
@@ -250,7 +250,8 @@ test('hardware lists 12 PC items, 3 audio items, the Quest 2 and the 12 kept ori
     assert.match(h, /MCHOSE A7 V2 Ultra/);
     assert.match(h, /QcK XXL/);
     assert.doesNotMatch(h, /G305|QcK\+/);
-    assert.equal((h.match(/data-hw="pc"/g) ?? []).length, 12, `${dir} pc items`);
+    assert.equal((h.match(/data-hw="pc"/g) ?? []).length, 6, `${dir} pc parts`);
+    assert.equal((h.match(/data-hw="peripherals"/g) ?? []).length, 6, `${dir} peripherals`);
     assert.equal((h.match(/data-hw="audio"/g) ?? []).length, 3, `${dir} audio items`);
     assert.match(h, /Meta Quest 2/);
     assert.doesNotMatch(h, /sponsored/, 'not affiliate links');
@@ -418,6 +419,17 @@ test('image converter pages exist in every language; the overview and the tools 
       assert.ok(overview.includes(`${pre(lang)}/tools/${slug}/`), `${lang} overview links to ${slug}`);
       assert.ok(strip.includes(`${pre(lang)}/tools/${slug}/`), `${lang} front-page strip links to ${slug}`);
     }
+  }
+});
+
+test('PDF presenter pages exist in every language and the overview and the tools strip link to them', () => {
+  for (const [lang, f] of Object.entries(PAGES)) {
+    const dir = f.replace(/index\.html$/, '');
+    const page = join('dist', dir, 'tools/presenter/index.html');
+    assert.ok(existsSync(page), `${dir}tools/presenter`);
+    assert.match(read(`${dir}tools/presenter/index.html`), /data-presenter/);
+    assert.ok(hrefs(mainOf(read(`${dir}tools/index.html`))).includes(`${pre(lang)}/tools/presenter/`), `${lang} overview`);
+    assert.ok(hrefs(section(read(f), 'tools')).includes(`${pre(lang)}/tools/presenter/`), `${lang} strip`);
   }
 });
 

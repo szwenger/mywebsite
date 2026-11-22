@@ -34,4 +34,14 @@ export const tools: Tool[] = [
       ru: 'Преобразование изображений между PNG, JPG и WebP, настройка качества и уменьшение до нужного размера.',
     },
   },
+  {
+    slug: 'presenter',
+    icon: 'M3 4h18v12H3zM12 16v4M8 20h8M10 8.5v3l3-1.5z',
+    name: { en: 'PDF presenter', de: 'PDF-Präsentator', ru: 'PDF-презентатор' },
+    blurb: {
+      en: 'Present a PDF with a speaker view: next slide, timer and a separate beamer window.',
+      de: 'Ein PDF mit Referentenansicht präsentieren: nächste Folie, Timer und ein eigenes Beamer-Fenster.',
+      ru: 'Показ PDF с режимом докладчика: следующий слайд, таймер и отдельное окно для проектора.',
+    },
+  },
 ];

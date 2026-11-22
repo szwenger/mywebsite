@@ -3,13 +3,13 @@ import type { Lang } from '../i18n/ui';
 type L = Record<Lang, string>;
 export type Spot = 'pc' | 'mouse' | 'kb' | 'pad' | 'm1' | 'm2' | 'm3' | 'hp' | 'mic' | 'ai' | 'vr';
 export interface HwItem { label: L; name: string; href?: string; spot: Spot; note?: L }
-export interface HwGroup { id: 'pc' | 'audio' | 'vr'; title: L; items: HwItem[] }
+export interface HwGroup { id: 'pc' | 'peripherals' | 'audio' | 'vr'; title: L; items: HwItem[] }
 
 const same = (s: string): L => ({ en: s, de: s, ru: s });
 
 export const hardware: HwGroup[] = [
   {
-    id: 'pc', title: { en: 'PC setup', de: 'PC-Setup', ru: 'ПК' },
+    id: 'pc', title: { en: 'PC parts', de: 'PC-Komponenten', ru: 'Комплектующие ПК' },
     items: [
       { label: { en: 'Case', de: 'Gehäuse', ru: 'Корпус' }, name: 'Cooler Master MasterBox TD500 Mesh', href: 'https://amzn.eu/d/4hkrHid', spot: 'pc' },
       { label: same('CPU'), name: 'Intel® Core™ i5-13600K', href: 'https://amzn.eu/d/9HwxtbE', spot: 'pc' },
@@ -17,6 +17,11 @@ export const hardware: HwGroup[] = [
       { label: { en: 'RAM', de: 'Arbeitsspeicher', ru: 'ОЗУ' }, name: 'G.Skill F4-3200C16D-32GVK (2 × 16 GB)', href: 'https://amzn.eu/d/4JcwcsO', spot: 'pc' },
       { label: { en: 'Motherboard', de: 'Mainboard', ru: 'Материнская плата' }, name: 'Gigabyte Z690 UD DDR4', href: 'https://amzn.eu/d/b3DLYPB', spot: 'pc' },
       { label: { en: 'OS', de: 'Betriebssystem', ru: 'ОС' }, name: 'Windows 11 Pro (64-bit)', href: 'https://www.microsoft.com/de-de/d/windows-11-pro/dg7gmgf0d8h4/000P', spot: 'pc' },
+    ],
+  },
+  {
+    id: 'peripherals', title: { en: 'Peripherals', de: 'Peripherie', ru: 'Периферия' },
+    items: [
       { label: { en: 'Mouse', de: 'Maus', ru: 'Мышь' }, name: 'MCHOSE A7 V2 Ultra', href: 'https://www.mchose.store/products/mchose-a7-v2-series-lightweight-all-round-wireless-gaming-mouse?variant=50834270847271', spot: 'mouse',
         note: { en: 'Wireless, 59 g. PAW3950 TI sensor up to 42,000 DPI, 8K polling wired and with the 2.4 GHz receiver, USB-C, 2.4 GHz and Bluetooth.', de: 'Kabellos, 59 g. PAW3950-TI-Sensor bis 42.000 DPI, 8K-Abtastrate per Kabel und mit dem 2,4-GHz-Empfänger, USB-C, 2,4 GHz und Bluetooth.', ru: 'Беспроводная, 59 г. Сенсор PAW3950 TI до 42 000 DPI, опрос 8K по проводу и через приёмник 2,4 ГГц, USB-C, 2,4 ГГц и Bluetooth.' } },
       { label: { en: 'Keyboard', de: 'Tastatur', ru: 'Клавиатура' }, name: 'HyperX Alloy Origins 60 (HyperX Red, US layout)', href: 'https://amzn.eu/d/3x2ZswV', spot: 'kb' },
