@@ -6,14 +6,106 @@ export function getStaticPaths() {
   return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
 }
 const lang = (Astro.params.lang ?? 'en') as Lang;
-const s = {
+const chart = {
   en: { data: 'Data', hint: 'Paste a table or drop a CSV file. The first column is the x axis, every other column is one line, bar or dot series (up to 8). A first row with names is detected on its own.', browse: 'Open a CSV file', kind: 'Chart', line: 'Line', bar: 'Bars', scatter: 'Scatter', title: 'Title', xlabel: 'X axis label', ylabel: 'Y axis label', size: 'Size', grid: 'Grid lines', legend: 'Legend', zero: 'Start the y axis at zero', svg: 'Download SVG', png: 'Download PNG', copy: 'Copy SVG', series: 'series', points: 'rows', dropped: '{n} more columns ignored', empty: 'There is no data to draw.', cols: 'Add at least one column of numbers next to the first column.', note: 'Drawn in your browser. The data is never uploaded. PNG files are saved at twice the size for sharp text.', sample: 'Month,Sales,Costs\nJan,12,9\nFeb,15,10\nMar,14,11\nApr,19,12\nMay,23,14\nJun,27,15' },
   de: { data: 'Daten', hint: 'Tabelle einfügen oder CSV-Datei ablegen. Die erste Spalte ist die x-Achse, jede weitere Spalte ist eine Linien-, Balken- oder Punktreihe (bis zu 8). Eine erste Zeile mit Namen wird automatisch erkannt.', browse: 'CSV-Datei öffnen', kind: 'Diagramm', line: 'Linie', bar: 'Balken', scatter: 'Punkte', title: 'Titel', xlabel: 'Beschriftung x-Achse', ylabel: 'Beschriftung y-Achse', size: 'Größe', grid: 'Gitternetz', legend: 'Legende', zero: 'y-Achse bei null beginnen', svg: 'SVG herunterladen', png: 'PNG herunterladen', copy: 'SVG kopieren', series: 'Reihen', points: 'Zeilen', dropped: '{n} weitere Spalten ignoriert', empty: 'Es gibt keine Daten zum Zeichnen.', cols: 'Füge neben der ersten Spalte mindestens eine Spalte mit Zahlen hinzu.', note: 'Wird in deinem Browser gezeichnet. Die Daten werden nie hochgeladen. PNG-Dateien werden doppelt so groß gespeichert, damit die Schrift scharf bleibt.', sample: 'Monat,Umsatz,Kosten\nJan,12,9\nFeb,15,10\nMär,14,11\nApr,19,12\nMai,23,14\nJun,27,15' },
   ru: { data: 'Данные', hint: 'Вставьте таблицу или перетащите файл CSV. Первый столбец — ось X, каждый следующий — отдельная линия, столбики или точки (до 8). Первая строка с названиями определяется сама.', browse: 'Открыть файл CSV', kind: 'График', line: 'Линия', bar: 'Столбики', scatter: 'Точки', title: 'Заголовок', xlabel: 'Подпись оси X', ylabel: 'Подпись оси Y', size: 'Размер', grid: 'Сетка', legend: 'Легенда', zero: 'Начинать ось Y с нуля', svg: 'Скачать SVG', png: 'Скачать PNG', copy: 'Копировать SVG', series: 'рядов', points: 'строк', dropped: 'лишних столбцов пропущено: {n}', empty: 'Нет данных для графика.', cols: 'Добавьте рядом с первым столбцом хотя бы один столбец с числами.', note: 'Рисуется в вашем браузере. Данные никуда не загружаются. PNG сохраняется вдвое крупнее, чтобы текст был чётким.', sample: 'Месяц,Продажи,Расходы\nЯнв,12,9\nФев,15,10\nМар,14,11\nАпр,19,12\nМай,23,14\nИюн,27,15' },
 }[lang];
+const graph = {
+  en: {
+    tabGraph: 'Function graph', tabChart: 'Data chart', add: 'Add expression', examples: 'Load an example…', ph: 'Type an expression', toggle: 'Show or hide', del: 'Remove', min: 'min', max: 'max', play: 'Animate',
+    zoomIn: 'Zoom in', zoomOut: 'Zoom out', reset: 'Reset view', square: 'Equal axes', xmin: 'x min', xmax: 'x max', ymin: 'y min', ymax: 'y max', gpng: 'Download PNG', link: 'Copy link', linked: 'Link copied',
+    ghint: 'Try y = x^2, x^2 + y^2 = 9, y > x - 1, (2, 3), (cos(t), sin(t)) or r = 1 + cos(theta). Letters such as a and b turn into sliders. Define f(x) = x^2 and use f(x). Limit a curve with {x > 0}. Functions need brackets: sin(x).',
+    gnote: 'Everything is drawn in your browser. The link keeps your expressions after the # sign, which is never sent anywhere. Drag to move, scroll or pinch to zoom.',
+    e_syntax: 'Not understood near', e_char: 'Unknown character', e_func: 'Functions need brackets, like sin(x). Problem near', e_args: 'Wrong number of arguments for', e_cond: 'Bad condition', e_empty: 'Nothing to draw',
+    ex: [
+      { n: 'Waves with sliders', l: ['y = a sin(b x)', 'a = 2', 'b = 1.5'] },
+      { n: 'Circle and line', l: ['x^2 + y^2 = 9', 'y = x / 2 + 1'] },
+      { n: 'Shaded regions', l: ['y >= x^2 - 4', 'x^2 + y^2 <= 16'] },
+      { n: 'Your own function', l: ['f(x) = x^3 - 3x', 'y = f(x)', 'y = f(x + a)', 'a = 1'] },
+      { n: 'Polar rose', l: ['r = 3 cos(3 theta)'] },
+      { n: 'Parametric curve', l: ['(3 sin(3 t), 3 sin(2 t))'] },
+      { n: 'Pieces of a curve', l: ['y = x^2 {x < 0}', 'y = x + 2 {x >= 0}'] },
+    ],
+  },
+  de: {
+    tabGraph: 'Funktionsgraph', tabChart: 'Datendiagramm', add: 'Ausdruck hinzufügen', examples: 'Beispiel laden…', ph: 'Ausdruck eingeben', toggle: 'Ein- oder ausblenden', del: 'Entfernen', min: 'min', max: 'max', play: 'Animieren',
+    zoomIn: 'Vergrößern', zoomOut: 'Verkleinern', reset: 'Ansicht zurücksetzen', square: 'Gleiche Achsen', xmin: 'x min', xmax: 'x max', ymin: 'y min', ymax: 'y max', gpng: 'PNG herunterladen', link: 'Link kopieren', linked: 'Link kopiert',
+    ghint: 'Probiere y = x^2, x^2 + y^2 = 9, y > x - 1, (2, 3), (cos(t), sin(t)) oder r = 1 + cos(theta). Buchstaben wie a und b werden zu Schiebereglern. Definiere f(x) = x^2 und nutze f(x). Begrenze eine Kurve mit {x > 0}. Funktionen brauchen Klammern: sin(x).',
+    gnote: 'Alles wird in deinem Browser gezeichnet. Der Link speichert deine Ausdrücke hinter dem #-Zeichen, das nirgendwohin gesendet wird. Ziehen zum Verschieben, Scrollen oder Zwei-Finger-Geste zum Zoomen.',
+    e_syntax: 'Nicht verstanden bei', e_char: 'Unbekanntes Zeichen', e_func: 'Funktionen brauchen Klammern, etwa sin(x). Problem bei', e_args: 'Falsche Anzahl Argumente bei', e_cond: 'Ungültige Bedingung', e_empty: 'Nichts zu zeichnen',
+    ex: [
+      { n: 'Wellen mit Schiebereglern', l: ['y = a sin(b x)', 'a = 2', 'b = 1.5'] },
+      { n: 'Kreis und Gerade', l: ['x^2 + y^2 = 9', 'y = x / 2 + 1'] },
+      { n: 'Schraffierte Bereiche', l: ['y >= x^2 - 4', 'x^2 + y^2 <= 16'] },
+      { n: 'Eigene Funktion', l: ['f(x) = x^3 - 3x', 'y = f(x)', 'y = f(x + a)', 'a = 1'] },
+      { n: 'Polarrose', l: ['r = 3 cos(3 theta)'] },
+      { n: 'Parameterkurve', l: ['(3 sin(3 t), 3 sin(2 t))'] },
+      { n: 'Kurvenstücke', l: ['y = x^2 {x < 0}', 'y = x + 2 {x >= 0}'] },
+    ],
+  },
+  ru: {
+    tabGraph: 'График функции', tabChart: 'Диаграмма по данным', add: 'Добавить выражение', examples: 'Загрузить пример…', ph: 'Введите выражение', toggle: 'Показать или скрыть', del: 'Удалить', min: 'мин', max: 'макс', play: 'Анимация',
+    zoomIn: 'Приблизить', zoomOut: 'Отдалить', reset: 'Сбросить вид', square: 'Равные оси', xmin: 'x мин', xmax: 'x макс', ymin: 'y мин', ymax: 'y макс', gpng: 'Скачать PNG', link: 'Копировать ссылку', linked: 'Ссылка скопирована',
+    ghint: 'Попробуйте y = x^2, x^2 + y^2 = 9, y > x - 1, (2, 3), (cos(t), sin(t)) или r = 1 + cos(theta). Буквы вроде a и b превращаются в ползунки. Задайте f(x) = x^2 и используйте f(x). Ограничение кривой: {x > 0}. Функциям нужны скобки: sin(x).',
+    gnote: 'Всё рисуется в вашем браузере. Ссылка хранит выражения после знака #, он никуда не отправляется. Тяните для сдвига, колесо или щипок для масштаба.',
+    e_syntax: 'Не понятно возле', e_char: 'Неизвестный символ', e_func: 'Функциям нужны скобки, например sin(x). Проблема возле', e_args: 'Неверное число аргументов у', e_cond: 'Неверное условие', e_empty: 'Нечего рисовать',
+    ex: [
+      { n: 'Волны с ползунками', l: ['y = a sin(b x)', 'a = 2', 'b = 1.5'] },
+      { n: 'Окружность и прямая', l: ['x^2 + y^2 = 9', 'y = x / 2 + 1'] },
+      { n: 'Закрашенные области', l: ['y >= x^2 - 4', 'x^2 + y^2 <= 16'] },
+      { n: 'Своя функция', l: ['f(x) = x^3 - 3x', 'y = f(x)', 'y = f(x + a)', 'a = 1'] },
+      { n: 'Полярная роза', l: ['r = 3 cos(3 theta)'] },
+      { n: 'Параметрическая кривая', l: ['(3 sin(3 t), 3 sin(2 t))'] },
+      { n: 'Куски кривой', l: ['y = x^2 {x < 0}', 'y = x + 2 {x >= 0}'] },
+    ],
+  },
+}[lang];
+const s = { ...chart, ...graph };
 ---
 <ToolLayout lang={lang} slug="plot">
-  <div class="tl plot" data-plot data-s={JSON.stringify(s)}>
+  <div class="tl plot" data-s={JSON.stringify(s)}>
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" aria-selected="true" data-tab="graph">{s.tabGraph}</button>
+      <button type="button" role="tab" aria-selected="false" data-tab="chart">{s.tabChart}</button>
+    </div>
+    <section data-panel="graph" class="graph" data-graph>
+      <div class="card pane g-side">
+        <div class="g-list" data-rows></div>
+        <div class="actions">
+          <button type="button" class="btn alt" data-add>{s.add}</button>
+          <select data-example aria-label={s.examples}>
+            <option value="">{s.examples}</option>
+            {s.ex.map((e, i) => <option value={String(i)}>{e.n}</option>)}
+          </select>
+        </div>
+        <p class="meta">{s.ghint}</p>
+      </div>
+      <div class="card pane g-main">
+        <div class="g-stage" data-stage>
+          <canvas data-canvas></canvas>
+          <div class="g-tools">
+            <button type="button" class="g-tb" data-zoom-in aria-label={s.zoomIn} title={s.zoomIn}>+</button>
+            <button type="button" class="g-tb" data-zoom-out aria-label={s.zoomOut} title={s.zoomOut}>−</button>
+            <button type="button" class="g-tb" data-reset aria-label={s.reset} title={s.reset}>⌂</button>
+            <button type="button" class="g-tb" data-square aria-label={s.square} title={s.square}>1:1</button>
+          </div>
+          <div class="g-read" data-read></div>
+        </div>
+        <div class="row g-win">
+          <label>{s.xmin}<input type="number" step="any" data-win="xmin" /></label>
+          <label>{s.xmax}<input type="number" step="any" data-win="xmax" /></label>
+          <label>{s.ymin}<input type="number" step="any" data-win="ymin" /></label>
+          <label>{s.ymax}<input type="number" step="any" data-win="ymax" /></label>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn" data-gpng>{s.gpng}</button>
+          <button type="button" class="btn alt" data-link>{s.link}</button>
+        </div>
+        <p class="meta">{s.gnote}</p>
+      </div>
+    </section>
+    <section data-panel="chart" data-plot hidden>
     <div class="work">
       <div class="card pane" data-drop>
         <label>{s.data}<textarea name="data" spellcheck="false" rows="12" class="mono"></textarea></label>
@@ -46,12 +138,40 @@ const s = {
         <p class="meta">{s.note}</p>
       </div>
     </div>
+    </section>
   </div>
 </ToolLayout>
 <script>
   import '../../../../tools/plot/plot.ts';
 </script>
 <style>
+  .tabs { display: inline-flex; gap: 4px; padding: 4px; background: var(--surface-2); border-radius: 999px; justify-self: start; }
+  .tabs button { padding: 7px 18px; border: 0; border-radius: 999px; background: none; color: var(--muted); font: inherit; font-size: .92rem; cursor: pointer; }
+  .tabs button[aria-selected='true'] { background: var(--accent-strong); color: #fff; }
+  .graph { display: grid; gap: 20px; grid-template-columns: minmax(250px, 340px) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 860px) { .graph { grid-template-columns: minmax(0, 1fr); } .g-main { order: -1; } }
+  .g-stage { position: relative; height: clamp(340px, 62vh, 640px); border-radius: var(--radius-sm); overflow: hidden; background: #fff; touch-action: none; }
+  .g-stage canvas { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+  .g-stage canvas:active { cursor: grabbing; }
+  .g-tools { position: absolute; right: 8px; top: 8px; display: grid; gap: 6px; }
+  .g-tb { width: 36px; height: 36px; border: 1px solid #d8d8de; border-radius: 8px; background: #fffffff0; color: #333; font: inherit; font-size: 1rem; cursor: pointer; }
+  .g-tb:hover { background: #f0f0f4; }
+  .g-read { position: absolute; left: 8px; bottom: 8px; padding: 2px 8px; border-radius: 6px; background: #ffffffe6; color: #333; font: 12px ui-monospace, Consolas, monospace; pointer-events: none; }
+  .g-win input { padding: 6px 8px; }
+  .g-list { display: grid; gap: 10px; }
+  .g-list :global(.g-row) { display: grid; grid-template-columns: 26px minmax(0, 1fr) 26px; gap: 6px; align-items: center; }
+  .g-list :global(.g-sw) { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--sw); background: var(--sw); cursor: pointer; padding: 0; }
+  .g-list :global(.g-sw[aria-pressed='false']) { background: transparent; }
+  .g-list :global(.g-in) { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); color: var(--fg); font: inherit; font-family: ui-monospace, 'Cascadia Mono', Consolas, Menlo, monospace; font-size: .92rem; }
+  .g-list :global(.g-in[aria-invalid='true']) { border-color: #d65a5a; }
+  .g-list :global(.g-del) { width: 26px; height: 26px; border: 0; border-radius: 6px; background: none; color: var(--muted); font-size: 1.1rem; cursor: pointer; }
+  .g-list :global(.g-del:hover) { background: var(--surface-2); color: var(--fg); }
+  .g-list :global(.g-meta) { grid-column: 2; display: grid; gap: 6px; font-size: .82rem; }
+  .g-list :global(.g-meta:empty) { display: none; }
+  .g-list :global(.g-err) { color: #d65a5a; }
+  .g-list :global(.g-lim) { display: flex; gap: 8px; align-items: center; color: var(--muted); }
+  .g-list :global(.g-lim input) { width: 4.6em; padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-2); color: var(--fg); font: inherit; font-size: .82rem; }
+  .g-list :global(.g-play) { margin-left: auto; width: 28px; height: 28px; border: 1px solid var(--line); border-radius: 50%; background: none; color: var(--fg); cursor: pointer; }
   .work { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); align-items: start; }
   @media (max-width: 900px) { .work { grid-template-columns: minmax(0, 1fr); } }
   .pick { cursor: pointer; justify-self: start; }

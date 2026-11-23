@@ -7,11 +7,17 @@ export function getStaticPaths() {
 }
 const lang = (Astro.params.lang ?? 'en') as Lang;
 const sample = 'e^{i\\pi} + 1 = 0 \\qquad \\int_{-\\infty}^{\\infty} e^{-x^2}\\,dx = \\sqrt{\\pi}';
-const s = {
+const base = {
   en: { src: 'LaTeX formula', hint: 'Type the formula without dollar signs. Buttons below add common pieces at the cursor.', display: 'Large display style', size: 'Size', preview: 'Result', copyTex: 'Copy LaTeX', copyMml: 'Copy MathML', note: 'MathML pastes as an editable formula into Word and LibreOffice. Rendering runs in your browser with KaTeX, nothing is uploaded.', sample },
   de: { src: 'LaTeX-Formel', hint: 'Formel ohne Dollarzeichen eingeben. Die Knöpfe darunter fügen gängige Bausteine an der Schreibmarke ein.', display: 'Große Darstellung', size: 'Größe', preview: 'Ergebnis', copyTex: 'LaTeX kopieren', copyMml: 'MathML kopieren', note: 'MathML lässt sich in Word und LibreOffice als bearbeitbare Formel einfügen. Das Rendern läuft mit KaTeX in deinem Browser, nichts wird hochgeladen.', sample },
   ru: { src: 'Формула LaTeX', hint: 'Вводите формулу без знаков доллара. Кнопки ниже вставляют типовые элементы в позицию курсора.', display: 'Крупный вид', size: 'Размер', preview: 'Результат', copyTex: 'Копировать LaTeX', copyMml: 'Копировать MathML', note: 'MathML вставляется в Word и LibreOffice как редактируемая формула. Отрисовка идёт в вашем браузере через KaTeX, ничего не загружается.', sample },
 }[lang];
+const more = {
+  en: { exportFail: 'The export did not work in this browser.', bg: 'Background', clear: 'Transparent', white: 'White', ink: 'Colour', scale: 'PNG scale', png: 'Download PNG', svg: 'Download SVG', pdf: 'Download PDF', exportNote: 'The SVG carries its own fonts and works in browsers, web pages and slides tools that render web content. Inkscape and Illustrator do not draw it, use the PNG or PDF there. The PDF holds a sharp high-resolution picture of the formula on white, not selectable text.' },
+  de: { exportFail: 'Der Export hat in diesem Browser nicht funktioniert.', bg: 'Hintergrund', clear: 'Transparent', white: 'Weiß', ink: 'Farbe', scale: 'PNG-Maßstab', png: 'PNG herunterladen', svg: 'SVG herunterladen', pdf: 'PDF herunterladen', exportNote: 'Das SVG bringt seine Schriften mit und funktioniert in Browsern und Webseiten. Inkscape und Illustrator zeichnen es nicht, dort PNG oder PDF nehmen. Das PDF enthält ein scharfes, hochaufgelöstes Bild der Formel auf Weiß, keinen markierbaren Text.' },
+  ru: { exportFail: 'Экспорт не удался в этом браузере.', bg: 'Фон', clear: 'Прозрачный', white: 'Белый', ink: 'Цвет', scale: 'Масштаб PNG', png: 'Скачать PNG', svg: 'Скачать SVG', pdf: 'Скачать PDF', exportNote: 'SVG содержит собственные шрифты и работает в браузерах и на веб-страницах. Inkscape и Illustrator его не рисуют, там берите PNG или PDF. PDF содержит чёткое изображение формулы высокого разрешения на белом фоне, а не выделяемый текст.' },
+}[lang];
+const s = { ...base, ...more };
 ---
 <ToolLayout lang={lang} slug="latex">
   <div class="tl latex" data-latex data-s={JSON.stringify(s)}>
@@ -32,6 +38,17 @@ const s = {
         <button type="button" class="btn" data-copy-tex data-needs>{s.copyTex}</button>
         <button type="button" class="btn alt" data-copy-mml data-needs>{s.copyMml}</button>
       </div>
+      <div class="row">
+        <label>{s.bg}<select name="bg"><option value="">{s.clear}</option><option value="#ffffff">{s.white}</option></select></label>
+        <label>{s.ink}<input type="color" name="ink" value="#000000" /></label>
+        <label>{s.scale}<select name="scale"><option value="2">2×</option><option value="4" selected>4×</option><option value="8">8×</option></select></label>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn" data-png data-needs>{s.png}</button>
+        <button type="button" class="btn alt" data-svg data-needs>{s.svg}</button>
+        <button type="button" class="btn alt" data-pdf data-needs>{s.pdf}</button>
+      </div>
+      <p class="meta">{s.exportNote}</p>
       <p class="meta">{s.note}</p>
     </div>
   </div>

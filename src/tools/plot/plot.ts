@@ -1,9 +1,10 @@
 import { renderChart, toData, type Kind } from './logic';
 import { copy, download, onFiles } from '../dom';
+import './graph';
 
 const root = document.querySelector<HTMLElement>('[data-plot]');
 if (root) {
-  const s = JSON.parse(root.dataset.s!) as Record<string, string>;
+  const s = JSON.parse(root.closest<HTMLElement>('[data-s]')!.dataset.s!) as Record<string, string>;
   const q = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
   const f = (name: string) => q<HTMLInputElement & HTMLSelectElement>(`[name=${name}]`);
   const view = q('[data-view]'), err = q('[data-error]'), info = q('[data-info]');
@@ -50,3 +51,15 @@ if (root) {
   f('data').value = s.sample;
   render();
 }
+
+// Tabs: function graph (default) and data chart.
+const tabs = [...document.querySelectorAll<HTMLButtonElement>('[data-tab]')];
+function showTab(name: string) {
+  for (const b of tabs) b.setAttribute('aria-selected', String(b.dataset.tab === name));
+  for (const p of document.querySelectorAll<HTMLElement>('[data-panel]')) p.hidden = p.dataset.panel !== name;
+  try { localStorage.setItem('plot-tab', name); } catch { /* private mode */ }
+}
+for (const b of tabs) b.addEventListener('click', () => showTab(b.dataset.tab!));
+let tab = 'graph';
+try { tab = location.hash.startsWith('#g=') ? 'graph' : localStorage.getItem('plot-tab') ?? 'graph'; } catch { /* private mode */ }
+showTab(tab === 'chart' ? 'chart' : 'graph');

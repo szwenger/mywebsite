@@ -5,9 +5,9 @@ export type Result = { ok: true; html: string } | { ok: false; error: string };
 const base = { throwOnError: true, strict: 'ignore', trust: false, maxExpand: 1000, maxSize: 50 } as const;
 
 /** LaTeX math to HTML (with MathML for screen readers). Never throws: a syntax error comes back as text. Links such as \href are refused by KaTeX unless trusted, and we do not trust. */
-export function renderLatex(src: string, display: boolean): Result {
+export function renderLatex(src: string, display: boolean, output: 'htmlAndMathml' | 'html' | 'mathml' = 'htmlAndMathml'): Result {
   if (!src.trim()) return { ok: true, html: '' };
-  try { return { ok: true, html: katex.renderToString(src, { ...base, displayMode: display, output: 'htmlAndMathml' }) }; }
+  try { return { ok: true, html: katex.renderToString(src, { ...base, displayMode: display, output }) }; }
   catch (e) { return { ok: false, error: (e as Error).message.replace(/^KaTeX parse error: /, '') }; }
 }
 

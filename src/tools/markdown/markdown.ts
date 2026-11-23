@@ -1,3 +1,4 @@
+import 'katex/dist/katex.min.css';
 import { counts, firstHeading, htmlDocument, markdownToHtml } from './logic';
 import { copy, download } from '../dom';
 
@@ -22,8 +23,8 @@ if (root) {
     if (f) { src.value = await f.text(); render(); }
     (e.target as HTMLInputElement).value = '';
   });
-  q('[data-copy]').addEventListener('click', (e) => copy(markdownToHtml(src.value), e.currentTarget as HTMLElement, '✓'));
-  q('[data-html]').addEventListener('click', () => download(htmlDocument(markdownToHtml(src.value), firstHeading(src.value) || 'Document', root.dataset.lang), 'document.html', 'text/html'));
+  q('[data-copy]').addEventListener('click', (e) => copy(markdownToHtml(src.value, true), e.currentTarget as HTMLElement, '✓'));
+  q('[data-html]').addEventListener('click', () => download(htmlDocument(markdownToHtml(src.value, true), firstHeading(src.value) || 'Document', root.dataset.lang), 'document.html', 'text/html'));
   q('[data-md-save]').addEventListener('click', () => download(src.value, 'document.md', 'text/markdown'));
 
   let saved = '';

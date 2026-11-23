@@ -49,3 +49,22 @@ test('first heading and counts', () => {
   assert.deepEqual(counts('  a b\nc '), { words: 3, chars: 8 });
   assert.deepEqual(counts(''), { words: 0, chars: 0 });
 });
+
+test('math: inline, display, money stays text, errors stay visible', () => {
+  const h = markdownToHtml('Euler $e^{i\\pi}+1=0$ and\n\n$$\\int_0^1 x\\,dx$$\n');
+  assert.match(h, /class="katex"/);
+  assert.match(h, /math-block/);
+  assert.match(h, /katex-display/);
+  const money = markdownToHtml('It costs $5 and $10 today');
+  assert.doesNotMatch(money, /katex/);
+  assert.match(money, /\$5 and \$10/);
+  assert.doesNotMatch(markdownToHtml('`$a$` and \\$b\\$'), /katex/);
+  const bad = markdownToHtml('$\\frac{a$');
+  assert.match(bad, /math-error/);
+});
+
+test('math in a saved page is plain MathML, no stylesheet needed', () => {
+  const h = markdownToHtml('$a^2$', true);
+  assert.match(h, /<math/);
+  assert.doesNotMatch(h, /katex-html/);
+});

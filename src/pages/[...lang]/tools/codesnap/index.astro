@@ -1,0 +1,140 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const sample = "function greet(name: string): string {\n  // say hello\n  return `Hello, ${name}!`;\n}\n\nconsole.log(greet('world'));";
+const s = {
+  en: {
+    code: 'Code', pick: 'Open a file', lang: 'Language', auto: 'Detect automatically', detected: 'Detected', theme: 'Colour theme', bgMode: 'Background', gradient: 'Gradient', solid: 'Solid colour', none: 'Transparent',
+    preset: 'Preset', c1: 'Colour 1', c2: 'Colour 2', angle: 'Angle', padding: 'Padding', frame: 'Window', mac: 'macOS', win: 'Windows', bare: 'No window', title: 'Title or file name',
+    lineNumbers: 'Line numbers', start: 'First line number', fontSize: 'Text size', radius: 'Corner radius', shadow: 'Shadow', marks: 'Highlight lines', marksHint: '2, 4-6 highlights lines, +3 marks a line as added, -5 as removed.',
+    others: 'All other lines', normal: 'Normal', dim: 'Dimmed', blur: 'Blurred', tab: 'Tab width', minWidth: 'Minimum width (px, 0 fits the code)', watermark: 'Watermark text', scale: 'PNG scale',
+    png: 'Download PNG', svg: 'Download SVG', copyImg: 'Copy image', copySvg: 'Copy SVG', size: 'px', failed: 'The image could not be made in this browser.', empty: 'Paste some code to start.',
+    look: 'Look', frameTitle: 'Window', linesTitle: 'Lines', outTitle: 'Output',
+    note: 'Made in your browser, the code is never uploaded. Your settings and the last code are kept on this device. The SVG uses your system monospace font, the PNG is the same picture as pixels.',
+    presets: ['Sunset', 'Ocean', 'Candy', 'Forest', 'Midnight', 'Violet', 'Peach', 'Slate', 'Aurora', 'Ember'],
+    sample,
+  },
+  de: {
+    code: 'Code', pick: 'Datei öffnen', lang: 'Sprache', auto: 'Automatisch erkennen', detected: 'Erkannt', theme: 'Farbschema', bgMode: 'Hintergrund', gradient: 'Farbverlauf', solid: 'Einfarbig', none: 'Transparent',
+    preset: 'Vorlage', c1: 'Farbe 1', c2: 'Farbe 2', angle: 'Winkel', padding: 'Rand', frame: 'Fenster', mac: 'macOS', win: 'Windows', bare: 'Kein Fenster', title: 'Titel oder Dateiname',
+    lineNumbers: 'Zeilennummern', start: 'Erste Zeilennummer', fontSize: 'Textgröße', radius: 'Eckenradius', shadow: 'Schatten', marks: 'Zeilen hervorheben', marksHint: '2, 4-6 hebt Zeilen hervor, +3 markiert eine Zeile als hinzugefügt, -5 als entfernt.',
+    others: 'Alle übrigen Zeilen', normal: 'Normal', dim: 'Abgedunkelt', blur: 'Unscharf', tab: 'Tab-Breite', minWidth: 'Mindestbreite (px, 0 passt sich dem Code an)', watermark: 'Wasserzeichen-Text', scale: 'PNG-Maßstab',
+    png: 'PNG herunterladen', svg: 'SVG herunterladen', copyImg: 'Bild kopieren', copySvg: 'SVG kopieren', size: 'px', failed: 'Das Bild konnte in diesem Browser nicht erstellt werden.', empty: 'Code einfügen, um zu beginnen.',
+    look: 'Aussehen', frameTitle: 'Fenster', linesTitle: 'Zeilen', outTitle: 'Ausgabe',
+    note: 'Wird in deinem Browser erstellt, der Code wird nie hochgeladen. Einstellungen und der letzte Code bleiben auf diesem Gerät. Das SVG nutzt die Monospace-Schrift deines Systems, das PNG ist dasselbe Bild als Pixel.',
+    presets: ['Sonnenuntergang', 'Ozean', 'Zuckerwatte', 'Wald', 'Mitternacht', 'Violett', 'Pfirsich', 'Schiefer', 'Polarlicht', 'Glut'],
+    sample,
+  },
+  ru: {
+    code: 'Код', pick: 'Открыть файл', lang: 'Язык', auto: 'Определить автоматически', detected: 'Определён', theme: 'Цветовая тема', bgMode: 'Фон', gradient: 'Градиент', solid: 'Один цвет', none: 'Прозрачный',
+    preset: 'Набор', c1: 'Цвет 1', c2: 'Цвет 2', angle: 'Угол', padding: 'Поля', frame: 'Окно', mac: 'macOS', win: 'Windows', bare: 'Без окна', title: 'Заголовок или имя файла',
+    lineNumbers: 'Номера строк', start: 'Номер первой строки', fontSize: 'Размер текста', radius: 'Скругление углов', shadow: 'Тень', marks: 'Выделить строки', marksHint: '2, 4-6 выделяет строки, +3 помечает строку как добавленную, -5 как удалённую.',
+    others: 'Остальные строки', normal: 'Обычные', dim: 'Приглушённые', blur: 'Размытые', tab: 'Ширина табуляции', minWidth: 'Минимальная ширина (px, 0 по размеру кода)', watermark: 'Текст водяного знака', scale: 'Масштаб PNG',
+    png: 'Скачать PNG', svg: 'Скачать SVG', copyImg: 'Копировать изображение', copySvg: 'Копировать SVG', size: 'px', failed: 'В этом браузере не удалось создать изображение.', empty: 'Вставьте код, чтобы начать.',
+    look: 'Оформление', frameTitle: 'Окно', linesTitle: 'Строки', outTitle: 'Результат',
+    note: 'Создаётся в вашем браузере, код никуда не загружается. Настройки и последний код остаются на этом устройстве. SVG использует моноширинный шрифт вашей системы, PNG — та же картинка в пикселях.',
+    presets: ['Закат', 'Океан', 'Леденец', 'Лес', 'Полночь', 'Фиолет', 'Персик', 'Сланец', 'Сияние', 'Жар'],
+    sample,
+  },
+}[lang];
+---
+<ToolLayout lang={lang} slug="codesnap">
+  <div class="tl snap" data-snap data-s={JSON.stringify(s)}>
+    <div class="side">
+      <div class="card pane" data-drop>
+        <label>{s.code}<textarea name="code" spellcheck="false" rows="10" class="mono" autocapitalize="off"></textarea></label>
+        <div class="row">
+          <label class="btn alt pick">{s.pick}<input type="file" class="sr-only" data-file /></label>
+          <label class="grow">{s.lang}<select name="lang"></select></label>
+        </div>
+        <p class="meta" data-detected></p>
+      </div>
+
+      <div class="card pane">
+        <h2 class="h">{s.look}</h2>
+        <div class="row">
+          <label class="grow">{s.theme}<select name="theme"></select></label>
+          <label class="grow">{s.fontSize}<input type="range" name="fontSize" min="10" max="26" value="15" /></label>
+        </div>
+        <div class="row">
+          <label class="grow">{s.bgMode}<select name="bgMode"><option value="gradient">{s.gradient}</option><option value="solid">{s.solid}</option><option value="none">{s.none}</option></select></label>
+          <label class="grow">{s.preset}<select name="preset" data-preset></select></label>
+        </div>
+        <div class="row">
+          <label>{s.c1}<input type="color" name="c1" value="#8e44ad" /></label>
+          <label>{s.c2}<input type="color" name="c2" value="#3498db" /></label>
+          <label class="grow">{s.angle}<input type="range" name="angle" min="0" max="360" value="135" /></label>
+        </div>
+      </div>
+
+      <div class="card pane">
+        <h2 class="h">{s.frameTitle}</h2>
+        <div class="row">
+          <label class="grow">{s.frame}<select name="frame"><option value="mac">{s.mac}</option><option value="win">{s.win}</option><option value="none">{s.bare}</option></select></label>
+          <label class="grow">{s.title}<input name="title" autocomplete="off" /></label>
+        </div>
+        <div class="row">
+          <label class="grow">{s.padding}<input type="range" name="padding" min="0" max="128" value="48" /></label>
+          <label class="grow">{s.radius}<input type="range" name="radius" min="0" max="32" value="12" /></label>
+          <label class="check"><input type="checkbox" name="shadow" checked />{s.shadow}</label>
+        </div>
+        <div class="row">
+          <label class="grow">{s.minWidth}<input type="number" name="minWidth" min="0" max="3000" value="0" /></label>
+          <label class="grow">{s.watermark}<input name="watermark" autocomplete="off" /></label>
+        </div>
+      </div>
+
+      <div class="card pane">
+        <h2 class="h">{s.linesTitle}</h2>
+        <div class="row">
+          <label class="check"><input type="checkbox" name="lineNumbers" />{s.lineNumbers}</label>
+          <label class="grow">{s.start}<input type="number" name="start" min="0" max="99999" value="1" /></label>
+          <label class="grow">{s.tab}<select name="tab"><option value="2">2</option><option value="4">4</option><option value="8">8</option></select></label>
+        </div>
+        <div class="row">
+          <label class="grow">{s.marks}<input name="marks" autocomplete="off" placeholder="2, +4-5, -7" /></label>
+          <label class="grow">{s.others}<select name="others"><option value="normal">{s.normal}</option><option value="dim">{s.dim}</option><option value="blur">{s.blur}</option></select></label>
+        </div>
+        <p class="meta">{s.marksHint}</p>
+      </div>
+    </div>
+
+    <div class="card pane main">
+      <div class="view" data-view></div>
+      <p class="meta" data-info></p>
+      <p class="note bad" role="alert" data-error hidden></p>
+      <div class="row">
+        <label>{s.scale}<select name="scale"><option value="1">1×</option><option value="2" selected>2×</option><option value="3">3×</option><option value="4">4×</option></select></label>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn" data-png data-needs>{s.png}</button>
+        <button type="button" class="btn alt" data-svg data-needs>{s.svg}</button>
+        <button type="button" class="btn alt" data-copy-img data-needs>{s.copyImg}</button>
+        <button type="button" class="btn alt" data-copy-svg data-needs>{s.copySvg}</button>
+      </div>
+      <p class="meta">{s.note}</p>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/codesnap/codesnap.ts';
+</script>
+<style>
+  .snap { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: start; }
+  @media (max-width: 960px) { .snap { grid-template-columns: minmax(0, 1fr); } .main { order: -1; } }
+  .side { display: grid; gap: 20px; min-width: 0; }
+  .main { position: sticky; top: 16px; }
+  @media (max-width: 960px) { .main { position: static; } }
+  .h { margin: 0; font-size: 1rem; font-weight: 600; }
+  .pick { cursor: pointer; }
+  .grow { flex: 1 1 140px; }
+  [data-drop].over { outline: 2px dashed var(--accent); outline-offset: 2px; }
+  .view { border-radius: var(--radius-sm); overflow: auto; line-height: 0; max-height: 70vh; }
+  .view.checker { background: repeating-conic-gradient(#80808033 0% 25%, transparent 0% 50%) 0 0 / 16px 16px; }
+  .view :global(svg) { display: block; width: 100%; height: auto; }
+</style>
