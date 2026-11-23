@@ -542,6 +542,20 @@ export const tools: Tool[] = [
     },
   },
   {
+    slug: 'dither',
+    cat: 'images',
+    accepts: ['png', 'jpg', 'webp', 'gif', 'bmp', 'heic'],
+    produces: ['png'],
+    tags: 'dither dithering halftone retro pixel art 1-bit black white floyd steinberg atkinson bayer gameboy thermal print',
+    icon: 'M4 4h4v4H4zM12 4h4v4h-4zM8 8h4v4H8zM16 8h4v4h-4zM4 12h4v4H4zM12 12h4v4h-4zM8 16h4v4H8zM16 16h4v4h-4z',
+    name: { en: 'Image ditherer', de: 'Bild-Ditherer', ru: 'Дизеринг изображений' },
+    blurb: {
+      en: 'Turn a photo into a few shades or two colours with Floyd-Steinberg, Atkinson or ordered dithering, with chunky dots if you like.',
+      de: 'Ein Foto mit Floyd-Steinberg, Atkinson oder geordnetem Dithering auf wenige Stufen oder zwei Farben bringen, auf Wunsch mit groben Punkten.',
+      ru: 'Преобразуйте фото в несколько оттенков или два цвета дизерингом Флойда–Стейнберга, Аткинсона или упорядоченным, при желании с крупными точками.',
+    },
+  },
+  {
     slug: 'crop',
     cat: 'images',
     accepts: ['png', 'jpg', 'webp', 'gif', 'bmp', 'heic'],

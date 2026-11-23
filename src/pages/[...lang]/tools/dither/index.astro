@@ -1,0 +1,37 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { langOf, toolPaths } from '../../../../i18n/tool-page';
+import { s as strings } from '../../../../i18n/tools/dither';
+import { ALGOS } from '../../../../tools/dither/logic';
+
+export const getStaticPaths = toolPaths;
+const lang = langOf(Astro.params);
+const s = strings[lang] as Record<string, string>;
+---
+<ToolLayout lang={lang} slug="dither">
+  <div class="tl two" data-dither data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <label class="drop" data-drop><span>{s.drop}</span><input type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp,image/heic,image/heif,.heic,.heif" data-input /></label>
+      <label>{s.algo}<select name="algo">{ALGOS.map((a) => <option value={a}>{s[a]}</option>)}</select></label>
+      <label><span>{s.levels}: <output name="levelsOut">2</output></span><input name="levels" type="range" min="2" max="8" value="2" aria-label={s.levels} /></label>
+      <label><span>{s.pixel}: <output name="pixelOut">1</output></span><input name="pixel" type="range" min="1" max="12" value="1" aria-label={s.pixel} /></label>
+      <div class="row">
+        <label>{s.dark}<input name="dark" type="color" value="#000000" /></label>
+        <label>{s.light}<input name="light" type="color" value="#ffffff" /></label>
+      </div>
+      <p class="note" data-error role="alert" hidden></p>
+      <p class="meta">{s.note}</p>
+    </div>
+    <div class="card pane">
+      <canvas data-out hidden></canvas>
+      <div class="actions"><button type="button" class="btn" data-png disabled>{s.png}</button></div>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/dither/dither.ts';
+</script>
+<style>
+  input[type='color'] { width: 64px; height: 40px; padding: 2px; }
+  canvas { max-width: 100%; height: auto; image-rendering: pixelated; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+</style>
