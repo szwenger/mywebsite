@@ -1,4 +1,5 @@
 ---
+import Icon from '../components/Icon.astro';
 // GitHub Pages serves this one file for every missing path, so it speaks all three languages.
 import Base from '../layouts/Base.astro';
 import { LANGS, path, t } from '../i18n/ui';
@@ -10,7 +11,7 @@ import { LANGS, path, t } from '../i18n/ui';
       {LANGS.map((l) => (
         <li lang={l}>
           <h1 class:list={{ sub: l !== 'en' }}>{t(l, 'nfTitle')}</h1>
-          <a href={path(l, '/')} hreflang={l}>{t(l, 'nfHome')} <span aria-hidden="true">→</span></a>
+          <a href={path(l, '/')} hreflang={l}>{t(l, 'nfHome')} <Icon name="arrow" size={14} /></a>
         </li>
       ))}
     </ul>

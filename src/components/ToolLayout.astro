@@ -15,6 +15,10 @@ const tool = tools.find((x) => x.slug === slug)!;
     <slot />
   </section>
 </Base>
+<script>
+  import { initFilePick } from '../scripts/filepick';
+  initFilePick();
+</script>
 <style>
   .page { padding-block: clamp(32px, 6vw, 64px) 0; }
   .blurb { margin: -6px 0 6px; max-width: 60ch; }

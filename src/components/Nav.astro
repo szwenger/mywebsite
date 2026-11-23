@@ -68,7 +68,7 @@ const items = [['blog', 'navBlog', 'blog'], ['videos', 'navVideos', 'videos'], [
   .controls { display: flex; align-items: center; gap: 12px; }
 
   .langmenu { position: relative; }
-  .langmenu summary { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 99px; color: var(--fg); font: 500 .85rem/1 var(--font); cursor: pointer; list-style: none; user-select: none; transition: background-color .15s; }
+  .langmenu summary { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 99px; color: var(--fg); font: 500 .85rem/1 var(--font); cursor: pointer; list-style: none; user-select: none; transition: background-color .15s, var(--press); }
   .langmenu summary::-webkit-details-marker { display: none; }
   .langmenu summary:hover, .langmenu[open] summary { background: var(--surface); }
   .langmenu summary svg:first-child { color: var(--muted); }
@@ -86,7 +86,7 @@ const items = [['blog', 'navBlog', 'blog'], ['videos', 'navVideos', 'videos'], [
   .langmenu li [aria-current] { color: var(--fg); }
   .langmenu li svg { color: var(--accent-ink); }
   .langmenu small { font-size: .78rem; color: var(--muted); }
-  .theme { display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 99px; background: none; color: var(--fg); cursor: pointer; }
+  .theme { display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 99px; background: none; color: var(--fg); cursor: pointer; transition: background-color .15s, var(--press); }
   .theme:hover { background: var(--surface); }
   :global([data-theme='dark']) .sun, :global([data-theme='light']) .moon { display: none; }
 

@@ -1,5 +1,5 @@
 import { renderChart, toData, type Kind } from './logic';
-import { copy, download, onFiles } from '../dom';
+import { copy, download, onFiles, slideIn } from '../dom';
 import './graph';
 
 const root = document.querySelector<HTMLElement>('[data-plot]');
@@ -54,12 +54,17 @@ if (root) {
 
 // Tabs: function graph (default) and data chart.
 const tabs = [...document.querySelectorAll<HTMLButtonElement>('[data-tab]')];
-function showTab(name: string) {
+function showTab(name: string, animate = false) {
+  const from = tabs.findIndex((b) => b.getAttribute('aria-selected') === 'true'), to = tabs.findIndex((b) => b.dataset.tab === name);
   for (const b of tabs) b.setAttribute('aria-selected', String(b.dataset.tab === name));
-  for (const p of document.querySelectorAll<HTMLElement>('[data-panel]')) p.hidden = p.dataset.panel !== name;
+  for (const p of document.querySelectorAll<HTMLElement>('[data-panel]')) {
+    const show = p.dataset.panel === name, was = p.hidden;
+    p.hidden = !show;
+    if (show && was && animate && from !== to) slideIn(p, to > from ? 1 : -1);
+  }
   try { localStorage.setItem('plot-tab', name); } catch { /* private mode */ }
 }
-for (const b of tabs) b.addEventListener('click', () => showTab(b.dataset.tab!));
+for (const b of tabs) b.addEventListener('click', () => showTab(b.dataset.tab!, true));
 let tab = 'graph';
 try { tab = location.hash.startsWith('#g=') ? 'graph' : localStorage.getItem('plot-tab') ?? 'graph'; } catch { /* private mode */ }
 showTab(tab === 'chart' ? 'chart' : 'graph');

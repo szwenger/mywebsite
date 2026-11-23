@@ -1,4 +1,5 @@
 import { accepts, fitsCanvas, isHeic, outName, targetSize, type Format } from './logic';
+import { iconButton, iconSvg } from '../dom';
 
 const root = document.querySelector<HTMLElement>('[data-image]');
 if (root) init(root);
@@ -120,20 +121,16 @@ function init(root: HTMLElement) {
       if (it.url) {
         info.textContent = `${size(it.file.size)} → ${size(it.size!)}`;
         const a = document.createElement('a');
-        a.className = 'btn';
+        a.className = 'btn ib';
         a.href = it.url;
         a.download = it.name!;
-        a.textContent = s.download;
+        a.innerHTML = `<span class="glyph">${iconSvg('download')}</span>`;
         a.setAttribute('aria-label', `${s.download}: ${it.name}`);
         act.append(a);
       } else {
         info.textContent = it.note ?? s.working;
       }
-      const rm = document.createElement('button');
-      rm.type = 'button';
-      rm.className = 'btn alt';
-      rm.textContent = s.remove;
-      rm.setAttribute('aria-label', `${s.remove}: ${it.file.name}`);
+      const rm = iconButton('close', `${s.remove}: ${it.file.name}`);
       rm.addEventListener('click', () => { if (it.url) URL.revokeObjectURL(it.url); items.splice(i, 1); render(); });
       act.append(rm);
       li.append(name, info, act);

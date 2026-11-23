@@ -1,4 +1,5 @@
 ---
+import Icon from './Icon.astro';
 import { t, type Lang } from '../i18n/ui';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
@@ -8,7 +9,7 @@ const { lang } = Astro.props;
     <h2 class="section-title" id="twitch-title">{t(lang, 'twitchTitle')}</h2>
     <p class="handle">twitch.tv/<strong>galuin</strong></p>
     <p class="meta note">{t(lang, 'twitchText')}</p>
-    <a class="chip watch" href="https://www.twitch.tv/galuin" rel="noopener">{t(lang, 'watchOnTwitch')} <span aria-hidden="true">↗</span></a>
+    <a class="chip watch" href="https://www.twitch.tv/galuin" rel="noopener">{t(lang, 'watchOnTwitch')} <Icon name="ext" size={14} /></a>
   </div>
   <div class="slot" data-twitch-slot>
     <button type="button" class="btn" data-twitch-load>

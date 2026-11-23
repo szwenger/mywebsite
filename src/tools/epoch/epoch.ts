@@ -23,7 +23,9 @@ if (root) {
     const td = Object.assign(document.createElement('td'), { className: 'val mono' });
     const b = iconButton('copy', s.copy, true);
     b.addEventListener('click', () => copy(value, b));
-    td.append(value, b);
+    const cell = Object.assign(document.createElement('div'), { className: 'cell' });
+    cell.append(Object.assign(document.createElement('span'), { textContent: value }), b);
+    td.append(cell);
     tr.append(th, td);
     return tr;
   }

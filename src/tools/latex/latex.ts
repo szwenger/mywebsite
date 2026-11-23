@@ -1,6 +1,6 @@
 import 'katex/dist/katex.min.css';
 import { SNIPPETS, insertSnippet, renderLatex, toMathml } from './logic';
-import { copy, download } from '../dom';
+import { copy, download, flagInvalid } from '../dom';
 import { formulaSvg } from './export';
 import { canvasPdf, canvasPng, svgToCanvas as toCanvas } from '../raster';
 
@@ -15,6 +15,7 @@ if (root) {
   function render() {
     const r = renderLatex(src.value, display.checked);
     ok = r.ok && src.value.trim() !== '';
+    flagInvalid(src, !r.ok && src.value.trim() !== '');
     err.hidden = r.ok;
     err.textContent = r.ok ? '' : r.error;
     if (r.ok) view.innerHTML = r.html;

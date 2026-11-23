@@ -1,5 +1,6 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
+import Icon from '../../../../components/Icon.astro';
 import { LANGS, type Lang } from '../../../../i18n/ui';
 
 export function getStaticPaths() {
@@ -79,8 +80,8 @@ const s = {
           <section class="card box nav" aria-label={s.slide}>
             <div class="count" aria-live="polite">{s.slide} <span data-num>1</span> / <span class="muted" data-total>1</span></div>
             <div class="row">
-              <button type="button" class="step" data-prev aria-label={s.prev}>←</button>
-              <button type="button" class="step" data-nextbtn aria-label={s.nextBtn}>→</button>
+              <button type="button" class="step ib" data-prev aria-label={s.prev}><Icon name="prev" size={18} /></button>
+              <button type="button" class="step ib" data-nextbtn aria-label={s.nextBtn}><Icon name="next" size={18} /></button>
             </div>
           </section>
 
@@ -123,7 +124,7 @@ const s = {
   @media (max-width: 800px) { .grid { grid-template-columns: minmax(0, 1fr); } }
   .cur, .box { padding: 14px; display: grid; gap: 10px; }
   .side { display: grid; gap: 16px; }
-  .label { margin: 0; font-size: .72rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .label { margin: 0; font-size: .82rem; font-weight: 600; letter-spacing: 0; color: var(--muted); }
   .view { height: clamp(260px, 62vh, 640px); display: grid; place-items: center; background: #000; border-radius: var(--radius-sm); overflow: hidden; }
   .view.small { height: 150px; background: var(--surface-2); }
   .view canvas { display: block; max-width: 100%; }
@@ -134,7 +135,8 @@ const s = {
   .nav { grid-auto-flow: column; align-items: center; justify-content: space-between; }
   .count { font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace; font-size: 1.1rem; }
   .muted { color: var(--muted); }
-  .step { width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--fg); font-size: 1.1rem; cursor: pointer; }
+  .step { display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--fg); cursor: pointer; transition: border-color .15s, var(--press); }
+  .step:disabled { opacity: .4; cursor: default; }
   .step:hover:not([disabled]) { border-color: var(--accent); }
   .keys { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 0; font-size: .82rem; }
   kbd { padding: 1px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface-2); font: .75rem ui-monospace, Consolas, monospace; }

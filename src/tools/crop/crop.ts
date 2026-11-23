@@ -81,6 +81,8 @@ if (root) {
   view.addEventListener('pointermove', (e) => { if (view.hasPointerCapture(e.pointerId)) moveTo(e); });
 
   root.addEventListener('input', () => { q('[data-custom]').hidden = f('ratio').value !== 'custom'; update(); });
+  const syncQuality = () => { f('quality').disabled = f('fmt').value === 'png'; }; // PNG has no quality setting; same rule as the image converter
+  f('fmt').addEventListener('change', syncQuality); syncQuality();
   root.querySelectorAll<HTMLElement>('[data-turn]').forEach((b) => b.addEventListener('click', () => { deg = (deg + Number(b.dataset.turn) + 360) % 360; turnSource(); cx = cy = 0.5; drawPreview(); }));
   q('[data-other]').addEventListener('click', () => { q('[data-work]').hidden = true; q('[data-drop]').hidden = false; });
 

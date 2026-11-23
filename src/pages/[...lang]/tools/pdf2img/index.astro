@@ -30,7 +30,7 @@ const s = {
     <div class="card opts" data-options hidden>
       <label>{s.fmt}<select name="fmt"><option value="png">PNG</option><option value="jpeg">JPG</option><option value="webp">WebP</option></select></label>
       <label>{s.dpi}<select name="dpi"><option>72</option><option>96</option><option selected>150</option><option>200</option><option>300</option><option>600</option></select></label>
-      <label>{s.quality} <output data-q-out>90</output><input type="range" name="quality" min="40" max="100" step="5" value="90" /></label>
+      <label><span>{s.quality} <output data-q-out>90</output></span><input type="range" aria-label={s.quality} name="quality" min="40" max="100" step="5" value="90" /></label>
       <label>{s.pages}<input name="range" placeholder={s.pagesPh} autocomplete="off" /></label>
       <button type="button" class="btn" data-go>{s.convert}</button>
       <p class="meta full">{s.dpiHint}</p>

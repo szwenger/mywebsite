@@ -1,7 +1,7 @@
 import { parseAll, type Env, type Parsed } from './expr';
 import { cells, contour, trace, traceParam } from './geom';
 import { COLORS, fmt, niceTicks } from './logic';
-import { copy, download } from '../dom';
+import { copy, download, iconButton, shake } from '../dom';
 
 type Line = { text: string; hidden?: boolean; min: number; max: number; play?: boolean; auto?: boolean };
 type View = { cx: number; cy: number; sx: number; sy: number };
@@ -205,12 +205,13 @@ if (root) {
     const row = el('div', 'g-row');
     const sw = el('button', 'g-sw'); sw.type = 'button'; sw.title = s.toggle; sw.setAttribute('aria-label', s.toggle);
     const inp = el('input', 'g-in'); inp.value = line.text; inp.placeholder = s.ph; inp.spellcheck = false; inp.autocomplete = 'off'; inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('aria-label', s.ph);
-    const del = el('button', 'g-del', '×'); del.type = 'button'; del.title = s.del; del.setAttribute('aria-label', s.del);
+    const del = iconButton('close', s.del, true); del.classList.add('g-del');
     const meta = el('div', 'g-meta');
     row.append(sw, inp, del, meta);
     sw.addEventListener('click', () => { line.hidden = !line.hidden; update(); });
     del.addEventListener('click', () => { lines = lines.filter((l) => l !== line); if (!lines.length) lines.push(newLine('')); update(); });
     inp.addEventListener('input', () => { line.text = inp.value; line.auto = false; update(); });
+    inp.addEventListener('change', () => { if (inp.getAttribute('aria-invalid') === 'true') shake(inp); }); // on leave or Enter, not per keystroke
     inp.addEventListener('keydown', (e) => {
       if (e.key !== 'Enter') return;
       e.preventDefault();

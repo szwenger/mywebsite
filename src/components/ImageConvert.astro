@@ -19,7 +19,7 @@ const { s, heic = false, accept } = Astro.props;
         <option value="png">PNG</option>
       </select>
     </label>
-    <label>{s.quality} <output data-quality-out></output>
+    <label><span>{s.quality} <output data-quality-out></output></span>
       <input type="range" min="10" max="100" step="5" value="85" data-quality aria-label={s.quality} />
     </label>
     <label>{s.maxW}<input type="number" min="1" inputmode="numeric" data-maxw /></label>
@@ -57,10 +57,9 @@ const { s, heic = false, accept } = Astro.props;
   .opts input[type='range'] { width: 160px; accent-color: var(--accent); }
   .opts input[disabled] { opacity: .45; }
   .note { flex-basis: 100%; margin: 0; }
-  .warn { margin: 0; padding: 9px 12px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface-2); font-size: .9rem; }
+  .warn { margin: 0; padding: 9px 12px; border-radius: var(--radius-sm); border: 1px solid #d65a5a; background: var(--surface-2); font-size: .9rem; }
   .row { display: flex; flex-wrap: wrap; gap: 10px; }
   .row.end { justify-content: flex-end; }
-  .btn.alt { background: transparent; color: var(--fg); border: 1px solid var(--line); box-shadow: none; }
   .btn[disabled] { opacity: .45; cursor: not-allowed; }
   .files { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 10px; }
   :global(.image .files .row) { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 8px 16px; padding: 12px 16px; }

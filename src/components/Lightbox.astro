@@ -1,10 +1,11 @@
 ---
 import { t, type Lang } from '../i18n/ui';
+import Icon from './Icon.astro';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 ---
 <dialog class="lightbox">
-  <button type="button" class="lb-close" aria-label={t(lang, 'closeImage')}>×</button>
+  <button type="button" class="lb-close" aria-label={t(lang, 'closeImage')}><Icon name="close" size={20} /></button>
   <img alt="" />
   <p class="lb-cap" hidden></p>
 </dialog>

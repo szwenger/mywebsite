@@ -1,5 +1,6 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
+import Icon from '../../../../components/Icon.astro';
 import { LANGS, type Lang } from '../../../../i18n/ui';
 
 export function getStaticPaths() {
@@ -85,10 +86,10 @@ const s = { ...chart, ...graph };
         <div class="g-stage" data-stage>
           <canvas data-canvas></canvas>
           <div class="g-tools">
-            <button type="button" class="g-tb" data-zoom-in aria-label={s.zoomIn} title={s.zoomIn}>+</button>
-            <button type="button" class="g-tb" data-zoom-out aria-label={s.zoomOut} title={s.zoomOut}>−</button>
-            <button type="button" class="g-tb" data-reset aria-label={s.reset} title={s.reset}>⌂</button>
-            <button type="button" class="g-tb" data-square aria-label={s.square} title={s.square}>1:1</button>
+            <button type="button" class="g-tb ib" data-zoom-in aria-label={s.zoomIn}><Icon name="plus" size={18} /></button>
+            <button type="button" class="g-tb ib" data-zoom-out aria-label={s.zoomOut}><Icon name="minus" size={18} /></button>
+            <button type="button" class="g-tb ib" data-reset aria-label={s.reset}><Icon name="home" size={18} /></button>
+            <button type="button" class="g-tb ib" data-square aria-label={s.square}><Icon name="square" size={18} /></button>
           </div>
           <div class="g-read" data-read></div>
         </div>
@@ -154,7 +155,7 @@ const s = { ...chart, ...graph };
   .g-stage canvas { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
   .g-stage canvas:active { cursor: grabbing; }
   .g-tools { position: absolute; right: 8px; top: 8px; display: grid; gap: 6px; }
-  .g-tb { width: 36px; height: 36px; border: 1px solid #d8d8de; border-radius: 8px; background: #fffffff0; color: #333; font: inherit; font-size: 1rem; cursor: pointer; }
+  .g-tb { display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 1px solid #d8d8de; border-radius: 8px; background: #fffffff0; color: #333; cursor: pointer; transition: background-color .15s, var(--press); }
   .g-tb:hover { background: #f0f0f4; }
   .g-read { position: absolute; left: 8px; bottom: 8px; padding: 2px 8px; border-radius: 6px; background: #ffffffe6; color: #333; font: 12px ui-monospace, Consolas, monospace; pointer-events: none; }
   .g-win input { padding: 6px 8px; }
@@ -164,8 +165,8 @@ const s = { ...chart, ...graph };
   .g-list :global(.g-sw[aria-pressed='false']) { background: transparent; }
   .g-list :global(.g-in) { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); color: var(--fg); font: inherit; font-family: ui-monospace, 'Cascadia Mono', Consolas, Menlo, monospace; font-size: .92rem; }
   .g-list :global(.g-in[aria-invalid='true']) { border-color: #d65a5a; }
-  .g-list :global(.g-del) { width: 26px; height: 26px; border: 0; border-radius: 6px; background: none; color: var(--muted); font-size: 1.1rem; cursor: pointer; }
-  .g-list :global(.g-del:hover) { background: var(--surface-2); color: var(--fg); }
+  .g-list :global(.g-del) { border-color: transparent; color: var(--muted); }
+  .g-list :global(.g-del:hover) { border-color: var(--line); color: var(--fg); }
   .g-list :global(.g-meta) { grid-column: 2; display: grid; gap: 6px; font-size: .82rem; }
   .g-list :global(.g-meta:empty) { display: none; }
   .g-list :global(.g-err) { color: #d65a5a; }

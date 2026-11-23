@@ -43,6 +43,8 @@ const s = {
 </script>
 <style>
   .big { font-size: 1.15rem; }
-  :global(.tl td .ib) { margin-left: 8px; vertical-align: middle; }
+  :global(.tl td .cell) { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  :global(.tl td .cell span) { min-width: 0; overflow-wrap: anywhere; }
+  :global(.tl td .cell .ib) { flex: none; }
   :global(.tl td.val) { overflow-wrap: anywhere; }
 </style>

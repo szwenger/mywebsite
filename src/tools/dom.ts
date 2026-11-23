@@ -18,15 +18,37 @@ export async function copy(text: string, btn?: HTMLElement, done = '✓'): Promi
   setTimeout(() => { btn.textContent = old; }, 1200);
 }
 
+/** Inline SVG for an icon, same markup as components/Icon.astro. */
+export const iconSvg = (n: IconName) => `<svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${icons[n]}</svg>`;
+
 /** Icon-only button built from script (same markup as components/IconButton.astro). `sm` = 28px glyph box inside a 40px hit area. */
 export function iconButton(icon: IconName, label: string, sm = false): HTMLButtonElement {
-  const svg = (n: IconName) => `<svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${icons[n]}</svg>`;
-  const b = Object.assign(document.createElement('button'), { type: 'button', className: `btn alt ib${sm ? ' sm' : ''}`, innerHTML: `<span class="glyph">${svg(icon)}</span><span class="done">${svg('check')}</span>` });
+  const b = Object.assign(document.createElement('button'), { type: 'button', className: `btn alt ib${sm ? ' sm' : ''}`, innerHTML: `<span class="glyph">${iconSvg(icon)}</span><span class="done">${iconSvg('check')}</span>` });
   b.setAttribute('aria-label', label);
   return b;
 }
 
-export const $ = <T extends HTMLElement>(root: ParentNode, sel: string): T => root.querySelector<T>(sel)!;
+export function shake(el: HTMLElement): void {
+  el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
+  setTimeout(() => el.classList.remove('shake'), 400);
+}
+
+/** Slides a freshly shown panel in from the side the user is travelling towards (dir 1 = from the right). No crossfade; skipped under reduced motion. */
+export function slideIn(el: HTMLElement, dir: 1 | -1): void {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  el.animate([{ translate: `${28 * dir}px 0`, opacity: 0 }, { translate: '0 0', opacity: 1 }], { duration: 240, easing: 'cubic-bezier(.2,.8,.2,1)' });
+}
+
+const watched = new WeakSet<HTMLElement>();
+/** Marks a field invalid (red border via aria-invalid; the message stays in the tool's own live note). It shakes when the field is left (blur) while still invalid, never per keystroke. */
+export function flagInvalid(field: HTMLElement, bad: boolean): void {
+  field.setAttribute('aria-invalid', String(bad));
+  if (watched.has(field)) return;
+  watched.add(field);
+  field.addEventListener('focusout', () => { if (field.getAttribute('aria-invalid') === 'true') shake(field); });
+}
+
+export const $ =<T extends HTMLElement>(root: ParentNode, sel: string): T => root.querySelector<T>(sel)!;
 
 /** Wires a file input and a drop target to one handler. */
 export function onFiles(drop: HTMLElement, input: HTMLInputElement, fn: (files: File[]) => void): void {

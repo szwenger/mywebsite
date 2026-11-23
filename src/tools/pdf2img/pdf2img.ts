@@ -87,5 +87,7 @@ if (root) {
   q('[data-unlock]').addEventListener('submit', (e) => { e.preventDefault(); if (pendingFile) open(pendingFile, f('pw').value); });
   q('[data-go]').addEventListener('click', convert);
   q('[data-zip]').addEventListener('click', () => { if (made.length) download(new Blob([zip(made)], { type: 'application/zip' }), `${name.replace(/\.pdf$/i, '')}-images.zip`); });
+  const syncQuality = () => { f('quality').disabled = f('fmt').value === 'png'; };
+  f('fmt').addEventListener('change', syncQuality); syncQuality();
   f('quality').addEventListener('input', () => { q('[data-q-out]').textContent = f('quality').value; });
 }

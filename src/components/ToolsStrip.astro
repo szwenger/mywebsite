@@ -1,4 +1,5 @@
 ---
+import Icon from './Icon.astro';
 import { path, t, type Lang } from '../i18n/ui';
 import { tools } from '../data/tools';
 interface Props { lang: Lang }
@@ -18,7 +19,7 @@ const { lang } = Astro.props;
         </a>
       </li>
     ))}
-    <li><a class="chip all" href={path(lang, '/tools/')}>{t(lang, 'allTools')} <span aria-hidden="true">→</span></a></li>
+    <li><a class="chip all" href={path(lang, '/tools/')}>{t(lang, 'allTools')} <Icon name="arrow" size={14} /></a></li>
   </ul>
 </section>
 <style>

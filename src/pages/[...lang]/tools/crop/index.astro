@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
 import Icon from '../../../../components/Icon.astro';
+import IconButton from '../../../../components/IconButton.astro';
 import { LANGS, type Lang } from '../../../../i18n/ui';
 import { PRESETS } from '../../../../tools/crop/logic';
 
@@ -41,8 +42,8 @@ const s = {
         <label>{s.fmt}<select name="fmt"><option value="png">PNG</option><option value="jpeg">JPG</option><option value="webp">WebP</option></select></label>
         <label>{s.quality}<input name="quality" type="range" min="40" max="100" step="5" value="90" /></label>
         <div class="row">
-          <button type="button" class="btn alt" data-turn="-90">↺ {s.left}</button>
-          <button type="button" class="btn alt" data-turn="90">↻ {s.right}</button>
+          <IconButton icon="rotl" label={s.left} data-turn="-90" />
+          <IconButton icon="rotr" label={s.right} data-turn="90" />
         </div>
         <p class="meta full" data-size></p>
         <div class="row full">

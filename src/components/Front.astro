@@ -1,4 +1,5 @@
 ---
+import Icon from './Icon.astro';
 import NoteItem from './NoteItem.astro';
 import PostCard from './PostCard.astro';
 import VideoCard from './VideoCard.astro';
@@ -53,7 +54,7 @@ const card = lead?.type === 'post'
       <div class="stack">
         {notes.map(({ post, Content }) => <NoteItem lang={lang} post={post}><Content /></NoteItem>)}
       </div>
-      <a class="more" href={path(lang, '/blog/')}>{t(lang, 'backToBlog')} <span aria-hidden="true">→</span></a>
+      <a class="more" href={path(lang, '/blog/')}>{t(lang, 'backToBlog')} <Icon name="arrow" size={14} /></a>
     </section>
   </div>
 
@@ -61,7 +62,7 @@ const card = lead?.type === 'post'
     <section class="posts" data-section="posts" aria-labelledby="posts-title">
       <div class="row-head">
         <h2 class="section-title" id="posts-title">{t(lang, 'latestPosts')}</h2>
-        <a class="more" href={path(lang, '/blog/')}>{t(lang, 'backToBlog')} <span aria-hidden="true">→</span></a>
+        <a class="more" href={path(lang, '/blog/')}>{t(lang, 'backToBlog')} <Icon name="arrow" size={14} /></a>
       </div>
       <div class="post-grid">{postRow.map((post) => <PostCard lang={lang} post={post} />)}</div>
     </section>
@@ -71,7 +72,7 @@ const card = lead?.type === 'post'
     <section class="videos" data-section="videos" aria-labelledby="videos-title">
       <div class="row-head">
         <h2 class="section-title" id="videos-title">{t(lang, 'latestVideos')}</h2>
-        <a class="more" href={path(lang, '/videos/')}>{t(lang, 'allVideos')} <span aria-hidden="true">→</span></a>
+        <a class="more" href={path(lang, '/videos/')}>{t(lang, 'allVideos')} <Icon name="arrow" size={14} /></a>
       </div>
       <div class="grid">{row.map((video) => <VideoCard lang={lang} video={video} />)}</div>
     </section>
@@ -106,7 +107,7 @@ const card = lead?.type === 'post'
   .notes :global(.note) { padding: 20px; }
   .notes :global(.note h2) { font-size: 1.02rem; }
   .notes :global(.note .prose) { font-size: .94rem; }
-  .more { display: inline-flex; gap: 6px; margin-top: 16px; color: var(--muted); font-size: .9rem; font-weight: 500; text-decoration: none; }
+  .more { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; padding-block: 6px; margin-bottom: -6px; color: var(--muted); font-size: .9rem; font-weight: 500; text-decoration: none; }
   .more:hover { color: var(--accent-ink); }
 
   .row-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }

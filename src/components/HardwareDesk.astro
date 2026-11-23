@@ -68,8 +68,8 @@ const layers = layerMap as Record<string, string[]>;
         <div class="panel-top">
           <button type="button" class="back">← {t(lang, 'hwClose')}</button>
           <span class="step">
-            <button type="button" class="prev" aria-label={t(lang, 'hwPrev')}>‹</button>
-            <button type="button" class="next" aria-label={t(lang, 'hwNext')}>›</button>
+            <button type="button" class="prev" aria-label={t(lang, 'hwPrev')}><Icon name="prev" size={16} /></button>
+            <button type="button" class="next" aria-label={t(lang, 'hwNext')}><Icon name="next" size={16} /></button>
           </span>
         </div>
         <h2>{s.title[lang]}</h2>
@@ -153,7 +153,7 @@ const layers = layerMap as Record<string, string[]>;
   .back { padding: 6px 12px 6px 8px; border: 0; border-radius: 99px; background: rgb(255 255 255 / .1); color: #eceef5; font: 600 .78rem var(--font); cursor: pointer; }
   .back:hover { background: rgb(255 255 255 / .2); }
   .step { display: inline-flex; gap: 6px; }
-  .step button { width: 30px; height: 30px; border: 0; border-radius: 50%; background: rgb(255 255 255 / .1); color: #eceef5; font-size: 1.2rem; line-height: 1; cursor: pointer; }
+  .step button { width: 30px; height: 30px; border: 0; border-radius: 50%; display: grid; place-items: center; background: rgb(255 255 255 / .1); color: #eceef5; cursor: pointer; transition: background-color .15s, var(--press); }
   .step button:hover { background: rgb(255 255 255 / .2); }
   .panel h2 { margin: 10px 0 4px; font-size: 1.05rem; line-height: 1.3; color: #fff; }
   .panel ul { margin: 0; padding: 0; list-style: none; }
@@ -166,7 +166,7 @@ const layers = layerMap as Record<string, string[]>;
 
   /* part list: the keyboard and touch way in, and a legend for the picture */
   .parts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
-  .part { display: inline-flex; align-items: center; gap: 7px; padding: 7px 14px; border: 1px solid var(--line); border-radius: 99px; background: var(--surface); color: var(--fg); font: 600 .82rem var(--font); cursor: pointer; transition: border-color .15s, background .15s; }
+  .part { display: inline-flex; align-items: center; gap: 7px; padding: 7px 14px; border: 1px solid var(--line); border-radius: 99px; background: var(--surface); color: var(--fg); font: 600 .82rem var(--font); cursor: pointer; transition: border-color .15s, background .15s, var(--press); }
   .part:hover, .part.lit, .part[aria-expanded='true'] { border-color: var(--accent); background: var(--surface-2); }
 
   @media (max-width: 760px) {

@@ -203,9 +203,9 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
           <p class="note good" data-sigok hidden>{s.sigReady}</p>
         </div>
         <div class="enav">
-          <button type="button" class="btn alt sm" data-eprev aria-label={s.ePrev}>‹</button>
+          <button type="button" class="btn alt sm ib" data-eprev aria-label={s.ePrev}><Icon name="prev" size={15} /></button>
           <label class="inl">{s.ePage}<input type="number" name="epage" min="1" value="1" /></label>
-          <button type="button" class="btn alt sm" data-enext aria-label={s.eNext}>›</button>
+          <button type="button" class="btn alt sm ib" data-enext aria-label={s.eNext}><Icon name="next" size={15} /></button>
           <button type="button" class="btn alt sm" data-edel disabled>{s.eDel}</button>
           <button type="button" class="btn alt sm" data-eclear>{s.eClear}</button>
           <span class="meta" data-ecount></span>
@@ -347,9 +347,9 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
         <div class="strip-head">
           <p class="meta" data-striptitle></p>
           <div class="strip-nav" data-stripnav hidden>
-            <button type="button" class="btn alt sm" data-stripprev aria-label={s.stripPrev}>‹</button>
+            <button type="button" class="btn alt sm ib" data-stripprev aria-label={s.stripPrev}><Icon name="prev" size={15} /></button>
             <span class="meta" data-striprange></span>
-            <button type="button" class="btn alt sm" data-stripnext aria-label={s.stripNext}>›</button>
+            <button type="button" class="btn alt sm ib" data-stripnext aria-label={s.stripNext}><Icon name="next" size={15} /></button>
           </div>
         </div>
         <div class="strip-row" data-striprow></div>
@@ -360,9 +360,9 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
       <div class="pv-bar">
         <strong data-pvtitle></strong>
         <span class="pv-hint">{s.zoomHint}</span>
-        <button type="button" class="btn alt sm" data-pvout aria-label={s.zoomOut}>−</button>
+        <button type="button" class="btn alt sm ib" data-pvout aria-label={s.zoomOut}><Icon name="minus" size={15} /></button>
         <span class="pv-pct" data-pvpct>100 %</span>
-        <button type="button" class="btn alt sm" data-pvin aria-label={s.zoomIn}>+</button>
+        <button type="button" class="btn alt sm ib" data-pvin aria-label={s.zoomIn}><Icon name="plus" size={15} /></button>
         <button type="button" class="btn alt sm" data-pvfit>{s.zoomFit}</button>
         <button type="button" class="btn sm" data-pvclose>{s.closeView}</button>
       </div>
@@ -400,7 +400,7 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
 
   /* tool tabs */
   .pdf .tabs { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
-  .pdf .tab { display: grid; gap: 3px; align-content: start; text-align: left; padding: 11px 13px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--fg); font: inherit; cursor: pointer; transition: border-color .15s, background .15s; }
+  .pdf .tab { display: grid; gap: 3px; align-content: start; text-align: left; padding: 11px 13px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); color: var(--fg); font: inherit; cursor: pointer; transition: border-color .15s, background .15s, var(--press); }
   .pdf .tab strong { font-weight: 600; font-size: .95rem; }
   .pdf .tab span { font-size: .78rem; color: var(--muted); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .pdf .tab:hover { border-color: var(--accent); }
@@ -412,7 +412,7 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
   .pdf .row { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: end; }
   .pdf .row.end { justify-content: flex-end; }
   .pdf .btn.alt { background: transparent; color: var(--fg); border: 1px solid var(--line); box-shadow: none; }
-  .pdf .btn.sm { padding: 6px 12px; font-size: .85rem; }
+  .pdf .btn.sm:not(.ib) { padding: 6px 12px; font-size: .85rem; }
   .pdf .btn[disabled] { opacity: .45; cursor: not-allowed; }
 
   /* panels */

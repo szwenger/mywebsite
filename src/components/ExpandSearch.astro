@@ -22,7 +22,7 @@ const { label, clear, list = false } = Astro.props;
   .xsearch:hover { border-color: var(--accent); }
   .xsearch.open { width: min(380px, 100%); border-color: var(--accent); box-shadow: 3px 3px 0 var(--accent); transform: translate(-1px, -1px); }
   .xsearch:focus-within { outline: 2px solid var(--accent-ink); outline-offset: 3px; }
-  .xs-toggle, .xs-clear { display: grid; place-items: center; flex: none; padding: 0; border: 0; background: none; color: var(--muted); cursor: pointer; transition: color .2s; }
+  .xs-toggle, .xs-clear { display: grid; place-items: center; flex: none; padding: 0; border: 0; background: none; color: var(--muted); cursor: pointer; transition: color .2s, var(--press); }
   .xs-toggle { width: 42px; height: 42px; }
   .xsearch:hover .xs-toggle, .xsearch.open .xs-toggle { color: var(--accent-ink); }
   .xs-clear { width: 32px; height: 32px; margin-right: 6px; border-radius: 50%; }

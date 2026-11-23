@@ -20,7 +20,7 @@ const { lang, video } = Astro.props;
   /* A Short is vertical: its thumbnail is the portrait frame, cropped from the centre of YouTube's 4:3 image. */
   .short .thumb { aspect-ratio: 9 / 16; }
   .body { padding: 16px 16px 20px; }
-  h2 { margin: 0 0 8px; font: 600 .98rem/1.35 var(--font); letter-spacing: 0; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  h2 { margin: 0 0 8px; font: 600 .98rem/1.35 var(--font); letter-spacing: 0; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; hyphens: auto; }
   /* Small grid (videos page toggle): tighter card, smaller title. */
   :global([data-density='small']) .body { padding: 12px 12px 16px; }
   :global([data-density='small']) h2 { font-size: .85rem; margin-bottom: 4px; }

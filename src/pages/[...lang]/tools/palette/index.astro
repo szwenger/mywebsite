@@ -25,7 +25,7 @@ const s = {
     <div class="work" data-work hidden>
       <div class="card pane">
         <img class="pic" data-img alt={s.alt} />
-        <label>{s.count} <output data-count></output><input type="range" name="count" min="2" max="12" value="6" /></label>
+        <label><span>{s.count} <output data-count></output></span><input type="range" aria-label={s.count} name="count" min="2" max="12" value="6" /></label>
         <div class="sws" data-swatches></div>
         <p class="meta">{s.sw}</p>
       </div>

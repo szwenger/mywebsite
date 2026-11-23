@@ -23,7 +23,7 @@ const s = {
         <a class="card spot" href={spot.url} rel="noopener" data-spot={spot.id}>
           <span class="icon"><Icon name={spot.icon} size={24} /></span>
           <div class="text">
-            <h2>{spot.name} <span class="arrow" aria-hidden="true">↗</span></h2>
+            <h2>{spot.name} <Icon name="ext" size={14} /></h2>
             <p class="handle">{spot.handle}</p>
             <p class="blurb">{spot.blurb[lang]}</p>
           </div>
@@ -42,7 +42,7 @@ const s = {
   .icon { display: grid; place-items: center; flex: none; width: 48px; height: 48px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); color: var(--accent-ink); }
   .text { min-width: 0; }
   .spot h2 { margin: 0 0 4px; font-size: 1.1rem; }
-  .arrow { color: var(--muted); font: 400 .9rem var(--font); }
+  .spot h2 :global(.icon) { vertical-align: -.1em; color: var(--muted); }
   .handle { margin: 0 0 8px; color: var(--accent-ink); font-size: .92rem; overflow-wrap: anywhere; }
   .blurb { margin: 0; color: var(--muted); font-size: .92rem; }
 </style>

@@ -1,4 +1,5 @@
 ---
+import Icon from '../../../components/Icon.astro';
 import Base from '../../../layouts/Base.astro';
 import VideoCard from '../../../components/VideoCard.astro';
 import { LANGS, t, type Lang } from '../../../i18n/ui';
@@ -45,7 +46,7 @@ const pager = { 'aria-label': t(lang, 'pagerLabel'), 'data-prev': t(lang, 'pageP
         <nav class="pager" data-list-pager hidden {...pager}></nav>
       </section>
     )}
-    <p class="more"><a class="chip" href={CHANNEL_URL} rel="noopener">{t(lang, 'moreOnYouTube')} <span aria-hidden="true">↗</span></a></p>
+    <p class="more"><a class="chip" href={CHANNEL_URL} rel="noopener">{t(lang, 'moreOnYouTube')} <Icon name="ext" size={14} /></a></p>
   </section>
 </Base>
 <script>
@@ -58,7 +59,7 @@ const pager = { 'aria-label': t(lang, 'pagerLabel'), 'data-prev': t(lang, 'pageP
   .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
   .intro { margin: -6px 0 24px; font-size: .95rem; }
   .density { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 12px; }
-  .density button { display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 8px; background: none; color: var(--muted); cursor: pointer; transition: color .15s, background-color .15s; }
+  .density button { display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 8px; background: none; color: var(--muted); cursor: pointer; transition: color .15s, background-color .15s, var(--press); }
   .density button:hover { color: var(--fg); }
   .density button[aria-pressed='true'] { background: var(--surface-2); color: var(--fg); }
   .block { margin-top: 48px; }

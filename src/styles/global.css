@@ -74,7 +74,13 @@ a.card:focus-visible, .card-link:focus-visible { box-shadow: 5px 5px 0 var(--acc
 }
 @media (hover: hover) { .btn:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--hard); } }
 .btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--hard); }
-button:not(:disabled):active, .btn:not([disabled]):active { scale: .97; }
+button:not(:disabled):active, .btn:not([disabled]):active, summary:active { scale: .97; }
+/* Outline variant, usable everywhere (also for buttons built by scripts). */
+.btn.alt { background: transparent; color: var(--fg); border: 1px solid var(--line); box-shadow: none; }
+.btn.alt:hover { box-shadow: none; border-color: var(--accent); }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.btn.alt[disabled] { opacity: .7; color: var(--muted); border-style: dashed; } /* outline buttons: a faded line alone vanishes */
+@media (hover: hover) { .btn[disabled]:hover { transform: none; box-shadow: 3px 3px 0 var(--hard); } .btn.alt[disabled]:hover { box-shadow: none; border-color: var(--line); } }
 
 /* Icon button: a .btn with only a glyph. 40px hit area (44 on touch), the label lives in aria-label and shows as a tooltip, see scripts/tip.ts. */
 .btn.ib { width: 40px; height: 40px; padding: 0; }
@@ -113,7 +119,8 @@ h1.section-title::before { content: ''; width: .62em; height: .62em; border-radi
 
 /* Pager, built by src/scripts/list.ts. */
 .pager { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin-top: 32px; color: var(--muted); }
-.pager button { min-width: 40px; height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: transparent; color: var(--muted); font: 500 .9rem/1 var(--font); cursor: pointer; transition: color .15s, background-color .15s, border-color .15s; }
+.pager button { min-width: 40px; height: 40px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: transparent; color: var(--muted); font: 500 .9rem/1 var(--font); cursor: pointer; transition: color .15s, background-color .15s, border-color .15s, var(--press); }
+.pager button { display: inline-grid; place-items: center; }
 .pager button:hover:not(:disabled) { color: var(--fg); background: var(--surface); }
 .pager button[aria-current='page'] { color: var(--fg); background: var(--surface-2); border-color: var(--accent); }
 .pager button:disabled { opacity: .4; cursor: default; }
@@ -125,7 +132,7 @@ h1.section-title::before { content: ''; width: .62em; height: .62em; border-radi
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
   a.card:hover, .card-link:hover { transform: none; }
-  button:not(:disabled):active, .btn:not([disabled]):active { scale: 1; }
+  button:not(:disabled):active, .btn:not([disabled]):active, summary:active { scale: 1; }
 }
 
 /* Post images: figure with optional caption, click opens the lightbox. */
@@ -145,6 +152,7 @@ h1.section-title::before { content: ''; width: .62em; height: .62em; border-radi
 .lightbox .lb-cap { margin: 0; max-width: 70ch; text-align: center; font-size: .92rem; color: #c3c8d8; }
 .lightbox .lb-close {
   position: absolute; top: 12px; right: 12px; width: 44px; height: 44px; border: 1px solid #ffffff40; border-radius: 99px;
-  background: #000a; color: #fff; font: 400 1.6rem/1 var(--font); cursor: pointer;
+  display: grid; place-items: center; background: #000a; color: #fff; cursor: pointer; transition: background-color .15s, var(--press);
 }
+.lightbox .lb-close:hover { background: #000d; }
 body:has(dialog.lightbox[open]) { overflow: hidden; }

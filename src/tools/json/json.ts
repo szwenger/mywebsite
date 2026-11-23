@@ -1,5 +1,5 @@
 import { parseJson, printJson } from './logic';
-import { copy, download } from '../dom';
+import { copy, download, flagInvalid } from '../dom';
 
 const root = document.querySelector<HTMLElement>('[data-json]');
 if (root) {
@@ -11,10 +11,12 @@ if (root) {
   function render() {
     const src = f<HTMLTextAreaElement>('src').value;
     const out = f<HTMLTextAreaElement>('out');
+    flagInvalid(f('src'), false);
     if (!src.trim()) { out.value = ''; status.className = 'note'; status.textContent = s.empty; buttons.forEach((b) => (b.disabled = true)); return; }
     const r = parseJson(src, f('lenient').checked);
     buttons.forEach((b) => (b.disabled = !r.ok));
     if (!r.ok) {
+      flagInvalid(f('src'), true);
       out.value = '';
       status.className = 'note bad';
       status.textContent = s[r.err.code].replace('{ch}', JSON.stringify(r.err.ch)).replace('{line}', String(r.err.line)).replace('{col}', String(r.err.col));

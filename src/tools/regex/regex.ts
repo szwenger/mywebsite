@@ -1,5 +1,5 @@
 import type { RegexResult } from './logic';
-import { copy } from '../dom';
+import { copy, flagInvalid } from '../dom';
 
 const root = document.querySelector<HTMLElement>('[data-regex]');
 if (root) {
@@ -17,6 +17,7 @@ if (root) {
   const say = (msg: string, kind: '' | 'good' | 'bad') => { status.hidden = !msg; status.className = `note ${kind}`; status.textContent = msg; };
 
   function show(r: RegexResult, text: string) {
+    flagInvalid(f('pattern'), !!r.error);
     if (r.error) { say(r.error, 'bad'); view.replaceChildren(el('span', text)); table.replaceChildren(); replaced.textContent = ''; return; }
     say(r.hits.length ? (r.truncated ? s.many : s.count.replace('{n}', String(r.hits.length))) : s.none, r.hits.length ? 'good' : '');
     const parts: (string | HTMLElement)[] = [];

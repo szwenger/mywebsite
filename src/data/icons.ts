@@ -39,5 +39,11 @@ export const icons = {
   trash: '<path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l.8 12.5h9.4L17.5 7M10 11v5M14 11v5"/>',
   play: '<path d="M8 5.5v13l10.5-6.5z"/>',
   expand: '<path d="M14 4.5h5.5V10M10 19.5H4.5V14M19.5 4.5 13.5 10.5M4.5 19.5l6-6"/>',
+  arrow: '<path d="M5 12h14M13.5 6.5 19 12l-5.5 5.5"/>',
+  ext: '<path d="M7.5 16.5 16.5 7.5M8.5 7.5h8v8"/>',
+  prev: '<path d="m14.5 6-6 6 6 6"/>',
+  next: '<path d="m9.5 6 6 6-6 6"/>',
+  home: '<path d="M4 11 12 4.5 20 11M6 9.5V19.5h4.5v-5h3v5H18V9.5"/>',
+  square: '<rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 12h6M12 9v6"/>',
 } as const;
 export type IconName = keyof typeof icons;

@@ -214,7 +214,7 @@ const kinds = ['words', 'long', 'caps', 'punct', 'numbers', 'sentences', 'code',
   .tt-tier .meta { margin: 2px 0 10px; }
   .tt-grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 8px; }
   @media (max-width: 860px) { .tt-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
-  .tt-grid .lv { display: grid; justify-items: center; gap: 2px; padding: 10px 4px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); color: var(--fg); font: inherit; cursor: pointer; transition: border-color .15s, transform .15s var(--ease); }
+  .tt-grid .lv { display: grid; justify-items: center; gap: 2px; padding: 10px 4px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); color: var(--fg); font: inherit; cursor: pointer; transition: border-color .15s, transform .15s var(--ease), var(--press); }
   .tt-grid .lv b { font: 600 1.05rem/1.2 var(--display); }
   .tt-grid .lv .st { font-size: .85rem; letter-spacing: 1px; color: var(--muted); }
   .tt-grid .lv.got .st { color: var(--tt-2); }
