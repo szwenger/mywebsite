@@ -427,6 +427,19 @@ export const tools: Tool[] = [
     },
   },
   {
+    slug: 'timecode',
+    cat: 'media',
+    topics: ['time', 'math'],
+    tags: 'timecode smpte drop frame ndf frames fps 29.97 23.976 59.94 video edit calculator duration',
+    icon: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2M5 3l-2 2M19 3l2 2',
+    name: { en: 'Timecode calculator', de: 'Timecode-Rechner', ru: 'Калькулятор таймкода' },
+    blurb: {
+      en: 'Add and subtract SMPTE timecodes and convert between timecode, frames and seconds, with 23.976, 29.97 and 59.94 drop frame done right.',
+      de: 'SMPTE-Timecodes addieren und subtrahieren und zwischen Timecode, Frames und Sekunden umrechnen, mit korrektem Drop Frame bei 23,976, 29,97 und 59,94.',
+      ru: 'Сложение и вычитание таймкодов SMPTE и пересчёт между таймкодом, кадрами и секундами, с корректным drop frame для 23,976, 29,97 и 59,94.',
+    },
+  },
+  {
     slug: 'subnet',
     cat: 'dev',
     topics: ['math'],
