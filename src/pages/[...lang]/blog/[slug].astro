@@ -5,9 +5,10 @@ import Icon from '../../../components/Icon.astro';
 import { LANGS, path, t, type Lang } from '../../../i18n/ui';
 import { dateLabel, loadPosts } from '../../../lib/load-posts';
 import { getCollection } from 'astro:content';
+import { splitId } from '../../../lib/posts';
 
 export async function getStaticPaths() {
-  const slugs = [...new Set((await getCollection('posts')).map((e) => e.id.split('/')[0]))];
+  const slugs = [...new Set((await getCollection('posts')).map((e) => splitId(e.id).slug))];
   return LANGS.flatMap((l) => slugs.map((slug) => ({ params: { lang: l === 'en' ? undefined : l, slug } })));
 }
 const lang = (Astro.params.lang ?? 'en') as Lang;

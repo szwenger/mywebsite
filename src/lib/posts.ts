@@ -3,6 +3,12 @@ import type { Lang } from '../i18n/ui';
 export interface PostEntry { slug: string; lang: Lang; title: string; date: Date; updated?: Date; cover?: string; tags?: string[]; body: string }
 export interface PostView extends PostEntry { kind: 'note' | 'long'; shownIn: Lang; fallback: boolean; originalLang: Lang }
 
+/** Collection id `2026-11-22_name/en` to slug `name` (the date prefix is optional, never part of the URL) and lang. */
+export function splitId(id: string): { slug: string; lang: Lang } {
+  const [folder, lang] = id.split('/');
+  return { slug: folder.replace(/^\d{4}-\d{2}-\d{2}_/, ''), lang: lang as Lang };
+}
+
 const RANK: Record<Lang, number> = { en: 0, de: 1, ru: 2 };
 
 /** A post with a cover image is a long post (card); without one it is a short note (shown in full). */

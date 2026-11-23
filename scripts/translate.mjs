@@ -1,7 +1,7 @@
 // Drafts German and Russian versions of a post with a local model (llama-server or LM Studio).
 // Usage: npm run translate -- <slug> [--lang de,ru] [--force] [--url http://127.0.0.1:8080/v1] [--model qwen3.5-35b-a3b]
 // Start the model first: llm-bench\serve.ps1 (port 8080). Output is a draft: read it, then commit it yourself.
-import { access, readFile, writeFile } from 'node:fs/promises';
+import { access, readdir, readFile, writeFile } from 'node:fs/promises';
 import { translatePost } from '../src/lib/translate.mjs';
 
 const args = process.argv.slice(2);
@@ -17,7 +17,9 @@ if (!slug || !langs.every((l) => ['de', 'ru'].includes(l))) {
   process.exit(1);
 }
 
-const dir = `src/content/posts/${slug}`;
+// <slug> may be the plain slug or the full folder name (YYYY-MM-DD_<slug>)
+const folder = (await readdir('src/content/posts')).find((f) => f === slug || f.replace(/^\d{4}-\d{2}-\d{2}_/, '') === slug) ?? slug;
+const dir = `src/content/posts/${folder}`;
 const source = await readFile(`${dir}/en.md`, 'utf8').catch(() => { console.error(`No ${dir}/en.md`); process.exit(1); });
 const keep = JSON.parse(await readFile('scripts/translate-keep.json', 'utf8'));
 

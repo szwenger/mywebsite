@@ -25,7 +25,7 @@ Optional: `tests/private-terms.local.txt` (git-ignored, one term per line) makes
 | Path | What it holds |
 |---|---|
 | `src/pages/` | English at the root, `de/` and `ru/` for the front page; shared pages live in `src/pages/[...lang]/` and are generated for all three languages |
-| `src/content/posts/<slug>/<lang>.md` | Blog posts, one file per language |
+| `src/content/posts/YYYY-MM-DD_<slug>/<lang>.md` | Blog posts, one file per language |
 | `src/data/` | `tools.ts` (tool list), `hardware.ts`, `legal.ts` (Impressum), `privacy.ts`, `videos.json` (fetched, git-ignored) |
 | `src/i18n/ui.ts` | Interface strings and language helpers |
 | `src/components/`, `src/layouts/` | Shared Astro components and the base layout |
@@ -35,7 +35,7 @@ Optional: `tests/private-terms.local.txt` (git-ignored, one term per line) makes
 
 ## Writing a post
 
-1. Create `src/content/posts/<slug>/en.md`. The folder name is the slug and the URL (`/blog/<slug>/`).
+1. Create `src/content/posts/YYYY-MM-DD_<slug>/en.md`. The folder name minus the date prefix is the slug and the URL (`/blog/<slug>/`).
 2. Add `de.md` and `ru.md` in the same folder for translations. A missing language is fine.
 3. Front matter:
 

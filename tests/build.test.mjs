@@ -123,8 +123,9 @@ test('404 page: not indexed, links home in all three languages', () => {
 
 // ---- Task 2: blog ----
 // Posts as the content folder has them, so these tests follow new posts instead of pinning today's set.
-const POSTS = readdirSync('src/content/posts').map((slug) => {
-  const dir = join('src/content/posts', slug);
+const POSTS = readdirSync('src/content/posts').map((folder) => {
+  const slug = folder.replace(/^\d{4}-\d{2}-\d{2}_/, ''); // folder is YYYY-MM-DD_<slug>, the URL is <slug>
+  const dir = join('src/content/posts', folder);
   const fm = readdirSync(dir).filter((f) => f.endsWith('.md')).map((f) => readFileSync(join(dir, f), 'utf8').split('---')[1] ?? '');
   return { slug, long: fm.some((m) => /^cover:/m.test(m)), date: fm.map((m) => m.match(/^date:\s*(\S+)/m)?.[1]).find(Boolean) ?? '' };
 });
