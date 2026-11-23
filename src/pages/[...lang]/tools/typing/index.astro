@@ -1,0 +1,322 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: {
+    locale: 'en', tabQuick: 'Quick start', tabLevels: 'Levels', tabStats: 'Statistics', tabs: 'Typing trainer', language: 'Typing language', kind: 'Text', limit: 'Length', start: 'Start',
+    secondsN: '{n} seconds', wordsN: '{n} words',
+    kind_words: 'Common words', kind_long: 'Long words', kind_caps: 'Capital letters', kind_punct: 'Punctuation', kind_numbers: 'Numbers', kind_sentences: 'Sentences', kind_code: 'Code', kind_letters: 'Letter drills',
+    quickHint: 'The clock starts with your first key. Backspace fixes a mistake, Esc starts over.',
+    t1: 'Learn the keys', t1d: 'New letters every level, index fingers first.', t2: 'Words', t2d: 'Real words, then long ones.', t3: 'Capitals, punctuation, numbers', t3d: 'Shift, commas, quotes, dates and prices.', t4: 'Sentences and code', t4d: 'Whole sentences, then brackets and operators.', t5: 'Precision, sprint, endurance', t5d: 'Few mistakes, short bursts and two minutes or more.',
+    tag_learn: 'Learn the keys', tag_words: 'Words', tag_symbols: 'Symbols', tag_text: 'Text', tag_precision: 'Precision', tag_sprint: 'Sprint', tag_endurance: 'Endurance',
+    levelN: 'Level {n}', goal: 'Goal: {wpm} wpm at {acc}% accuracy', bestOf: 'Best: {wpm} wpm, {acc}%', locked: 'Locked: earn a star on level {n} first', unlockAll: 'Unlock all levels',
+    levelsHint: 'A star needs the speed goal and the accuracy. Two and three stars need 20% and 40% more speed.',
+    hint: 'Click here and start typing', restart: 'Restart (Esc)', back: 'Back', showKeys: 'Show the keyboard', time: 'Time', speed: 'Speed', accuracy: 'Accuracy', textLabel: 'Text to type',
+    resNet: 'Net speed', resRaw: 'Raw speed', resAcc: 'Accuracy', resErr: 'Mistakes', resTime: 'Time', retry: 'Try again', next: 'Next level',
+    passed: 'Level passed.', failed: 'Not yet. You need {wpm} wpm at {acc}% accuracy.', newBest: 'New personal best.', tooShort: 'Too short to count. Type at least 10 characters.',
+    resHelp: 'Net speed counts only correct characters. Raw speed counts every key you pressed.',
+    runsT: 'Runs', bestT: 'Best speed', avgT: 'Average, last 10', accT: 'Accuracy, last 10', timeT: 'Time typed', unitMin: 'min',
+    trendH: 'Speed over time', histH: 'Where your runs land', calH: 'Practice calendar', kbH: 'Keyboard', weakH: 'Keys you miss most', slowH: 'Slowest keys', lvH: 'Level progress',
+    kbSpeed: 'Speed', kbErr: 'Mistakes', empty: 'No runs yet. Finish a test and your statistics show up here.', needMore: 'Not enough data yet (a key needs 8 presses).',
+    lvSum: '{done} of 50 levels passed, {stars} of 150 stars.', clear: 'Delete my data', clearSure: 'Click again to delete everything', storeNote: 'Statistics stay in this browser (localStorage). Nothing is sent anywhere.', storeOff: 'Your browser blocks local storage, so nothing is saved between visits.',
+    backupH: 'Backup', backupHelp: 'Save your results as a file to keep them or move them to another device. Importing adds to what is already here and never removes anything.', export: 'Export data', import: 'Import data', imported: 'Imported: {n} new runs. Levels and key statistics merged.', importBad: 'This file is not a typing trainer export.', exportEmpty: 'Nothing to export yet.',
+    wpm: 'wpm', net: 'Net', raw: 'Raw', second: 'Second {n}', mistakes: '{n} mistakes', mistakesLegend: 'Mistakes', runChart: 'Speed for every second of this run', trend: 'Speed of every run', eachRun: 'Each run', avg10: 'Average of the last 10',
+    hist: 'Number of runs per speed band', runs: 'Runs', runsN: '{n} runs', calendar: 'Minutes typed per day', minutes: '{n} min', noTyping: 'no typing', days: 'Mon,Tue,Wed,Thu,Fri,Sat,Sun', less: 'Less', more: 'More',
+    acc: 'accuracy', noData: 'no data yet', mistakesWord: 'mistakes', pressed: '{n} presses', slowKey: 'Slow', fastKey: 'Fast', fewMistakes: 'Few mistakes', manyMistakes: 'Many mistakes',
+  },
+  de: {
+    locale: 'de', tabQuick: 'Schnellstart', tabLevels: 'Level', tabStats: 'Statistik', tabs: 'Tipptrainer', language: 'Tipp-Sprache', kind: 'Text', limit: 'Länge', start: 'Start',
+    secondsN: '{n} Sekunden', wordsN: '{n} Wörter',
+    kind_words: 'Häufige Wörter', kind_long: 'Lange Wörter', kind_caps: 'Großbuchstaben', kind_punct: 'Satzzeichen', kind_numbers: 'Zahlen', kind_sentences: 'Sätze', kind_code: 'Code', kind_letters: 'Buchstabenübungen',
+    quickHint: 'Die Uhr startet mit deiner ersten Taste. Mit Rücktaste korrigierst du, mit Esc beginnst du neu.',
+    t1: 'Tasten lernen', t1d: 'Jedes Level neue Buchstaben, zuerst die Zeigefinger.', t2: 'Wörter', t2d: 'Echte Wörter, dann lange.', t3: 'Großschreibung, Satzzeichen, Zahlen', t3d: 'Shift, Kommas, Anführungszeichen, Daten und Preise.', t4: 'Sätze und Code', t4d: 'Ganze Sätze, dann Klammern und Operatoren.', t5: 'Präzision, Sprint, Ausdauer', t5d: 'Wenige Fehler, kurze Sprints und zwei Minuten oder mehr.',
+    tag_learn: 'Tasten lernen', tag_words: 'Wörter', tag_symbols: 'Zeichen', tag_text: 'Text', tag_precision: 'Präzision', tag_sprint: 'Sprint', tag_endurance: 'Ausdauer',
+    levelN: 'Level {n}', goal: 'Ziel: {wpm} WPM bei {acc} % Genauigkeit', bestOf: 'Bestwert: {wpm} WPM, {acc} %', locked: 'Gesperrt: hol erst einen Stern in Level {n}', unlockAll: 'Alle Level freischalten',
+    levelsHint: 'Ein Stern braucht das Tempoziel und die Genauigkeit. Zwei und drei Sterne brauchen 20 % und 40 % mehr Tempo.',
+    hint: 'Hier klicken und losschreiben', restart: 'Neustart (Esc)', back: 'Zurück', showKeys: 'Tastatur anzeigen', time: 'Zeit', speed: 'Tempo', accuracy: 'Genauigkeit', textLabel: 'Zu tippender Text',
+    resNet: 'Netto-Tempo', resRaw: 'Brutto-Tempo', resAcc: 'Genauigkeit', resErr: 'Fehler', resTime: 'Zeit', retry: 'Nochmal', next: 'Nächstes Level',
+    passed: 'Level geschafft.', failed: 'Noch nicht. Du brauchst {wpm} WPM bei {acc} % Genauigkeit.', newBest: 'Neuer persönlicher Rekord.', tooShort: 'Zu kurz zum Zählen. Tippe mindestens 10 Zeichen.',
+    resHelp: 'Das Netto-Tempo zählt nur richtige Zeichen. Das Brutto-Tempo zählt jede gedrückte Taste.',
+    runsT: 'Durchgänge', bestT: 'Bestes Tempo', avgT: 'Schnitt, letzte 10', accT: 'Genauigkeit, letzte 10', timeT: 'Getippte Zeit', unitMin: 'Min.',
+    trendH: 'Tempo im Zeitverlauf', histH: 'Wo deine Durchgänge landen', calH: 'Übungskalender', kbH: 'Tastatur', weakH: 'Meistverfehlte Tasten', slowH: 'Langsamste Tasten', lvH: 'Level-Fortschritt',
+    kbSpeed: 'Tempo', kbErr: 'Fehler', empty: 'Noch keine Durchgänge. Schließe einen Test ab, dann erscheint hier deine Statistik.', needMore: 'Noch zu wenig Daten (eine Taste braucht 8 Anschläge).',
+    lvSum: '{done} von 50 Leveln geschafft, {stars} von 150 Sternen.', clear: 'Meine Daten löschen', clearSure: 'Nochmal klicken, um alles zu löschen', storeNote: 'Die Statistik bleibt in diesem Browser (localStorage). Es wird nichts gesendet.', storeOff: 'Dein Browser blockiert den lokalen Speicher, deshalb wird nichts zwischen Besuchen gespeichert.',
+    backupH: 'Sicherung', backupHelp: 'Speichere deine Ergebnisse als Datei, um sie aufzubewahren oder auf ein anderes Gerät zu übertragen. Beim Import wird zu den vorhandenen Daten hinzugefügt, nichts wird entfernt.', export: 'Daten exportieren', import: 'Daten importieren', imported: 'Importiert: {n} neue Durchgänge. Level und Tastenstatistik zusammengeführt.', importBad: 'Diese Datei ist kein Export des Tipptrainers.', exportEmpty: 'Noch nichts zu exportieren.',
+    wpm: 'WPM', net: 'Netto', raw: 'Brutto', second: 'Sekunde {n}', mistakes: '{n} Fehler', mistakesLegend: 'Fehler', runChart: 'Tempo für jede Sekunde dieses Durchgangs', trend: 'Tempo jedes Durchgangs', eachRun: 'Jeder Durchgang', avg10: 'Schnitt der letzten 10',
+    hist: 'Anzahl der Durchgänge pro Tempo-Bereich', runs: 'Durchgänge', runsN: '{n} Durchgänge', calendar: 'Getippte Minuten pro Tag', minutes: '{n} Min.', noTyping: 'nicht getippt', days: 'Mo,Di,Mi,Do,Fr,Sa,So', less: 'Weniger', more: 'Mehr',
+    acc: 'Genauigkeit', noData: 'noch keine Daten', mistakesWord: 'Fehler', pressed: '{n} Anschläge', slowKey: 'Langsam', fastKey: 'Schnell', fewMistakes: 'Wenige Fehler', manyMistakes: 'Viele Fehler',
+  },
+  ru: {
+    locale: 'ru', tabQuick: 'Быстрый старт', tabLevels: 'Уровни', tabStats: 'Статистика', tabs: 'Клавиатурный тренажёр', language: 'Язык набора', kind: 'Текст', limit: 'Длина', start: 'Старт',
+    secondsN: '{n} с', wordsN: '{n} слов',
+    kind_words: 'Частые слова', kind_long: 'Длинные слова', kind_caps: 'Заглавные буквы', kind_punct: 'Знаки препинания', kind_numbers: 'Числа', kind_sentences: 'Предложения', kind_code: 'Код', kind_letters: 'Упражнения на буквы',
+    quickHint: 'Время идёт с первой нажатой клавиши. Backspace исправляет ошибку, Esc начинает заново.',
+    t1: 'Учим клавиши', t1d: 'На каждом уровне новые буквы, сначала указательные пальцы.', t2: 'Слова', t2d: 'Обычные слова, затем длинные.', t3: 'Заглавные, знаки, числа', t3d: 'Shift, запятые, кавычки, даты и цены.', t4: 'Предложения и код', t4d: 'Целые предложения, затем скобки и операторы.', t5: 'Точность, спринт, выносливость', t5d: 'Мало ошибок, короткие рывки и две минуты и больше.',
+    tag_learn: 'Учим клавиши', tag_words: 'Слова', tag_symbols: 'Символы', tag_text: 'Текст', tag_precision: 'Точность', tag_sprint: 'Спринт', tag_endurance: 'Выносливость',
+    levelN: 'Уровень {n}', goal: 'Цель: {wpm} WPM при точности {acc}%', bestOf: 'Лучшее: {wpm} WPM, {acc}%', locked: 'Закрыто: сначала получите звезду на уровне {n}', unlockAll: 'Открыть все уровни',
+    levelsHint: 'Для звезды нужны скорость и точность. Для двух и трёх звёзд скорость выше на 20% и 40%.',
+    hint: 'Нажмите сюда и печатайте', restart: 'Заново (Esc)', back: 'Назад', showKeys: 'Показывать клавиатуру', time: 'Время', speed: 'Скорость', accuracy: 'Точность', textLabel: 'Текст для набора',
+    resNet: 'Чистая скорость', resRaw: 'Общая скорость', resAcc: 'Точность', resErr: 'Ошибки', resTime: 'Время', retry: 'Ещё раз', next: 'Следующий уровень',
+    passed: 'Уровень пройден.', failed: 'Пока нет. Нужно {wpm} WPM при точности {acc}%.', newBest: 'Новый личный рекорд.', tooShort: 'Слишком коротко для зачёта. Наберите хотя бы 10 символов.',
+    resHelp: 'Чистая скорость учитывает только верные символы. Общая считает каждую нажатую клавишу.',
+    runsT: 'Заходы', bestT: 'Лучшая скорость', avgT: 'Среднее, последние 10', accT: 'Точность, последние 10', timeT: 'Время набора', unitMin: 'мин',
+    trendH: 'Скорость со временем', histH: 'Где попадают ваши заходы', calH: 'Календарь занятий', kbH: 'Клавиатура', weakH: 'Клавиши с ошибками', slowH: 'Самые медленные клавиши', lvH: 'Прогресс по уровням',
+    kbSpeed: 'Скорость', kbErr: 'Ошибки', empty: 'Пока нет заходов. Закончите тест, и здесь появится статистика.', needMore: 'Пока мало данных (нужно 8 нажатий на клавишу).',
+    lvSum: 'Пройдено уровней: {done} из 50, звёзд: {stars} из 150.', clear: 'Удалить мои данные', clearSure: 'Нажмите ещё раз, чтобы удалить всё', storeNote: 'Статистика хранится в этом браузере (localStorage). Ничего не отправляется.', storeOff: 'Браузер блокирует локальное хранилище, поэтому между визитами ничего не сохраняется.',
+    backupH: 'Резервная копия', backupHelp: 'Сохраните результаты в файл, чтобы не потерять их или перенести на другое устройство. Импорт добавляет данные к имеющимся и ничего не удаляет.', export: 'Экспорт данных', import: 'Импорт данных', imported: 'Импортировано: новых заходов {n}. Уровни и статистика клавиш объединены.', importBad: 'Этот файл не является экспортом тренажёра.', exportEmpty: 'Пока нечего экспортировать.',
+    wpm: 'WPM', net: 'Чистая', raw: 'Общая', second: 'Секунда {n}', mistakes: 'ошибок: {n}', mistakesLegend: 'Ошибки', runChart: 'Скорость по секундам этого захода', trend: 'Скорость каждого захода', eachRun: 'Каждый заход', avg10: 'Среднее за последние 10',
+    hist: 'Число заходов по диапазонам скорости', runs: 'Заходы', runsN: 'заходов: {n}', calendar: 'Минуты набора по дням', minutes: '{n} мин', noTyping: 'без набора', days: 'Пн,Вт,Ср,Чт,Пт,Сб,Вс', less: 'Меньше', more: 'Больше',
+    acc: 'точность', noData: 'данных пока нет', mistakesWord: 'ошибок', pressed: 'нажатий: {n}', slowKey: 'Медленно', fastKey: 'Быстро', fewMistakes: 'Мало ошибок', manyMistakes: 'Много ошибок',
+  },
+}[lang];
+const tiers = [1, 2, 3, 4, 5] as const;
+const limits = [['15s', 15], ['30s', 30], ['60s', 60], ['120s', 120], ['25', 0], ['50', 0], ['100', 0]] as const;
+const fmt = (tpl: string, n: number | string) => tpl.replace('{n}', String(n));
+const kinds = ['words', 'long', 'caps', 'punct', 'numbers', 'sentences', 'code', 'letters'] as const;
+---
+<ToolLayout lang={lang} slug="typing">
+  <div class="tt tl" data-typing data-lang={lang} data-s={JSON.stringify(s)}>
+    <p class="note bad" data-nostore hidden>{s.storeOff}</p>
+
+    <div class="tt-bar">
+      <div class="tt-tabs" role="tablist" aria-label={s.tabs}>
+        <button type="button" role="tab" data-tab="quick" aria-selected="true">{s.tabQuick}</button>
+        <button type="button" role="tab" data-tab="levels" aria-selected="false">{s.tabLevels}</button>
+        <button type="button" role="tab" data-tab="stats" aria-selected="false">{s.tabStats}</button>
+      </div>
+      <label class="tt-lang">{s.language}
+        <select name="lang"><option value="en">English</option><option value="de">Deutsch</option><option value="ru">Русский</option></select>
+      </label>
+    </div>
+
+    <section class="card pane" data-view="quick">
+      <div class="row">
+        <label>{s.kind}<select name="kind">{kinds.map((k) => <option value={k}>{s[`kind_${k}`]}</option>)}</select></label>
+        <label>{s.limit}<select name="limit">{limits.map(([v, n]) => <option value={v}>{n ? fmt(s.secondsN, n) : fmt(s.wordsN, v)}</option>)}</select></label>
+      </div>
+      <p class="meta">{s.quickHint}</p>
+      <div class="actions"><button type="button" class="btn" data-start>{s.start}</button></div>
+    </section>
+
+    <section class="card pane" data-view="levels" hidden>
+      <div class="row">
+        <label class="check"><input type="checkbox" name="all" />{s.unlockAll}</label>
+        <strong class="tt-stars" data-star-total></strong>
+      </div>
+      <p class="meta">{s.levelsHint}</p>
+      {tiers.map((t) => (
+        <div class="tt-tier">
+          <h2>{t}. {s[`t${t}`]}</h2>
+          <p class="meta">{s[`t${t}d`]}</p>
+          <div class="tt-grid" data-tier={t}></div>
+        </div>
+      ))}
+    </section>
+
+    <section class="card pane" data-view="stats" hidden>
+      <p class="meta" data-empty>{s.empty}</p>
+      <div class="tt-stats" data-stats hidden>
+        <div class="tt-tiles" data-tiles></div>
+        <div class="tt-panel"><h2>{s.trendH}</h2><div data-trend></div></div>
+        <div class="tt-panel"><h2>{s.histH}</h2><div data-hist></div></div>
+        <div class="tt-panel"><h2>{s.calH}</h2><div data-cal></div></div>
+        <div class="tt-panel">
+          <h2>{s.kbH} <small data-stat-lang></small></h2>
+          <div class="tt-seg" role="group" aria-label={s.kbH}>
+            <button type="button" data-metric="speed" aria-pressed="true">{s.kbSpeed}</button>
+            <button type="button" data-metric="errors" aria-pressed="false">{s.kbErr}</button>
+          </div>
+          <div data-kbmap></div>
+        </div>
+        <div class="tt-two">
+          <div class="tt-panel"><h2>{s.weakH}</h2><ul class="tt-keys" data-weak></ul></div>
+          <div class="tt-panel"><h2>{s.slowH}</h2><ul class="tt-keys" data-slow></ul></div>
+        </div>
+        <div class="tt-panel"><h2>{s.lvH}</h2><p class="meta" data-lvsum></p></div>
+        <p class="meta">{s.storeNote}</p>
+        <div class="actions"><button type="button" class="btn alt" data-wipe>{s.clear}</button></div>
+      </div>
+      <div class="tt-panel tt-backup">
+        <h2>{s.backupH}</h2>
+        <p class="meta">{s.backupHelp}</p>
+        <div class="actions">
+          <button type="button" class="btn alt" data-export>{s.export}</button>
+          <button type="button" class="btn alt" data-import>{s.import}</button>
+          <input type="file" accept=".json,application/json" data-import-file hidden />
+        </div>
+        <p class="note" data-backup-msg role="status" hidden></p>
+      </div>
+    </section>
+
+    <section class="card pane" data-view="play" hidden>
+      <div class="tt-head">
+        <div><strong data-title></strong><p class="meta" data-goal></p></div>
+        <div class="actions">
+          <button type="button" class="btn alt" data-restart>{s.restart}</button>
+          <button type="button" class="btn alt" data-back>{s.back}</button>
+        </div>
+      </div>
+      <div class="tt-live" data-live-row>
+        <div><small>{s.time}</small><b data-live="time">0</b></div>
+        <div><small>{s.speed}</small><b data-live="wpm">0</b></div>
+        <div><small>{s.accuracy}</small><b data-live="acc">100%</b></div>
+      </div>
+      <div class="tt-text mono" data-text>
+        <div class="tt-inner" data-text-inner></div>
+        <input class="tt-in" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label={s.textLabel} />
+        <button type="button" class="tt-hint" data-hint>{s.hint}</button>
+      </div>
+      <div class="tt-kb" data-kb></div>
+      <label class="check" data-keys-label><input type="checkbox" name="keys" checked />{s.showKeys}</label>
+
+      <div class="tt-result" data-result hidden>
+        <div class="tt-big">
+          <div><small>{s.resNet}</small><b data-r="wpm">0</b><em>{s.wpm}</em></div>
+          <div><small>{s.resAcc}</small><b data-r="acc">0</b></div>
+          <div><small>{s.resRaw}</small><b data-r="raw">0</b></div>
+          <div><small>{s.resErr}</small><b data-r="err">0</b></div>
+          <div><small>{s.resTime}</small><b data-r="time">0</b></div>
+        </div>
+        <p class="note" data-verdict hidden></p>
+        <div data-run-chart></div>
+        <p class="meta">{s.resHelp}</p>
+        <div class="actions">
+          <button type="button" class="btn" data-next hidden>{s.next}</button>
+          <button type="button" class="btn alt" data-retry>{s.retry}</button>
+        </div>
+      </div>
+    </section>
+    <div class="tt-tipbox" data-tip-box role="tooltip" hidden></div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/typing/typing.ts';
+</script>
+<style is:global>
+  .tt { position: relative; --tt-1: #2a78d6; --tt-2: #eb6834; --tt-err: #e34948; --tt-ink: #fff; }
+  html[data-theme='dark'] .tt { --tt-1: #3987e5; --tt-2: #d95926; --tt-err: #e66767; }
+  .tt [hidden] { display: none !important; }
+
+  .tt-bar { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: end; justify-content: space-between; }
+  .tt-tabs { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 99px; background: var(--surface); }
+  .tt-tabs button { padding: 8px 16px; border: 0; border-radius: 99px; background: none; color: var(--muted); font: inherit; font-size: .92rem; font-weight: 500; cursor: pointer; }
+  .tt-tabs button:hover { color: var(--fg); }
+  .tt-tabs button[aria-selected='true'] { background: var(--accent-strong); color: #fff; }
+  .tt-lang { min-width: 170px; }
+  .tt-stars { font-variant-numeric: tabular-nums; color: var(--accent-ink); }
+
+  .tt-tier h2 { margin: 6px 0 0; font: 600 1rem/1.3 var(--display); letter-spacing: -.01em; }
+  .tt-tier .meta { margin: 2px 0 10px; }
+  .tt-grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 8px; }
+  @media (max-width: 860px) { .tt-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+  .tt-grid .lv { display: grid; justify-items: center; gap: 2px; padding: 10px 4px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); color: var(--fg); font: inherit; cursor: pointer; transition: border-color .15s, transform .15s var(--ease); }
+  .tt-grid .lv b { font: 600 1.05rem/1.2 var(--display); }
+  .tt-grid .lv .st { font-size: .85rem; letter-spacing: 1px; color: var(--muted); }
+  .tt-grid .lv.got .st { color: var(--tt-2); }
+  .tt-grid .lv small { color: var(--muted); font-size: .72rem; display: inline-flex; align-items: center; gap: 4px; min-height: 1.2em; }
+  .tt-grid .lv:not(:disabled):hover { border-color: var(--accent); transform: translateY(-2px); }
+  .tt-grid .lv:disabled { opacity: .5; cursor: not-allowed; }
+
+  .tt-head { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: start; justify-content: space-between; }
+  .tt-head .meta { margin: 2px 0 0; }
+  .tt-live { display: flex; gap: 28px; }
+  .tt-live small, .tt-big small, .tt-tiles small { display: block; color: var(--muted); font-size: .8rem; }
+  .tt-live b { font: 600 1.6rem/1.2 var(--display); font-variant-numeric: tabular-nums; }
+
+  .tt-text { position: relative; height: calc(3 * 2.1em); overflow: hidden; padding: 0 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); font-size: 1.7rem; line-height: 2.1em; cursor: text; }
+  .tt-inner { white-space: pre-wrap; transition: transform .12s var(--ease); }
+  .tt .c { color: var(--muted); border-radius: 3px; }
+  .tt .c.ok { color: var(--fg); }
+  .tt .c.bad { color: var(--tt-err); background: color-mix(in srgb, var(--tt-err) 18%, transparent); text-decoration: underline; }
+  .tt .c.cur { box-shadow: -2px 0 0 var(--accent); }
+  .tt-in { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; border: 0; padding: 0; cursor: text; }
+  .tt .tt-hint { position: absolute; inset: 0; display: grid; place-items: center; border: 0; background: color-mix(in srgb, var(--surface-2) 78%, transparent); backdrop-filter: blur(2px); color: var(--fg); font: inherit; font-size: 1rem; cursor: pointer; }
+
+  .tt-kb { display: grid; gap: 6px; justify-items: center; max-width: 100%; overflow-x: auto; }
+  .tt-kb .kr { display: flex; gap: 6px; margin-left: calc(var(--off, 0) * 2.6em); }
+  .tt .key { display: inline-grid; place-items: center; width: 2.4em; height: 2.4em; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-2); color: var(--muted); font: 500 .8rem/1 var(--font); }
+  .tt .key.on { border-color: var(--accent); background: var(--accent-strong); color: #fff; }
+  .tt .key.space { width: 16em; }
+  .tt-kb .kr:has(.space) { margin-left: 0; }
+
+  .tt-big { display: flex; flex-wrap: wrap; gap: 18px 36px; align-items: end; }
+  .tt-big b { display: block; font: 600 clamp(1.6rem, 4vw, 2.6rem)/1.1 var(--display); font-variant-numeric: tabular-nums; }
+  .tt-big div:first-child b { font-size: clamp(2.4rem, 7vw, 4rem); color: var(--tt-1); }
+  .tt-big em { font-style: normal; color: var(--muted); font-size: .9rem; }
+  .tt-result { display: grid; gap: 14px; }
+
+  .tt-stats { display: grid; gap: 22px; }
+  .tt-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+  .tt-tiles .tile { padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); }
+  .tt-tiles .tile b { display: block; font: 600 1.35rem/1.3 var(--display); font-variant-numeric: tabular-nums; }
+  .tt-panel h2 { margin: 0 0 8px; font: 600 1rem/1.3 var(--display); letter-spacing: -.01em; }
+  .tt-panel h2 small { margin-left: 8px; color: var(--muted); font: 400 .85rem var(--font); }
+  .tt-two { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  @media (max-width: 700px) { .tt-two { grid-template-columns: 1fr; } }
+  .tt-seg { display: inline-flex; margin-bottom: 10px; border: 1px solid var(--line); border-radius: 99px; overflow: hidden; }
+  .tt-seg button { padding: 6px 14px; border: 0; background: none; color: var(--muted); font: inherit; font-size: .85rem; cursor: pointer; }
+  .tt-seg button[aria-pressed='true'] { background: var(--surface-2); color: var(--fg); box-shadow: inset 0 -2px 0 var(--accent); }
+
+  .tt-fig { margin: 0; }
+  .tt-svg { width: 100%; max-width: 760px; height: auto; display: block; overflow: visible; }
+  .tt-svg .gl { stroke: var(--line); stroke-width: 1; }
+  .tt-svg .ax { fill: var(--muted); font: 400 11px var(--font); }
+  .tt-svg .ln1 { fill: none; stroke: var(--tt-1); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .tt-svg .ln2 { fill: none; stroke: var(--tt-2); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .tt-svg .xe { fill: none; stroke: var(--tt-err); stroke-width: 2; stroke-linecap: round; }
+  .tt-svg .dot { stroke: var(--surface); stroke-width: 2; }
+  .tt-svg .dot.s1 { fill: var(--tt-1); opacity: 0; }
+  .tt-svg .dot.s2 { fill: var(--tt-2); }
+  .tt-svg .hit { fill: transparent; cursor: crosshair; }
+  .tt-svg .cross { stroke: var(--muted); stroke-width: 1; opacity: 0; }
+  .tt-svg .pt:hover .cross, .tt-svg .pt:hover .dot.s1 { opacity: 1; }
+  .tt-svg .bar { fill: var(--tt-1); }
+  .tt-svg .pt:hover .bar { fill: color-mix(in srgb, var(--tt-1) 78%, var(--fg)); }
+  .tt-svg .cell { stroke: none; }
+  .tt .cell.l0 { fill: var(--surface-2); background: var(--surface-2); }
+  .tt .cell.l1 { fill: color-mix(in srgb, var(--tt-1) 28%, var(--surface-2)); background: color-mix(in srgb, var(--tt-1) 28%, var(--surface-2)); }
+  .tt .cell.l2 { fill: color-mix(in srgb, var(--tt-1) 52%, var(--surface-2)); background: color-mix(in srgb, var(--tt-1) 52%, var(--surface-2)); }
+  .tt .cell.l3 { fill: color-mix(in srgb, var(--tt-1) 76%, var(--surface-2)); background: color-mix(in srgb, var(--tt-1) 76%, var(--surface-2)); }
+  .tt .cell.l4 { fill: var(--tt-1); background: var(--tt-1); }
+  .tt-svg.cal { max-width: 560px; }
+  .tt-lg { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 0 0 6px; padding: 0; list-style: none; color: var(--muted); font-size: .82rem; }
+  .tt-lg li { display: inline-flex; align-items: center; gap: 6px; }
+  .tt-lg i { display: inline-block; }
+  .tt-lg i.ln { width: 16px; height: 3px; border-radius: 2px; }
+  .tt-lg i.dot { width: 9px; height: 9px; border-radius: 50%; }
+  .tt-lg i.x { width: 10px; height: 10px; background: linear-gradient(45deg, transparent 43%, var(--tt-err) 43% 57%, transparent 57%), linear-gradient(-45deg, transparent 43%, var(--tt-err) 43% 57%, transparent 57%); }
+  .tt-lg i.s1 { background: var(--tt-1); }
+  .tt-lg i.s2 { background: var(--tt-2); }
+  .tt-lg i.cell { width: 12px; height: 12px; border-radius: 3px; }
+  .tt-lg i.ramp { width: 90px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--surface-2), var(--tt-1)); }
+  .tt-lg i.ramp.errors { background: linear-gradient(90deg, var(--surface-2), var(--tt-err)); }
+
+  .tt-stats .tt-kb { justify-items: start; overflow-x: auto; padding-bottom: 4px; }
+  .tt .key.speed { background: color-mix(in srgb, var(--tt-1) calc(var(--p) * 100%), var(--surface-2)); color: var(--fg); }
+  .tt .key.errors { background: color-mix(in srgb, var(--tt-err) calc(var(--p) * 100%), var(--surface-2)); color: var(--fg); }
+  .tt .key.hi { color: #fff; }
+  .tt-stats .tt-kb .tt-lg { margin-top: 10px; }
+
+  .tt-keys { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+  .tt-keys li { display: grid; grid-template-columns: 2.2em 1fr 4.5em; gap: 10px; align-items: center; font-size: .9rem; }
+  .tt-keys li.none { display: block; color: var(--muted); }
+  .tt-keys kbd { display: inline-grid; place-items: center; height: 2em; border: 1px solid var(--line); border-radius: 5px; background: var(--surface-2); font: 500 .8rem var(--font); }
+  .tt-keys .bar { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+  .tt-keys .bar i { display: block; height: 100%; border-radius: 4px; background: var(--tt-1); }
+  .tt-keys.err .bar i { background: var(--tt-err); }
+  .tt-keys em { font-style: normal; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+
+  .tt-tipbox { position: absolute; z-index: 5; max-width: 260px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); box-shadow: 0 6px 18px rgb(0 0 0 / .3); font-size: .82rem; line-height: 1.4; white-space: pre-line; pointer-events: none; }
+
+  @media (max-width: 700px) {
+    .tt-text { font-size: 1.15rem; }
+    .tt .key { font-size: .65rem; }
+    .tt .key.space { width: 10em; }
+  }
+  @media (prefers-reduced-motion: reduce) { .tt-inner, .tt-grid .lv { transition: none; } }
+</style>

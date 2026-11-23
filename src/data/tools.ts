@@ -356,6 +356,18 @@ export const tools: Tool[] = [
     },
   },
   {
+    slug: 'typing',
+    cat: 'text',
+    tags: 'typing trainer speed test wpm keyboard touch typing levels practice tippen tastatur schreiben клавиатура печать скорость',
+    icon: 'M3 7h18v10H3zM7 11h.01M11 11h.01M15 11h.01M7 14h10',
+    name: { en: 'Typing trainer', de: 'Tipptrainer', ru: 'Клавиатурный тренажёр' },
+    blurb: {
+      en: 'Speed test and 50 levels from the home row to code, with a keyboard heat map, per-second speed charts and a practice calendar. Saved only in your browser.',
+      de: 'Tempotest und 50 Level von der Grundreihe bis zu Code, mit Tastatur-Heatmap, Tempo-Diagrammen pro Sekunde und Übungskalender. Nur in deinem Browser gespeichert.',
+      ru: 'Тест скорости и 50 уровней от основного ряда до кода: тепловая карта клавиатуры, графики скорости по секундам и календарь занятий. Хранится только в вашем браузере.',
+    },
+  },
+  {
     slug: 'crop',
     cat: 'images',
     tags: 'image crop resize rotate aspect ratio photo thumbnail square avatar',
