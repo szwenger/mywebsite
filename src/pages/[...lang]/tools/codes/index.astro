@@ -1,0 +1,49 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import IconButton from '../../../../components/IconButton.astro';
+import { langOf, toolPaths } from '../../../../i18n/tool-page';
+import { s as strings } from '../../../../i18n/tools/codes';
+
+export const getStaticPaths = toolPaths;
+const lang = langOf(Astro.params);
+const s = strings[lang];
+const modes = ['morse', 'nato', 'braille', 'caesar', 'vigenere'] as const;
+---
+<ToolLayout lang={lang} slug="codes">
+  <div class="tl two" data-codes data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <div class="row tabs" role="group">
+        {modes.map((m, i) => <label class="check"><input type="radio" name="mode" value={m} checked={i === 0} /> {s[m]}</label>)}
+      </div>
+      <div class="row tabs" role="group">
+        <label class="check"><input type="radio" name="dir" value="encode" checked /> {s.encode}</label>
+        <label class="check"><input type="radio" name="dir" value="decode" /> {s.decode}</label>
+      </div>
+      <div class="stack" data-when="morse">
+        <label>{s.alphabet}<select name="alphabet"><option value="latin">{s.latin}</option><option value="cyrillic">{s.cyrillic}</option></select></label>
+        <label><span>{s.speed}: <output name="wpmOut">18</output></span><input name="wpm" type="range" min="5" max="40" value="18" aria-label={s.speed} /></label>
+        <div class="actions"><button type="button" class="btn alt" data-play>{s.play}</button></div>
+      </div>
+      <div class="stack" data-when="caesar" hidden>
+        <label><span>{s.shift}: <output name="shiftOut">3</output></span><input name="shift" type="range" min="1" max="25" value="3" aria-label={s.shift} /></label>
+        <div class="actions"><button type="button" class="btn alt" data-brute>{s.brute}</button></div>
+      </div>
+      <div class="stack" data-when="vigenere" hidden>
+        <label>{s.key}<input name="key" autocomplete="off" spellcheck="false" /></label>
+      </div>
+      <p class="note" data-note role="status" hidden></p>
+      <p class="meta">{s.notes}</p>
+    </div>
+    <div class="card pane">
+      <label>{s.input}<textarea name="input" rows="7" spellcheck="false"></textarea></label>
+      <label>{s.output}<textarea name="output" rows="7" readonly spellcheck="false"></textarea></label>
+      <div class="actions"><IconButton icon="copy" label={s.copy} data-copy /></div>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/codes/codes.ts';
+</script>
+<style>
+  .stack { display: grid; gap: 14px; }
+</style>

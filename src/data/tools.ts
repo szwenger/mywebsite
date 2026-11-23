@@ -440,6 +440,18 @@ export const tools: Tool[] = [
     },
   },
   {
+    slug: 'codes',
+    cat: 'text',
+    tags: 'morse code nato phonetic alphabet braille caesar cipher rot13 vigenere cipher encode decode spell audio beep',
+    icon: 'M4 12h2M9 12h6M18 12h2M4 7h6M13 7h2M18 7h2M4 17h2M9 17h2M14 17h6',
+    name: { en: 'Morse, NATO, braille and cipher codes', de: 'Morse, NATO, Braille und Chiffren', ru: 'Морзе, НАТО, Брайль и шифры' },
+    blurb: {
+      en: 'Translate text to and from Morse (with sound), the NATO alphabet and braille, and use Caesar, ROT13 and Vigenère ciphers.',
+      de: 'Text in und aus Morse (mit Ton), NATO-Alphabet und Braille übersetzen, dazu Caesar-, ROT13- und Vigenère-Chiffren.',
+      ru: 'Перевод текста в азбуку Морзе (со звуком), алфавит НАТО и шрифт Брайля и обратно, а также шифры Цезаря, ROT13 и Виженера.',
+    },
+  },
+  {
     slug: 'subnet',
     cat: 'dev',
     topics: ['math'],
