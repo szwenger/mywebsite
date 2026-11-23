@@ -128,6 +128,9 @@ h1.section-title::before { content: ''; width: .62em; height: .62em; border-radi
 /* Theme switch: the new page is revealed through an ink blot, see src/scripts/theme.ts. */
 ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 ::view-transition-new(root) { mask-image: var(--ink); mask-repeat: no-repeat; mask-size: 0 0; }
+/* Touch devices fade a veil instead, and every switch turns transitions off for one frame (no colour wave). */
+.theme-veil { position: fixed; inset: 0; z-index: 100; pointer-events: none; opacity: 0; }
+.theme-switching, .theme-switching *, .theme-switching *::before, .theme-switching *::after { transition: none !important; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
