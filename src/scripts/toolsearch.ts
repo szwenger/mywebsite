@@ -20,10 +20,11 @@ if (input) {
     let shown = 0;
     // a card is "found" when it matches the search; it is "shown" when it is also in the chosen category
     const found: Record<string, number> = {};
+    let total = 0;
     for (const c of cards) {
       const keys = [c.closest<HTMLElement>('[data-group]')!.dataset.cat!, ...list(c.dataset.topics)];
       const ok = finds({ hay: c.dataset.hay!, accepts: list(c.dataset.in), produces: list(c.dataset.out) }, q);
-      if (ok) for (const k of keys) found[k] = (found[k] ?? 0) + 1;
+      if (ok) { total++; for (const k of keys) found[k] = (found[k] ?? 0) + 1; }
       const vis = ok && (!cat || keys.includes(cat));
       c.hidden = !vis;
       if (vis) shown++;
@@ -31,7 +32,7 @@ if (input) {
     for (const g of groups) g.hidden = !g.querySelector('[data-hay]:not([hidden])');
     for (const ch of chips) {
       const id = ch.dataset.chip!;
-      const n = id ? (found[id] ?? 0) : Object.values(found).reduce((a, b) => a + b, 0);
+      const n = id ? (found[id] ?? 0) : total;
       ch.querySelector('[data-n]')!.textContent = String(n);
       ch.toggleAttribute('data-zero', n === 0);
       if (id === cat) ch.setAttribute('aria-current', 'true'); else ch.removeAttribute('aria-current');

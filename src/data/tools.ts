@@ -19,6 +19,12 @@ export const topics: Record<Topic, Record<Lang, string>> = {
   time: { en: 'Time & dates', de: 'Zeit & Datum', ru: 'Время и даты' },
   security: { en: 'Security', de: 'Sicherheit', ru: 'Безопасность' },
 };
+/** Icon path data (24×24, currentColor) for each topic chip. */
+export const topicIcons: Record<Topic, string> = {
+  math: 'M5 7h6M8 4v6M13 7h6M5 17h6M13.5 14.5l5 5M18.5 14.5l-5 5',
+  time: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',
+  security: 'M7 11V8a5 5 0 0 1 10 0v3M5 11h14v9H5zM12 15v2',
+};
 /** Order here is the order of the groups on the overview page and of the filter row above them. */
 export const categories: Record<Category, Record<Lang, string>> = {
   pdf: { en: 'PDF', de: 'PDF', ru: 'PDF' },

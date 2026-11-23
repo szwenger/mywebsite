@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
-import { tools, topics, categories } from '../src/data/tools.ts';
+import { tools, topics, topicIcons, categories } from '../src/data/tools.ts';
 import { extKey } from '../src/scripts/toolfilter.ts';
 
 test('every tool has a page, a known category and text in all three languages', () => {
@@ -23,7 +23,10 @@ test('accepts and produces use the one spelling of each extension (jpg, heic, ti
 });
 
 test('topics: every one used is defined in three languages, and each groups at least three tools', () => {
-  for (const [k, names] of Object.entries(topics)) for (const l of ['en', 'de', 'ru']) assert.ok(names[l]?.trim(), `${k}/${l}`);
+  for (const [k, names] of Object.entries(topics)) {
+    assert.ok(topicIcons[k], `${k} has an icon`);
+    for (const l of ['en', 'de', 'ru']) assert.ok(names[l]?.trim(), `${k}/${l}`);
+  }
   for (const t of tools) for (const k of t.topics ?? []) assert.ok(topics[k], `${t.slug}: unknown topic ${k}`);
   for (const k of Object.keys(topics)) assert.ok(tools.filter((t) => t.topics?.includes(k)).length >= 3, `${k} has fewer than three tools`);
 });

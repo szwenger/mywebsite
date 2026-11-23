@@ -2,7 +2,7 @@
 import Base from '../../../layouts/Base.astro';
 import ExpandSearch from '../../../components/ExpandSearch.astro';
 import { LANGS, path, t, type Lang } from '../../../i18n/ui';
-import { tools, categories, categoryIcons, topics, type Category, type Topic } from '../../../data/tools';
+import { tools, categories, categoryIcons, topics, topicIcons, type Category, type Topic } from '../../../data/tools';
 
 export function getStaticPaths() {
   return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
@@ -29,10 +29,10 @@ const topicIds = Object.keys(topics) as Topic[];
           <span>{categories[cat][lang]}</span><small data-n>{tools.filter((x) => x.cat === cat).length}</small>
         </a>
       ))}
-    </nav>
-    <nav class="chips topics" aria-label={t(lang, 'toolsTopics')}>
+      <span class="sep" aria-hidden="true"></span>
       {topicIds.map((id) => (
         <a class="chip" href={`#${id}`} data-chip={id}>
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d={topicIcons[id]} fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
           <span>{topics[id][lang]}</span><small data-n>{tools.filter((x) => x.topics?.includes(id)).length}</small>
         </a>
       ))}
@@ -65,7 +65,7 @@ const topicIds = Object.keys(topics) as Topic[];
   .head .section-title { margin: 0; }
   .intro { margin: -6px 0 24px; font-size: .95rem; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
-  .topics { margin-top: 0; }
+  .sep { align-self: center; flex: none; width: 1px; height: 22px; margin-inline: 4px; background: var(--line); }
   .chip { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px 0 12px; border: 1px solid var(--line); border-radius: 99px; color: var(--muted); font-size: .92rem; font-weight: 500; text-decoration: none; white-space: nowrap; transition: color .15s, background-color .15s, border-color .15s, opacity .15s; }
   .chip svg { flex: none; }
   .chip small { min-width: 1.4em; padding: 1px 6px; border-radius: 99px; background: var(--surface-2); color: var(--muted); font-size: .75rem; line-height: 1.4; text-align: center; font-variant-numeric: tabular-nums; }
