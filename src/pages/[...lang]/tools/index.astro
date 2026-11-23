@@ -2,13 +2,14 @@
 import Base from '../../../layouts/Base.astro';
 import ExpandSearch from '../../../components/ExpandSearch.astro';
 import { LANGS, path, t, type Lang } from '../../../i18n/ui';
-import { tools, categories, categoryIcons, type Category } from '../../../data/tools';
+import { tools, categories, categoryIcons, topics, type Category, type Topic } from '../../../data/tools';
 
 export function getStaticPaths() {
   return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
 }
 const lang = (Astro.params.lang ?? 'en') as Lang;
 const cats = Object.keys(categories) as Category[];
+const topicIds = Object.keys(topics) as Topic[];
 ---
 <Base lang={lang} title={`${t(lang, 'navTools')} · Galuin`} description={t(lang, 'toolsIntro')} current="tools">
   <section class="wrap page">
@@ -29,12 +30,19 @@ const cats = Object.keys(categories) as Category[];
         </a>
       ))}
     </nav>
+    <nav class="chips topics" aria-label={t(lang, 'toolsTopics')}>
+      {topicIds.map((id) => (
+        <a class="chip" href={`#${id}`} data-chip={id}>
+          <span>{topics[id][lang]}</span><small data-n>{tools.filter((x) => x.topics?.includes(id)).length}</small>
+        </a>
+      ))}
+    </nav>
     {cats.map((cat) => (
       <section class="group" data-group data-cat={cat} aria-labelledby={`cat-${cat}`}>
         <h2 class="cat" id={`cat-${cat}`}>{categories[cat][lang]}</h2>
         <div class="grid">
           {tools.filter((x) => x.cat === cat).map((tool) => (
-            <a class="card tool" href={path(lang, `/tools/${tool.slug}/`)} data-hay={[tool.name[lang], tool.blurb[lang], tool.tags ?? '', tool.slug, categories[cat][lang]].join(' ')}>
+            <a class="card tool" href={path(lang, `/tools/${tool.slug}/`)} data-hay={[tool.name[lang], tool.blurb[lang], tool.tags ?? '', tool.slug, categories[cat][lang], ...(tool.topics ?? []).map((k) => topics[k][lang])].join(' ')} data-topics={(tool.topics ?? []).join(' ')} data-in={(tool.accepts ?? []).join(' ')} data-out={(tool.produces ?? []).join(' ')}>
               <span class="icon"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d={tool.icon} fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
               <div class="text">
                 <h3>{tool.name[lang]}</h3>
@@ -57,6 +65,7 @@ const cats = Object.keys(categories) as Category[];
   .head .section-title { margin: 0; }
   .intro { margin: -6px 0 24px; font-size: .95rem; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+  .topics { margin-top: 0; }
   .chip { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px 0 12px; border: 1px solid var(--line); border-radius: 99px; color: var(--muted); font-size: .92rem; font-weight: 500; text-decoration: none; white-space: nowrap; transition: color .15s, background-color .15s, border-color .15s, opacity .15s; }
   .chip svg { flex: none; }
   .chip small { min-width: 1.4em; padding: 1px 6px; border-radius: 99px; background: var(--surface-2); color: var(--muted); font-size: .75rem; line-height: 1.4; text-align: center; font-variant-numeric: tabular-nums; }

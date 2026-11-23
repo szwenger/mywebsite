@@ -1,6 +1,6 @@
 // Search on the tools overview: filters the cards as you type. The field itself is components/ExpandSearch.astro.
 import './xsearch';
-import { matches } from './toolfilter';
+import { finds } from './toolfilter';
 
 const input = document.querySelector<HTMLInputElement>('#xs-input');
 if (input) {
@@ -9,8 +9,10 @@ if (input) {
   const groups = [...document.querySelectorAll<HTMLElement>('[data-group]')];
   const empty = document.querySelector<HTMLElement>('[data-ts-empty]')!;
   const chips = [...document.querySelectorAll<HTMLAnchorElement>('[data-chip]')];
-  const known = new Set(groups.map((g) => g.dataset.cat));
-  // The category filter lives in the URL hash (#pdf); the search text in ?q=. Both survive a reload.
+  const list = (v?: string) => (v ?? '').split(' ').filter(Boolean);
+  const known = new Set(chips.map((c) => c.dataset.chip!).filter(Boolean));
+  // The chosen category or topic lives in the URL hash (#pdf, #math); the search text in ?q=. Both survive a reload.
+  // A card belongs to its category and to each of its topics.
   let cat = known.has(location.hash.slice(1)) ? location.hash.slice(1) : '';
 
   function filter() {
@@ -19,10 +21,10 @@ if (input) {
     // a card is "found" when it matches the search; it is "shown" when it is also in the chosen category
     const found: Record<string, number> = {};
     for (const c of cards) {
-      const g = c.closest<HTMLElement>('[data-group]')!.dataset.cat!;
-      const ok = matches(c.dataset.hay!, q);
-      if (ok) found[g] = (found[g] ?? 0) + 1;
-      const vis = ok && (!cat || g === cat);
+      const keys = [c.closest<HTMLElement>('[data-group]')!.dataset.cat!, ...list(c.dataset.topics)];
+      const ok = finds({ hay: c.dataset.hay!, accepts: list(c.dataset.in), produces: list(c.dataset.out) }, q);
+      if (ok) for (const k of keys) found[k] = (found[k] ?? 0) + 1;
+      const vis = ok && (!cat || keys.includes(cat));
       c.hidden = !vis;
       if (vis) shown++;
     }

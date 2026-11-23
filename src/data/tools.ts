@@ -1,9 +1,24 @@
 import type { Lang } from '../i18n/ui';
 
 /** One entry per tool page at /tools/<slug>/. `icon` is SVG path data on a 24×24 viewBox, drawn with currentColor. */
-export interface Tool { slug: string; cat: Category; featured?: boolean; /** extra English search words, matched in every language */ tags?: string; icon: string; name: Record<Lang, string>; blurb: Record<Lang, string> }
+export interface Tool {
+  slug: string; cat: Category; featured?: boolean;
+  /** cross-cutting themes (a tool has one category but may have several topics); each becomes a filter chip */
+  topics?: Topic[];
+  /** extra English search words, matched in every language */
+  tags?: string;
+  /** file formats the tool reads and writes, lowercase extensions without a dot (jpg, not jpeg); they power "heic to jpg" in the search */
+  accepts?: string[]; produces?: string[];
+  icon: string; name: Record<Lang, string>; blurb: Record<Lang, string>;
+}
 
 export type Category = 'pdf' | 'images' | 'files' | 'text' | 'dev' | 'ai' | 'media';
+export type Topic = 'math' | 'time' | 'security';
+export const topics: Record<Topic, Record<Lang, string>> = {
+  math: { en: 'Math & calculators', de: 'Mathe & Rechner', ru: 'Математика и калькуляторы' },
+  time: { en: 'Time & dates', de: 'Zeit & Datum', ru: 'Время и даты' },
+  security: { en: 'Security', de: 'Sicherheit', ru: 'Безопасность' },
+};
 /** Order here is the order of the groups on the overview page and of the filter row above them. */
 export const categories: Record<Category, Record<Lang, string>> = {
   pdf: { en: 'PDF', de: 'PDF', ru: 'PDF' },
@@ -30,6 +45,7 @@ export const tools: Tool[] = [
     slug: 'qr',
     cat: 'images',
     featured: true,
+    produces: ['png', 'svg'],
     icon: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h3v3h-3zM20 14v.01M14 20h.01M20 20v.01M17 17v3',
     name: { en: 'QR code generator', de: 'QR-Code-Generator', ru: 'Генератор QR-кодов' },
     blurb: {
@@ -42,6 +58,9 @@ export const tools: Tool[] = [
     slug: 'pdf',
     cat: 'pdf',
     featured: true,
+    topics: ['security'],
+    accepts: ['pdf', 'jpg', 'png'],
+    produces: ['pdf', 'png', 'jpg', 'webp', 'txt', 'docx', 'zip'],
     icon: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h4',
     name: { en: 'PDF tools', de: 'PDF-Werkzeuge', ru: 'PDF-инструменты' },
     tags: 'pdf merge split compress sign signature redact protect password unlock watermark page numbers rotate reorder crop forms booklet n-up',
@@ -55,6 +74,8 @@ export const tools: Tool[] = [
     slug: 'image',
     cat: 'images',
     featured: true,
+    accepts: ['png', 'jpg', 'webp', 'gif', 'bmp', 'heic'],
+    produces: ['png', 'jpg', 'webp'],
     tags: 'heic heif iphone apple photo jpg jpeg png webp convert',
     icon: 'M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM8.5 9.5v.01M4 17l5-5 4 4 3-3 4 4',
     name: { en: 'Image converter', de: 'Bild-Konverter', ru: 'Конвертер изображений' },
@@ -68,6 +89,7 @@ export const tools: Tool[] = [
     slug: 'presenter',
     cat: 'pdf',
     featured: true,
+    accepts: ['pdf'],
     icon: 'M3 4h18v12H3zM12 16v4M8 20h8M10 8.5v3l3-1.5z',
     name: { en: 'PDF presenter', de: 'PDF-Präsentator', ru: 'PDF-презентатор' },
     blurb: {
@@ -80,6 +102,7 @@ export const tools: Tool[] = [
     slug: 'vram',
     cat: 'ai',
     featured: true,
+    topics: ['math'],
     icon: 'M7 7h10v10H7zM10 10h4v4h-4zM9 3v4M15 3v4M9 17v4M15 17v4M3 9h4M3 15h4M17 9h4M17 15h4',
     name: { en: 'GGUF VRAM calculator', de: 'GGUF-VRAM-Rechner', ru: 'Калькулятор VRAM для GGUF' },
     blurb: {
@@ -91,6 +114,7 @@ export const tools: Tool[] = [
   {
     slug: 'checksum',
     cat: 'files',
+    topics: ['security'],
     icon: 'M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6zM9 12l2 2 4-4',
     name: { en: 'Checksum verifier', de: 'Prüfsummen-Prüfer', ru: 'Проверка контрольной суммы' },
     blurb: {
@@ -103,6 +127,7 @@ export const tools: Tool[] = [
     slug: 'tz',
     cat: 'text',
     featured: true,
+    topics: ['time'],
     icon: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',
     name: { en: 'Time zone and Discord timestamps', de: 'Zeitzonen und Discord-Zeitstempel', ru: 'Часовые пояса и метки времени Discord' },
     blurb: {
@@ -114,6 +139,7 @@ export const tools: Tool[] = [
   {
     slug: 'bitrate',
     cat: 'media',
+    topics: ['math'],
     icon: 'M4 18V9M9 18V5M14 18v-7M19 18V8',
     name: { en: 'Bitrate and file size calculator', de: 'Bitrate- und Dateigrößen-Rechner', ru: 'Калькулятор битрейта и размера файла' },
     blurb: {
@@ -136,6 +162,9 @@ export const tools: Tool[] = [
   {
     slug: 'meta',
     cat: 'files',
+    topics: ['security'],
+    accepts: ['jpg', 'png', 'pdf'],
+    produces: ['jpg', 'png', 'pdf'],
     icon: 'M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6zM12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4 4l16 16',
     name: { en: 'Metadata viewer and remover', de: 'Metadaten anzeigen und entfernen', ru: 'Просмотр и удаление метаданных' },
     blurb: {
@@ -147,6 +176,8 @@ export const tools: Tool[] = [
   {
     slug: 'favicon',
     cat: 'images',
+    accepts: ['png', 'jpg', 'webp', 'gif', 'bmp', 'heic', 'svg'],
+    produces: ['ico', 'png', 'zip'],
     icon: 'M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z',
     name: { en: 'Favicon generator', de: 'Favicon-Generator', ru: 'Генератор favicon' },
     blurb: {
@@ -158,6 +189,8 @@ export const tools: Tool[] = [
   {
     slug: 'json',
     cat: 'dev',
+    accepts: ['json'],
+    produces: ['json'],
     icon: 'M8 4c-2 0-3 1-3 3v2c0 1-1 2-2 3 1 1 2 2 2 3v2c0 2 1 3 3 3M16 4c2 0 3 1 3 3v2c0 1 1 2 2 3-1 1-2 2-2 3v2c0 2-1 3-3 3',
     name: { en: 'JSON formatter and validator', de: 'JSON-Formatierer und -Prüfer', ru: 'Форматирование и проверка JSON' },
     blurb: {
@@ -169,6 +202,7 @@ export const tools: Tool[] = [
   {
     slug: 'gen',
     cat: 'dev',
+    topics: ['security'],
     icon: 'M4 4h16v16H4zM8.5 8.5v.01M15.5 8.5v.01M12 12v.01M8.5 15.5v.01M15.5 15.5v.01',
     name: { en: 'Password, UUID and token generator', de: 'Passwort-, UUID- und Token-Generator', ru: 'Генератор паролей, UUID и токенов' },
     blurb: {
@@ -191,6 +225,8 @@ export const tools: Tool[] = [
   {
     slug: 'subs',
     cat: 'media',
+    accepts: ['srt', 'vtt'],
+    produces: ['srt', 'vtt'],
     tags: 'srt vtt webvtt subtitles captions sync shift timing fps',
     icon: 'M4 5h16v11H4zM8 20h8M7 9h4M13 9h4M7 12.5h2M11 12.5h6',
     name: { en: 'Subtitle converter and shifter', de: 'Untertitel-Konverter', ru: 'Конвертер субтитров' },
@@ -203,6 +239,8 @@ export const tools: Tool[] = [
   {
     slug: 'ics',
     cat: 'text',
+    topics: ['time'],
+    produces: ['ics'],
     tags: 'calendar event ics ical invite appointment reminder',
     icon: 'M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM4 10h16M8 3v4M16 3v4M9 14h2',
     name: { en: 'Calendar event (.ics) maker', de: 'Kalendertermin (.ics) erstellen', ru: 'Создание события календаря (.ics)' },
@@ -251,6 +289,7 @@ export const tools: Tool[] = [
   {
     slug: 'cron',
     cat: 'dev',
+    topics: ['time'],
     tags: 'cron crontab schedule job next run expression',
     icon: 'M3.5 12a8.5 8.5 0 1 0 2.5-6M3 4v4h4M12 8v4l3 2',
     name: { en: 'Cron expression explainer', de: 'Cron-Ausdruck erklärt', ru: 'Разбор выражений cron' },
@@ -275,6 +314,8 @@ export const tools: Tool[] = [
   {
     slug: 'markdown',
     cat: 'text',
+    accepts: ['md'],
+    produces: ['html'],
     tags: 'md preview render html readme editor math latex formula katex',
     icon: 'M3 6h18v12H3zM6.5 15V9l2.5 3 2.5-3v6M16 9v6M14 13l2 2 2-2',
     name: { en: 'Markdown preview', de: 'Markdown-Vorschau', ru: 'Просмотр Markdown' },
@@ -287,6 +328,9 @@ export const tools: Tool[] = [
   {
     slug: 'plot',
     cat: 'images',
+    topics: ['math'],
+    accepts: ['csv'],
+    produces: ['png', 'svg'],
     tags: 'chart graph plot diagram line bar scatter csv data visualization desmos function graphing calculator equation plotter slider polar parametric inequality intersection logarithmic log scale table of values',
     icon: 'M4 4v16h16M8 15l3-4 3 2 5-6',
     name: { en: 'Graphing calculator and charts', de: 'Funktionsplotter und Diagramme', ru: 'Графики функций и диаграммы' },
@@ -299,6 +343,9 @@ export const tools: Tool[] = [
   {
     slug: 'latex',
     cat: 'text',
+    topics: ['math'],
+    accepts: ['tex'],
+    produces: ['png', 'svg', 'pdf'],
     tags: 'math formula equation katex tex mathml png svg pdf export',
     icon: 'M6 4h12M6 20h12M7 4l6 8-6 8M13 12h5',
     name: { en: 'LaTeX formulas', de: 'LaTeX-Formeln', ru: 'Формулы LaTeX' },
@@ -311,6 +358,7 @@ export const tools: Tool[] = [
   {
     slug: 'codesnap',
     cat: 'images',
+    produces: ['png', 'svg'],
     tags: 'code screenshot snippet carbon codesnap syntax highlight image png svg share',
     icon: 'M3 5h18v14H3zM3 9h18M6.5 7h.01M9.5 7h.01M8 13l-2 2 2 2M16 13l2 2-2 2M13 12l-2 6',
     name: { en: 'Code screenshots', de: 'Code-Screenshots', ru: 'Скриншоты кода' },
@@ -335,6 +383,7 @@ export const tools: Tool[] = [
   {
     slug: 'epoch',
     cat: 'dev',
+    topics: ['time'],
     tags: 'unix timestamp epoch time date convert milliseconds iso week',
     icon: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2',
     name: { en: 'Unix timestamp converter', de: 'Unix-Zeitstempel-Umrechner', ru: 'Конвертер Unix-времени' },
@@ -347,6 +396,8 @@ export const tools: Tool[] = [
   {
     slug: 'csv',
     cat: 'dev',
+    accepts: ['csv', 'json'],
+    produces: ['csv', 'json'],
     tags: 'csv json convert table spreadsheet excel delimiter tsv',
     icon: 'M4 5h16v14H4zM4 10h16M4 15h16M9 5v14',
     name: { en: 'CSV and JSON converter', de: 'CSV-JSON-Konverter', ru: 'Конвертер CSV и JSON' },
@@ -359,6 +410,7 @@ export const tools: Tool[] = [
   {
     slug: 'subnet',
     cat: 'dev',
+    topics: ['math'],
     tags: 'ip subnet cidr netmask network ipv4 broadcast hosts calculator vlsm',
     icon: 'M12 4v5M12 9H5v5M12 9h7v5M5 14v3M19 14v3M3 17h4v3H3zM17 17h4v3h-4zM10 4h4',
     name: { en: 'Subnet calculator', de: 'Subnetz-Rechner', ru: 'Калькулятор подсетей' },
@@ -371,6 +423,7 @@ export const tools: Tool[] = [
   {
     slug: 'chmod',
     cat: 'dev',
+    topics: ['math'],
     tags: 'chmod permissions linux unix file mode octal rwx setuid sticky',
     icon: 'M7 11V8a5 5 0 0 1 10 0v3M5 11h14v9H5zM12 15v2',
     name: { en: 'chmod calculator', de: 'chmod-Rechner', ru: 'Калькулятор chmod' },
@@ -395,6 +448,7 @@ export const tools: Tool[] = [
   {
     slug: 'barcode',
     cat: 'images',
+    produces: ['png', 'svg'],
     tags: 'barcode code128 ean13 ean8 upc ean generator label product',
     icon: 'M4 5v14M7 5v14M11 5v14M14 5v14M17 5v14M20 5v14',
     name: { en: 'Barcode generator', de: 'Barcode-Generator', ru: 'Генератор штрихкодов' },
@@ -419,6 +473,8 @@ export const tools: Tool[] = [
   {
     slug: 'crop',
     cat: 'images',
+    accepts: ['png', 'jpg', 'webp', 'gif', 'bmp', 'heic'],
+    produces: ['png', 'jpg', 'webp'],
     tags: 'image crop resize rotate aspect ratio photo thumbnail square avatar',
     icon: 'M7 3v14h14M3 7h14v14',
     name: { en: 'Image crop and resize', de: 'Bild zuschneiden und skalieren', ru: 'Обрезка и изменение размера' },
@@ -431,6 +487,7 @@ export const tools: Tool[] = [
   {
     slug: 'units',
     cat: 'text',
+    topics: ['math'],
     tags: 'unit converter length mass weight temperature celsius fahrenheit kelvin miles km pounds kg gallons litres speed area data mpg fuel',
     icon: 'M4 17h16M4 17V9M8 17v-4M12 17V9M16 17v-4M20 17V9M4 9h16',
     name: { en: 'Unit converter', de: 'Einheiten-Umrechner', ru: 'Конвертер единиц' },
@@ -443,6 +500,8 @@ export const tools: Tool[] = [
   {
     slug: 'palette',
     cat: 'images',
+    accepts: ['png', 'jpg', 'webp', 'gif', 'bmp', 'heic'],
+    produces: ['json', 'css'],
     tags: 'color palette colour extract dominant image swatch hex css theme',
     icon: 'M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.8 1.8-1.7 0-1-.8-1.4-.8-2.3 0-.9.7-1.5 1.7-1.5H17a4 4 0 0 0 4-4c0-4.4-4-8.5-9-8.5zM7.5 11v.01M9.5 7.5v.01M14 7v.01',
     name: { en: 'Colour palette from an image', de: 'Farbpalette aus einem Bild', ru: 'Палитра цветов из изображения' },
@@ -455,6 +514,8 @@ export const tools: Tool[] = [
   {
     slug: 'svg',
     cat: 'images',
+    accepts: ['svg'],
+    produces: ['svg', 'png', 'jpg', 'webp'],
     tags: 'svg png convert minify optimize vector icon logo svgo export raster',
     icon: 'M6 4h8l4 4v12H6zM14 4v4h4M9 13l-2 2 2 2M15 13l2 2-2 2M12.5 12l-1 6',
     name: { en: 'SVG to PNG and SVG minifier', de: 'SVG zu PNG und SVG-Verkleinerer', ru: 'SVG в PNG и сжатие SVG' },
@@ -467,6 +528,8 @@ export const tools: Tool[] = [
   {
     slug: 'imgmark',
     cat: 'images',
+    accepts: ['png', 'jpg', 'webp', 'heic'],
+    produces: ['png', 'jpg', 'webp', 'zip'],
     tags: 'watermark image photo logo text copyright stamp batch overlay',
     icon: 'M5 4h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM8 15h8M9 12h6',
     name: { en: 'Image watermark', de: 'Bild-Wasserzeichen', ru: 'Водяной знак на изображении' },
@@ -479,6 +542,8 @@ export const tools: Tool[] = [
   {
     slug: 'audio',
     cat: 'media',
+    accepts: ['mp3', 'wav', 'm4a', 'ogg', 'mp4', 'webm'],
+    produces: ['wav'],
     tags: 'audio trim cut mp3 wav ringtone fade normalize clip sound editor',
     icon: 'M3 12h2M7 8v8M11 5v14M15 8v8M19 10v4M21 12h0',
     name: { en: 'Audio trimmer', de: 'Audio-Schneider', ru: 'Обрезка аудио' },
@@ -491,6 +556,8 @@ export const tools: Tool[] = [
   {
     slug: 'pdf2img',
     cat: 'pdf',
+    accepts: ['pdf'],
+    produces: ['png', 'jpg', 'webp', 'zip'],
     tags: 'pdf to image jpg png convert pages screenshot render zip',
     icon: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 17l2-3 2 2 2-3',
     name: { en: 'PDF to images', de: 'PDF in Bilder', ru: 'PDF в изображения' },
