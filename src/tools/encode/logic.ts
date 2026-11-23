@@ -58,3 +58,30 @@ export function decodeJwt(token: string): Jwt {
     return { header, payload, signature: parts[2] ?? '', times };
   } catch { throw new Error('jwt'); }
 }
+
+/** The picture type of some bytes, from their first bytes (or the opening tag, for SVG). null when it is not a picture we know. */
+export function sniffImage(b: Uint8Array): string | null {
+  const ascii = (from: number, to: number) => String.fromCharCode(...b.subarray(from, to));
+  if (b[0] === 0x89 && ascii(1, 4) === 'PNG') return 'image/png';
+  if (b[0] === 0xff && b[1] === 0xd8) return 'image/jpeg';
+  if (ascii(0, 3) === 'GIF') return 'image/gif';
+  if (ascii(0, 4) === 'RIFF' && ascii(8, 12) === 'WEBP') return 'image/webp';
+  if (ascii(0, 2) === 'BM') return 'image/bmp';
+  if (/^\s*(<\?xml[^>]*>\s*)?(<!--[\s\S]*?-->\s*)?<svg[\s>]/i.test(new TextDecoder().decode(b.subarray(0, 512)))) return 'image/svg+xml';
+  return null;
+}
+
+export const dataUri = (bytes: Uint8Array, mime: string): string => `data:${mime};base64,${b64(bytes)}`;
+
+/** A data URI (base64 or percent-encoded) or a bare Base64 string to the picture inside it; null when it is not a picture. */
+export function parseDataUri(text: string): { mime: string; bytes: Uint8Array } | null {
+  const t = text.trim();
+  if (!t) return null;
+  try {
+    const m = /^data:([^;,]*)((?:;[^;,]*)*),([\s\S]*)$/i.exec(t);
+    if (!m) { const bytes = b64bytes(t); const mime = sniffImage(bytes); return mime ? { mime, bytes } : null; }
+    const bytes = /;base64/i.test(m[2]) ? b64bytes(m[3]) : new TextEncoder().encode(decodeURIComponent(m[3]));
+    const mime = sniffImage(bytes);
+    return mime && (!m[1] || m[1].startsWith('image/')) ? { mime: m[1] || mime, bytes } : null;
+  } catch { return null; }
+}

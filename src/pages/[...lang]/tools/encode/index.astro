@@ -8,11 +8,11 @@ export function getStaticPaths() {
 }
 const lang = (Astro.params.lang ?? 'en') as Lang;
 const s = {
-  en: { mode: 'Format', enc: 'Encode', dec: 'Decode', input: 'Input', output: 'Output', copy: 'Copy', use: 'Use output as input', jwtNote: 'A JWT is only decoded here. The signature is not checked, so never treat the content as trusted.', header: 'Header', payload: 'Payload', times: 'Times (UTC)', claims: { exp: 'expires', nbf: 'not before', iat: 'issued' },
+  en: { image: 'Image (data URI)', dropImage: 'Drop an image here, or click to choose. Or paste a data URI or Base64 below.', dataUri: 'Data URI', htmlTag: 'HTML', cssRule: 'CSS', imgSize: '{a} as a file, {b} as a data URI', download: 'Download image', notImage: 'That is not an image or a data URI.', bigWarn: 'Large data URIs slow a page down; above roughly 10 KB a normal file is usually the better choice.', mode: 'Format', enc: 'Encode', dec: 'Decode', input: 'Input', output: 'Output', copy: 'Copy', use: 'Use output as input', jwtNote: 'A JWT is only decoded here. The signature is not checked, so never treat the content as trusted.', header: 'Header', payload: 'Payload', times: 'Times (UTC)', claims: { exp: 'expires', nbf: 'not before', iat: 'issued' },
     err: { base64: 'This is not valid Base64.', utf8: 'The data is valid, but it is not UTF-8 text.', url: 'This is not valid percent-encoding.', hex: 'This is not valid hex (pairs of 0-9 and a-f).', jwt: 'This is not a JWT: expected two or three parts separated by dots, each Base64URL-encoded JSON.' }, note: 'Text is handled as UTF-8, everything stays in your browser.' },
-  de: { mode: 'Format', enc: 'Kodieren', dec: 'Dekodieren', input: 'Eingabe', output: 'Ausgabe', copy: 'Kopieren', use: 'Ausgabe als Eingabe nutzen', jwtNote: 'Ein JWT wird hier nur dekodiert. Die Signatur wird nicht geprüft, behandle den Inhalt also nie als vertrauenswürdig.', header: 'Header', payload: 'Payload', times: 'Zeiten (UTC)', claims: { exp: 'läuft ab', nbf: 'gültig ab', iat: 'ausgestellt' },
+  de: { image: 'Bild (Data-URI)', dropImage: 'Bild hier ablegen oder klicken zum Auswählen. Oder unten eine Data-URI oder Base64 einfügen.', dataUri: 'Data-URI', htmlTag: 'HTML', cssRule: 'CSS', imgSize: '{a} als Datei, {b} als Data-URI', download: 'Bild herunterladen', notImage: 'Das ist weder ein Bild noch eine Data-URI.', bigWarn: 'Große Data-URIs bremsen eine Seite aus; ab etwa 10 KB ist eine normale Datei meist die bessere Wahl.', mode: 'Format', enc: 'Kodieren', dec: 'Dekodieren', input: 'Eingabe', output: 'Ausgabe', copy: 'Kopieren', use: 'Ausgabe als Eingabe nutzen', jwtNote: 'Ein JWT wird hier nur dekodiert. Die Signatur wird nicht geprüft, behandle den Inhalt also nie als vertrauenswürdig.', header: 'Header', payload: 'Payload', times: 'Zeiten (UTC)', claims: { exp: 'läuft ab', nbf: 'gültig ab', iat: 'ausgestellt' },
     err: { base64: 'Das ist kein gültiges Base64.', utf8: 'Die Daten sind gültig, aber kein UTF-8-Text.', url: 'Das ist keine gültige Prozent-Kodierung.', hex: 'Das ist kein gültiges Hex (Paare aus 0-9 und a-f).', jwt: 'Das ist kein JWT: erwartet werden zwei oder drei durch Punkte getrennte Teile, jeweils Base64URL-kodiertes JSON.' }, note: 'Text wird als UTF-8 behandelt, alles bleibt in deinem Browser.' },
-  ru: { mode: 'Формат', enc: 'Кодировать', dec: 'Декодировать', input: 'Ввод', output: 'Результат', copy: 'Копировать', use: 'Результат как ввод', jwtNote: 'JWT здесь только декодируется. Подпись не проверяется, поэтому не считайте содержимое доверенным.', header: 'Заголовок', payload: 'Данные', times: 'Время (UTC)', claims: { exp: 'истекает', nbf: 'не раньше', iat: 'выдан' },
+  ru: { image: 'Изображение (data URI)', dropImage: 'Перетащите изображение сюда или нажмите для выбора. Или вставьте ниже data URI или Base64.', dataUri: 'Data URI', htmlTag: 'HTML', cssRule: 'CSS', imgSize: '{a} как файл, {b} как data URI', download: 'Скачать изображение', notImage: 'Это не изображение и не data URI.', bigWarn: 'Большие data URI замедляют страницу; примерно от 10 КБ обычный файл обычно лучше.', mode: 'Формат', enc: 'Кодировать', dec: 'Декодировать', input: 'Ввод', output: 'Результат', copy: 'Копировать', use: 'Результат как ввод', jwtNote: 'JWT здесь только декодируется. Подпись не проверяется, поэтому не считайте содержимое доверенным.', header: 'Заголовок', payload: 'Данные', times: 'Время (UTC)', claims: { exp: 'истекает', nbf: 'не раньше', iat: 'выдан' },
     err: { base64: 'Это не корректный Base64.', utf8: 'Данные корректны, но это не текст UTF-8.', url: 'Это не корректное процентное кодирование.', hex: 'Это не корректный hex (пары символов 0-9 и a-f).', jwt: 'Это не JWT: ожидаются две или три части через точку, каждая в виде JSON в Base64URL.' }, note: 'Текст обрабатывается как UTF-8, всё остаётся в вашем браузере.' },
 }[lang];
 ---
@@ -23,7 +23,7 @@ const s = {
         <label>{s.mode}
           <select name="mode">
             <option value="base64">Base64</option><option value="base64url">Base64 URL</option><option value="url">URL (percent)</option>
-            <option value="hex">Hex</option><option value="html">HTML entities</option><option value="jwt">JWT</option>
+            <option value="hex">Hex</option><option value="html">HTML entities</option><option value="jwt">JWT</option><option value="image">{s.image}</option>
           </select>
         </label>
         <div class="row" data-dir role="group">
@@ -31,6 +31,7 @@ const s = {
           <label class="check"><input type="radio" name="dir" value="dec" /> {s.dec}</label>
         </div>
       </div>
+      <label class="drop" data-drop hidden><span>{s.dropImage}</span><input type="file" accept="image/*" data-file /></label>
       <label>{s.input}<textarea name="input" spellcheck="false" rows="12"></textarea></label>
     </div>
     <div class="card pane" aria-live="polite">
@@ -46,6 +47,20 @@ const s = {
         <h2 class="sub" data-times-title>{s.times}</h2>
         <table><tbody data-jwt-times></tbody></table>
       </div>
+      <div data-image hidden>
+        <img class="pic" alt="" data-img hidden />
+        <p class="meta" data-img-size></p>
+        <p class="note" data-img-warn hidden>{s.bigWarn}</p>
+        <label>{s.dataUri}<textarea readonly spellcheck="false" rows="3" data-out-uri></textarea></label>
+        <label>{s.htmlTag}<textarea readonly spellcheck="false" rows="3" data-out-html></textarea></label>
+        <label>{s.cssRule}<textarea readonly spellcheck="false" rows="3" data-out-css></textarea></label>
+        <div class="actions pad">
+          <IconButton icon="copy" label={`${s.copy} ${s.dataUri}`} data-copy-uri />
+          <IconButton icon="copy" label={`${s.copy} ${s.htmlTag}`} data-copy-html />
+          <IconButton icon="copy" label={`${s.copy} ${s.cssRule}`} data-copy-css />
+          <button type="button" class="btn alt" data-save hidden>{s.download}</button>
+        </div>
+      </div>
       <p class="meta">{s.note}</p>
     </div>
   </div>
@@ -56,4 +71,5 @@ const s = {
 <style>
   .sub { margin: 14px 0 6px; font-family: var(--font); font-size: .95rem; font-weight: 600; letter-spacing: 0; }
   .pad { margin-top: 10px; }
+  .pic { max-width: 100%; max-height: 220px; object-fit: contain; border: 1px solid var(--line); border-radius: var(--radius-sm); background: repeating-conic-gradient(#8883 0 25%, transparent 0 50%) 0 0 / 16px 16px; }
 </style>

@@ -272,13 +272,13 @@ export const tools: Tool[] = [
   {
     slug: 'encode',
     cat: 'dev',
-    tags: 'base64 url encode decode hex html entities jwt token percent escape',
+    tags: 'base64 url encode decode hex html entities jwt token percent escape image data uri datauri inline embed picture',
     icon: 'M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 6l-3 12',
     name: { en: 'Base64, URL and JWT decoder', de: 'Base64-, URL- und JWT-Dekoder', ru: 'Base64, URL и JWT' },
     blurb: {
-      en: 'Encode and decode Base64, URLs, hex and HTML entities, and read what is inside a JWT.',
-      de: 'Base64, URLs, Hex und HTML-Entities kodieren und dekodieren und lesen, was in einem JWT steckt.',
-      ru: 'Кодирование и декодирование Base64, URL, hex и HTML-сущностей, а также просмотр содержимого JWT.',
+      en: 'Encode and decode Base64, URLs, hex and HTML entities, turn an image into a data URI (or back), and read what is inside a JWT.',
+      de: 'Base64, URLs, Hex und HTML-Entities kodieren und dekodieren, ein Bild in eine Data-URI verwandeln (oder zurück) und lesen, was in einem JWT steckt.',
+      ru: 'Кодирование и декодирование Base64, URL, hex и HTML-сущностей, превращение изображения в data URI (и обратно), а также просмотр содержимого JWT.',
     },
   },
   {

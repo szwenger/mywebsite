@@ -54,3 +54,38 @@ test('JWT: junk is rejected', () => {
   assert.throws(() => decodeJwt('abc'), { message: 'jwt' });
   assert.throws(() => decodeJwt('a.b.c'), { message: 'jwt' });
 });
+
+import { dataUri, parseDataUri, sniffImage } from '../src/tools/encode/logic.ts';
+
+const PNG = Uint8Array.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]);
+
+test('sniffImage tells the common picture types by their first bytes', () => {
+  assert.equal(sniffImage(PNG), 'image/png');
+  assert.equal(sniffImage(Uint8Array.from([0xff, 0xd8, 0xff, 0xe0, 0, 0])), 'image/jpeg');
+  assert.equal(sniffImage(new TextEncoder().encode('GIF89a....')), 'image/gif');
+  assert.equal(sniffImage(new TextEncoder().encode('RIFF\0\0\0\0WEBPVP8 ')), 'image/webp');
+  assert.equal(sniffImage(new TextEncoder().encode('BM......')), 'image/bmp');
+  assert.equal(sniffImage(new TextEncoder().encode('  <?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg"/>')), 'image/svg+xml');
+  assert.equal(sniffImage(new TextEncoder().encode('<svg viewBox="0 0 1 1"/>')), 'image/svg+xml');
+  assert.equal(sniffImage(new TextEncoder().encode('hello world')), null);
+});
+
+test('dataUri and parseDataUri round-trip, and parse takes a bare Base64 string too', () => {
+  const uri = dataUri(PNG, 'image/png');
+  assert.match(uri, /^data:image\/png;base64,iVBORw0KGgo/);
+  const back = parseDataUri(uri);
+  assert.equal(back.mime, 'image/png');
+  assert.deepEqual([...back.bytes], [...PNG]);
+  const bare = parseDataUri('iVBORw0KGgoAAAAA'); // no prefix: the type comes from the bytes
+  assert.equal(bare.mime, 'image/png');
+  assert.equal(parseDataUri(`  ${uri.slice(0, 30)}\n${uri.slice(30)}  `).mime, 'image/png'); // line breaks and padding are ignored
+});
+
+test('parseDataUri reads a percent-encoded SVG data URI and rejects what is not an image', () => {
+  const svg = parseDataUri("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3C/svg%3E");
+  assert.equal(svg.mime, 'image/svg+xml');
+  assert.equal(new TextDecoder().decode(svg.bytes), "<svg xmlns='http://www.w3.org/2000/svg'></svg>");
+  assert.equal(parseDataUri('hello world, not base64!'), null);
+  assert.equal(parseDataUri('data:text/plain;base64,aGVsbG8='), null);
+  assert.equal(parseDataUri(''), null);
+});
