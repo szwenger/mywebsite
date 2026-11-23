@@ -39,3 +39,41 @@ test('traceParam splits at undefined points', () => {
   const l = traceParam((t) => [t, t === 5 ? NaN : t], 0, 10, 10);
   assert.equal(l.length, 2);
 });
+
+import { crossings } from '../src/tools/plot/geom.ts';
+
+// A 400 x 400 pixel view of x, y in [-10, 10].
+const V = { w: 400, h: 400, at: (px, py) => [-10 + px / 20, 10 - py / 20], to: (x, y) => [(x + 10) * 20, (10 - y) * 20] };
+const near = (p, x, y, eps = 1e-6) => Math.abs(p[0] - x) < eps && Math.abs(p[1] - y) < eps;
+
+test('crossings: two lines meet once', () => {
+  const pts = crossings((x, y) => y - x, (x, y) => y + x - 2, V.w, V.h, V.at, V.to);
+  assert.equal(pts.length, 1);
+  assert.ok(near(pts[0], 1, 1), String(pts[0]));
+});
+
+test('crossings: circle and line give two exact points', () => {
+  const pts = crossings((x, y) => x * x + y * y - 9, (x, y) => y - x / 2 - 1, V.w, V.h, V.at, V.to);
+  assert.equal(pts.length, 2);
+  for (const [x, y] of pts) { assert.ok(Math.abs(x * x + y * y - 9) < 1e-6); assert.ok(Math.abs(y - x / 2 - 1) < 1e-6); }
+});
+
+test('crossings: sin and cos meet at pi/4 + k pi', () => {
+  const pts = crossings((x, y) => y - Math.sin(x), (x, y) => y - Math.cos(x), V.w, V.h, V.at, V.to);
+  assert.equal(pts.length, 6); // -7pi/4 .. 9pi/4 inside [-10, 10]: -5.5, -2.36, 0.785, 3.93, 7.07, (10.2 is out)
+  assert.ok(pts.some((p) => near(p, Math.PI / 4, Math.SQRT1_2)));
+});
+
+test('crossings: parallel and identical curves give none, a pole is not a crossing', () => {
+  assert.equal(crossings((x, y) => y - x, (x, y) => y - x - 3, V.w, V.h, V.at, V.to).length, 0);
+  assert.equal(crossings((x, y) => y - x, (x, y) => y - x, V.w, V.h, V.at, V.to).length, 0);
+  // tan(x) against the x axis: only the real zeros -pi, 0, pi, never the poles
+  const pts = crossings((x, y) => y - Math.tan(x), (x, y) => y, V.w, V.h, V.at, V.to);
+  assert.deepEqual(pts.map((p) => Math.round(p[0] / Math.PI)).sort((a, b) => a - b), [-3, -2, -1, 0, 1, 2, 3]);
+});
+
+test('crossings: undefined values (NaN) are skipped', () => {
+  const pts = crossings((x, y) => (x > 0 ? y - Math.sqrt(x) : NaN), (x, y) => y - 1, V.w, V.h, V.at, V.to);
+  assert.equal(pts.length, 1);
+  assert.ok(near(pts[0], 1, 1));
+});

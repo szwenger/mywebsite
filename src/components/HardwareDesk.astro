@@ -66,7 +66,7 @@ const layers = layerMap as Record<string, string[]>;
     {spots.map((s) => (
       <section class="panel" id={`pop-${s.id}`} aria-label={s.title[lang]} data-pop={s.id} data-shot-for={shotOf[s.id]} hidden>
         <div class="panel-top">
-          <button type="button" class="back">← {t(lang, 'hwClose')}</button>
+          <button type="button" class="back"><Icon name="prev" size={14} /> {t(lang, 'hwClose')}</button>
           <span class="step">
             <button type="button" class="prev" aria-label={t(lang, 'hwPrev')}><Icon name="prev" size={16} /></button>
             <button type="button" class="next" aria-label={t(lang, 'hwNext')}><Icon name="next" size={16} /></button>
@@ -150,7 +150,7 @@ const layers = layerMap as Record<string, string[]>;
   .panel[hidden] { display: none; }
   @keyframes rise { from { opacity: 0; transform: translateY(10px); } }
   .panel-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-  .back { padding: 6px 12px 6px 8px; border: 0; border-radius: 99px; background: rgb(255 255 255 / .1); color: #eceef5; font: 600 .78rem var(--font); cursor: pointer; }
+  .back { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px 6px 8px; border: 0; border-radius: 99px; background: rgb(255 255 255 / .1); color: #eceef5; font: 600 .78rem var(--font); cursor: pointer; }
   .back:hover { background: rgb(255 255 255 / .2); }
   .step { display: inline-flex; gap: 6px; }
   .step button { width: 30px; height: 30px; border: 0; border-radius: 50%; display: grid; place-items: center; background: rgb(255 255 255 / .1); color: #eceef5; cursor: pointer; transition: background-color .15s, var(--press); }

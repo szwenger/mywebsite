@@ -87,3 +87,53 @@ export function traceParam(pt: (t: number) => [number, number], t0: number, t1: 
   flush();
   return lines;
 }
+
+/** Points where the curves F(x, y) = 0 and G(x, y) = 0 meet inside a w x h pixel area. `at` maps a pixel to (x, y), `to` maps back.
+ *  Finds them from the pixel contours of both curves, then sharpens each with Newton's method. Curves that only touch, or lie on each other, are not reported. */
+export function crossings(
+  F: (x: number, y: number) => number, G: (x: number, y: number) => number, w: number, h: number,
+  at: (px: number, py: number) => [number, number], to: (x: number, y: number) => [number, number], cell = 4, max = 60,
+): [number, number][] {
+  const A = contour((px, py) => F(...at(px, py)), w, h, cell), B = contour((px, py) => G(...at(px, py)), w, h, cell);
+  if (!A.length || !B.length) return [];
+  const K = 16, buckets = new Map<string, Seg[]>();
+  for (const s of B) {
+    const id = `${Math.floor((s[0] + s[2]) / 2 / K)},${Math.floor((s[1] + s[3]) / 2 / K)}`;
+    (buckets.get(id) ?? buckets.set(id, []).get(id)!).push(s);
+  }
+  const out: [number, number][] = [], px: [number, number][] = [];
+  for (const a of A) {
+    const bx = Math.floor((a[0] + a[2]) / 2 / K), by = Math.floor((a[1] + a[3]) / 2 / K);
+    for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) for (const b of buckets.get(`${bx + i},${by + j}`) ?? []) {
+      const rx = a[2] - a[0], ry = a[3] - a[1], sx = b[2] - b[0], sy = b[3] - b[1], d = rx * sy - ry * sx;
+      if (Math.abs(d) < 1e-12) continue;
+      const qx = b[0] - a[0], qy = b[1] - a[1], t = (qx * sy - qy * sx) / d, u = (qx * ry - qy * rx) / d;
+      if (t < -1e-9 || t > 1 + 1e-9 || u < -1e-9 || u > 1 + 1e-9) continue;
+      const seed: [number, number] = [a[0] + t * rx, a[1] + t * ry];
+      const p = newton(F, G, ...at(...seed));
+      if (!p) continue;
+      const q = to(p[0], p[1]);
+      if (!(Math.hypot(q[0] - seed[0], q[1] - seed[1]) <= 6) || px.some((o) => Math.hypot(o[0] - q[0], o[1] - q[1]) < 1)) continue;
+      px.push(q); out.push(p);
+      if (out.length >= max) return out;
+    }
+  }
+  return out;
+}
+
+function newton(F: (x: number, y: number) => number, G: (x: number, y: number) => number, x: number, y: number): [number, number] | null {
+  for (let n = 0; n < 40; n++) {
+    const f = F(x, y), g = G(x, y);
+    if (!Number.isFinite(f) || !Number.isFinite(g)) return null;
+    const hx = 1e-6 * (1 + Math.abs(x)), hy = 1e-6 * (1 + Math.abs(y));
+    const fx = (F(x + hx, y) - F(x - hx, y)) / (2 * hx), fy = (F(x, y + hy) - F(x, y - hy)) / (2 * hy);
+    const gx = (G(x + hx, y) - G(x - hx, y)) / (2 * hx), gy = (G(x, y + hy) - G(x, y - hy)) / (2 * hy);
+    const det = fx * gy - fy * gx;
+    if (!Number.isFinite(det) || Math.abs(det) < 1e-12 * (Math.abs(fx) + Math.abs(fy)) * (Math.abs(gx) + Math.abs(gy))) return null;
+    const dx = (-f * gy + g * fy) / det, dy = (-g * fx + f * gx) / det;
+    x += dx; y += dy;
+    if (!Number.isFinite(x + y)) return null;
+    if (Math.abs(dx) + Math.abs(dy) < 1e-12 * (1 + Math.abs(x) + Math.abs(y))) return Math.abs(F(x, y)) + Math.abs(G(x, y)) < 1e-6 * (1 + Math.abs(x) + Math.abs(y)) ? [x, y] : null;
+  }
+  return null;
+}

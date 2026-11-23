@@ -287,7 +287,7 @@ export const tools: Tool[] = [
   {
     slug: 'plot',
     cat: 'images',
-    tags: 'chart graph plot diagram line bar scatter csv data visualization desmos function graphing calculator equation plotter slider polar parametric inequality',
+    tags: 'chart graph plot diagram line bar scatter csv data visualization desmos function graphing calculator equation plotter slider polar parametric inequality intersection logarithmic log scale table of values',
     icon: 'M4 4v16h16M8 15l3-4 3 2 5-6',
     name: { en: 'Graphing calculator and charts', de: 'Funktionsplotter und Diagramme', ru: 'Графики функций и диаграммы' },
     blurb: {

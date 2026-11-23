@@ -82,3 +82,33 @@ test('renderChart: text x on a line chart, constant data, nothing to draw', () =
   assert.match(renderChart(toData('x,y\n1,5\n2,5'), O), /^<svg/);
   assert.match(renderChart(toData('x,y\n1,\n2,'), O), /^<svg/);
 });
+
+import { logTicks, valueTable, tableCsv } from '../src/tools/plot/logic.ts';
+
+test('logTicks: decades, minor ticks inside, wide spans thin out', () => {
+  const t = logTicks(1, 1000, 6);
+  assert.deepEqual(t.major, [1, 10, 100, 1000]);
+  assert.ok(t.minor.includes(2) && t.minor.includes(500) && !t.minor.includes(10));
+  const wide = logTicks(1e-20, 1e20, 6);
+  assert.ok(wide.major.length <= 8 && wide.minor.length === 0);
+  assert.ok(wide.major.every((v) => Number.isFinite(v) && v > 0));
+});
+
+test('logTicks: less than a decade still has labels, less than a tenth falls back to linear', () => {
+  assert.deepEqual(logTicks(2, 6, 6).major, [2, 3, 4, 5, 6]);
+  const tight = logTicks(100, 101, 6);
+  assert.ok(tight.major.length >= 2 && tight.major.every((v) => v >= 100 && v <= 101.2));
+});
+
+test('valueTable: rows, undefined cells and the step cap', () => {
+  const rows = valueTable([(x) => x * x, (x) => Math.sqrt(x)], -1, 1, 3);
+  assert.deepEqual(rows, [[-1, 1, NaN], [0, 0, 0], [1, 1, 1]]);
+  assert.equal(valueTable([(x) => x], 0, 1, 5000).length, 200);
+  assert.deepEqual(valueTable([(x) => x], 0, 0.1, 3).map((r) => r[0]), [0, 0.1, 0.2]); // no float noise
+  assert.equal(valueTable([], 0, 1, 3).length, 3);
+});
+
+test('tableCsv: header, number format, empty cell for undefined', () => {
+  const csv = tableCsv(['x', 'y = x^2, sq'], [[1, 1], [2, NaN]]);
+  assert.equal(csv, 'x,"y = x^2, sq"\n1,1\n2,');
+});

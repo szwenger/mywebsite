@@ -3,7 +3,7 @@ import {
   Engine, LEVELS, KINDS, emptyStore, isUnlocked, keyRows, levelText, makeText, record, rng, sanitize, exportJson, parseImport, merge, slowKeys, starsFor, summarize, totals, weakKeys, calendar,
   type Kind, type Level, type Run, type Store,
 } from './logic';
-import { download } from '../dom';
+import { download, slideIn } from '../dom';
 import { calChart, histChart, keyboard, runChart, trendChart, type Labels } from './charts';
 import { ROWS, type L } from './words';
 
@@ -36,10 +36,13 @@ function init(root: HTMLElement) {
   // ---- tabs ----
   type View = 'quick' | 'levels' | 'stats' | 'play';
   let view: View = 'quick', origin: View = 'quick';
+  const ORDER: View[] = ['quick', 'levels', 'stats', 'play'];
   function show(v: View) {
+    const dir = ORDER.indexOf(v) > ORDER.indexOf(view) ? 1 : -1, was = view;
     if (v !== 'play') { stop(); origin = v; }
     view = v;
     for (const el of $$('[data-view]')) el.hidden = el.dataset.view !== v;
+    if (v !== was) slideIn($(`[data-view="${v}"]`), dir); // the next step arrives from the side you are heading to
     for (const b of $$<HTMLButtonElement>('[data-tab]')) b.setAttribute('aria-selected', String(b.dataset.tab === v || (v === 'play' && b.dataset.tab === origin)));
     if (v === 'levels') renderLevels();
     if (v === 'stats') renderStats();

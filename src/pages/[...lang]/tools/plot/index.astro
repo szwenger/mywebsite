@@ -1,6 +1,7 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
 import Icon from '../../../../components/Icon.astro';
+import IconButton from '../../../../components/IconButton.astro';
 import { LANGS, type Lang } from '../../../../i18n/ui';
 
 export function getStaticPaths() {
@@ -16,6 +17,7 @@ const graph = {
   en: {
     tabGraph: 'Function graph', tabChart: 'Data chart', add: 'Add expression', examples: 'Load an example…', ph: 'Type an expression', toggle: 'Show or hide', del: 'Remove', min: 'min', max: 'max', play: 'Animate',
     zoomIn: 'Zoom in', zoomOut: 'Zoom out', reset: 'Reset view', square: 'Equal axes', xmin: 'x min', xmax: 'x max', ymin: 'y min', ymax: 'y max', gpng: 'Download PNG', link: 'Copy link', linked: 'Link copied',
+    logx: 'Log x axis', logy: 'Log y axis', cross: 'Show intersections', crossNone: 'No intersections in view', table: 'Table of values', tStart: 'Start at x', tStep: 'Step', tRows: 'Rows', tEmpty: 'Add a function like y = x^2 to see its values.', csvCopy: 'Copy CSV', csvDl: 'Download CSV',
     ghint: 'Try y = x^2, x^2 + y^2 = 9, y > x - 1, (2, 3), (cos(t), sin(t)) or r = 1 + cos(theta). Letters such as a and b turn into sliders. Define f(x) = x^2 and use f(x). Limit a curve with {x > 0}. Functions need brackets: sin(x).',
     gnote: 'Everything is drawn in your browser. The link keeps your expressions after the # sign, which is never sent anywhere. Drag to move, scroll or pinch to zoom.',
     e_syntax: 'Not understood near', e_char: 'Unknown character', e_func: 'Functions need brackets, like sin(x). Problem near', e_args: 'Wrong number of arguments for', e_cond: 'Bad condition', e_empty: 'Nothing to draw',
@@ -32,6 +34,7 @@ const graph = {
   de: {
     tabGraph: 'Funktionsgraph', tabChart: 'Datendiagramm', add: 'Ausdruck hinzufügen', examples: 'Beispiel laden…', ph: 'Ausdruck eingeben', toggle: 'Ein- oder ausblenden', del: 'Entfernen', min: 'min', max: 'max', play: 'Animieren',
     zoomIn: 'Vergrößern', zoomOut: 'Verkleinern', reset: 'Ansicht zurücksetzen', square: 'Gleiche Achsen', xmin: 'x min', xmax: 'x max', ymin: 'y min', ymax: 'y max', gpng: 'PNG herunterladen', link: 'Link kopieren', linked: 'Link kopiert',
+    logx: 'Logarithmische x-Achse', logy: 'Logarithmische y-Achse', cross: 'Schnittpunkte zeigen', crossNone: 'Keine Schnittpunkte im Ausschnitt', table: 'Wertetabelle', tStart: 'Start bei x', tStep: 'Schrittweite', tRows: 'Zeilen', tEmpty: 'Füge eine Funktion wie y = x^2 hinzu, um ihre Werte zu sehen.', csvCopy: 'CSV kopieren', csvDl: 'CSV herunterladen',
     ghint: 'Probiere y = x^2, x^2 + y^2 = 9, y > x - 1, (2, 3), (cos(t), sin(t)) oder r = 1 + cos(theta). Buchstaben wie a und b werden zu Schiebereglern. Definiere f(x) = x^2 und nutze f(x). Begrenze eine Kurve mit {x > 0}. Funktionen brauchen Klammern: sin(x).',
     gnote: 'Alles wird in deinem Browser gezeichnet. Der Link speichert deine Ausdrücke hinter dem #-Zeichen, das nirgendwohin gesendet wird. Ziehen zum Verschieben, Scrollen oder Zwei-Finger-Geste zum Zoomen.',
     e_syntax: 'Nicht verstanden bei', e_char: 'Unbekanntes Zeichen', e_func: 'Funktionen brauchen Klammern, etwa sin(x). Problem bei', e_args: 'Falsche Anzahl Argumente bei', e_cond: 'Ungültige Bedingung', e_empty: 'Nichts zu zeichnen',
@@ -48,6 +51,7 @@ const graph = {
   ru: {
     tabGraph: 'График функции', tabChart: 'Диаграмма по данным', add: 'Добавить выражение', examples: 'Загрузить пример…', ph: 'Введите выражение', toggle: 'Показать или скрыть', del: 'Удалить', min: 'мин', max: 'макс', play: 'Анимация',
     zoomIn: 'Приблизить', zoomOut: 'Отдалить', reset: 'Сбросить вид', square: 'Равные оси', xmin: 'x мин', xmax: 'x макс', ymin: 'y мин', ymax: 'y макс', gpng: 'Скачать PNG', link: 'Копировать ссылку', linked: 'Ссылка скопирована',
+    logx: 'Логарифмическая ось X', logy: 'Логарифмическая ось Y', cross: 'Показать пересечения', crossNone: 'В этом окне нет пересечений', table: 'Таблица значений', tStart: 'Начать с x', tStep: 'Шаг', tRows: 'Строк', tEmpty: 'Добавьте функцию, например y = x^2, чтобы увидеть её значения.', csvCopy: 'Копировать CSV', csvDl: 'Скачать CSV',
     ghint: 'Попробуйте y = x^2, x^2 + y^2 = 9, y > x - 1, (2, 3), (cos(t), sin(t)) или r = 1 + cos(theta). Буквы вроде a и b превращаются в ползунки. Задайте f(x) = x^2 и используйте f(x). Ограничение кривой: {x > 0}. Функциям нужны скобки: sin(x).',
     gnote: 'Всё рисуется в вашем браузере. Ссылка хранит выражения после знака #, он никуда не отправляется. Тяните для сдвига, колесо или щипок для масштаба.',
     e_syntax: 'Не понятно возле', e_char: 'Неизвестный символ', e_func: 'Функциям нужны скобки, например sin(x). Проблема возле', e_args: 'Неверное число аргументов у', e_cond: 'Неверное условие', e_empty: 'Нечего рисовать',
@@ -99,6 +103,28 @@ const s = { ...chart, ...graph };
           <label>{s.ymin}<input type="number" step="any" data-win="ymin" /></label>
           <label>{s.ymax}<input type="number" step="any" data-win="ymax" /></label>
         </div>
+        <div class="row g-opts">
+          <label class="check"><input type="checkbox" data-log-x />{s.logx}</label>
+          <label class="check"><input type="checkbox" data-log-y />{s.logy}</label>
+          <label class="check"><input type="checkbox" data-cross-on />{s.cross}</label>
+        </div>
+        <p class="meta g-cross" data-cross hidden></p>
+        <details class="g-tbl" data-tbl>
+          <summary>{s.table}</summary>
+          <div class="row">
+            <label>{s.tStart}<input type="number" step="any" value="-5" data-t="start" /></label>
+            <label>{s.tStep}<input type="number" step="any" value="1" data-t="step" /></label>
+            <label>{s.tRows}<input type="number" min="1" max="200" step="1" value="11" data-t="rows" /></label>
+          </div>
+          <p class="meta" data-tempty hidden>{s.tEmpty}</p>
+          <div class="g-tbox" data-tbox>
+            <div class="g-twrap"><table><thead><tr data-thead></tr></thead><tbody data-tbody></tbody></table></div>
+            <div class="actions">
+              <IconButton icon="copy" label={s.csvCopy} data-tcopy />
+              <IconButton icon="download" label={s.csvDl} data-tdl />
+            </div>
+          </div>
+        </details>
         <div class="actions">
           <button type="button" class="btn" data-gpng>{s.gpng}</button>
           <button type="button" class="btn alt" data-link>{s.link}</button>
@@ -159,6 +185,17 @@ const s = { ...chart, ...graph };
   .g-tb:hover { background: #f0f0f4; }
   .g-read { position: absolute; left: 8px; bottom: 8px; padding: 2px 8px; border-radius: 6px; background: #ffffffe6; color: #333; font: 12px ui-monospace, Consolas, monospace; pointer-events: none; }
   .g-win input { padding: 6px 8px; }
+  .g-opts { gap: 8px 22px; align-items: center; }
+  .g-opts .check { font-size: .88rem; }
+  .g-cross { overflow-wrap: anywhere; font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace; }
+  .g-tbl { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0 14px; }
+  .g-tbl[open] { padding-bottom: 14px; display: grid; gap: 12px; }
+  .g-tbl summary { cursor: pointer; padding: 11px 0; font-size: .92rem; list-style-position: inside; }
+  .g-tbox { display: grid; gap: 10px; }
+  .g-twrap { max-height: 320px; overflow: auto; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+  .g-twrap table { width: 100%; border-collapse: collapse; font: .84rem ui-monospace, 'Cascadia Mono', Consolas, monospace; font-variant-numeric: tabular-nums; }
+  .g-twrap :global(th), .g-twrap :global(td) { padding: 5px 10px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  .g-twrap :global(th) { position: sticky; top: 0; background: var(--surface-2); font-weight: 600; border-bottom: 2px solid var(--sw, var(--line)); }
   .g-list { display: grid; gap: 10px; }
   .g-list :global(.g-row) { display: grid; grid-template-columns: 26px minmax(0, 1fr) 26px; gap: 6px; align-items: center; }
   .g-list :global(.g-sw) { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--sw); background: var(--sw); cursor: pointer; padding: 0; }

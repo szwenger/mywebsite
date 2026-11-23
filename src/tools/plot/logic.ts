@@ -158,3 +158,41 @@ export function renderChart(d: Data, o: Options): string {
   out.push('</svg>');
   return out.join('\n');
 }
+
+/** Ticks for a logarithmic axis over [lo, hi] (both above zero): labelled `major` values and unlabelled `minor` grid values.
+ *  Decades (1, 10, 100) when the range spans several, 1 to 9 times a power of ten inside one decade, plain linear ticks when zoomed in very far. */
+export function logTicks(lo: number, hi: number, target = 6): { major: number[]; minor: number[] } {
+  const a0 = Math.log10(lo), a1 = Math.log10(hi), span = a1 - a0;
+  const inside = (v: number) => v >= lo * (1 - 1e-9) && v <= hi * (1 + 1e-9);
+  if (!(span >= 0.25)) return { major: niceTicks(lo, hi, target), minor: [] };
+  const k0 = Math.floor(a0 + 1e-9), k1 = Math.floor(a1 + 1e-9);
+  if (span < 1) {
+    const major: number[] = [];
+    for (let k = k0; k <= k1; k++) for (let m = 1; m <= 9; m++) { const v = Number((m * 10 ** k).toPrecision(12)); if (inside(v)) major.push(v); }
+    return { major, minor: [] };
+  }
+  const count = k1 - Math.ceil(a0 - 1e-9) + 1;
+  const stride = Math.max(1, Math.ceil(count / target));
+  const major: number[] = [];
+  for (let k = Math.ceil((a0 - 1e-9) / stride) * stride; k <= k1 + 1e-9; k += stride) major.push(Number((10 ** k).toPrecision(12)));
+  const minor: number[] = [];
+  if (stride === 1 && count <= 8) for (let k = k0; k <= k1; k++) for (let m = 2; m <= 9; m++) { const v = Number((m * 10 ** k).toPrecision(12)); if (inside(v)) minor.push(v); }
+  return { major, minor };
+}
+
+/** Rows [x, f1(x), f2(x), …] for `count` values of x from `start` in steps of `step` (at most 200 rows). A value that is not a finite number is NaN. */
+export function valueTable(fns: ((x: number) => number)[], start: number, step: number, count: number): number[][] {
+  const n = Math.min(200, Math.max(1, Math.floor(count) || 1));
+  const rows: number[][] = [];
+  for (let i = 0; i < n; i++) {
+    const x = Number((start + i * step).toPrecision(12));
+    rows.push([x, ...fns.map((f) => { const v = f(x); return Number.isFinite(v) ? Number(v.toPrecision(10)) : NaN; })]);
+  }
+  return rows;
+}
+
+/** CSV text of a table; NaN becomes an empty cell. */
+export function tableCsv(header: string[], rows: number[][]): string {
+  const cell = (t: string) => (/[",\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t);
+  return [header.map(cell).join(','), ...rows.map((r) => r.map((v) => (Number.isNaN(v) ? '' : String(v))).join(','))].join('\n');
+}
