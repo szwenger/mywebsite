@@ -6,7 +6,7 @@ import { LANGS, localize, path, t, type Lang } from '../i18n/ui';
 interface Props { lang: Lang; current?: string; alternates?: Record<Lang, string> }
 const { lang, current } = Astro.props;
 const alternates = Astro.props.alternates ?? Object.fromEntries(LANGS.map((l) => [l, localize(Astro.url.pathname, l)])) as Record<Lang, string>;
-const items = [['blog', 'navBlog', 'blog'], ['videos', 'navVideos', 'videos'], ['tools', 'navTools', 'tools'], ['hardware', 'navSetup', 'setup'], ['hangout', 'navHangout', 'hangout']] as const;
+const items = [['blog', 'navBlog', 'blog'], ['videos', 'navVideos', 'videos'], ['tools', 'navTools', 'tools'], ['hardware', 'navSetup', 'setup']] as const;
 ---
 <header class="site-head">
   <div class="wrap bar">

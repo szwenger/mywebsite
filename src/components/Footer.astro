@@ -1,24 +1,27 @@
 ---
 import Icon from './Icon.astro';
+import BrandIcon from './BrandIcon.astro';
+import { spots } from '../data/hangout';
 import { path, t, type Lang } from '../i18n/ui';
 interface Props { lang: Lang; current?: string }
 const { lang } = Astro.props;
-const social = [
-  ['YouTube', 'https://www.youtube.com/@Galuin'],
-  ['Twitch', 'https://www.twitch.tv/galuin'],
-  [t(lang, 'footerWork'), 'https://simon.zwenger.dev/'],
-] as const;
 ---
 <footer class="site-foot">
   <div class="wrap inner">
     <div class="sign">
       <p class="word" aria-hidden="true">Galuin<span>.</span></p>
       <p class="line">{t(lang, 'footerLine')}</p>
+      <ul class="social more">
+        <li><a href={path(lang, '/rss.xml')}><Icon name="rss" size={16} />RSS</a></li>
+        <li><a href="https://simon.zwenger.dev/" rel="noopener">{t(lang, 'footerWork')}<Icon name="ext" size={14} /></a></li>
+      </ul>
     </div>
-    <ul class="social">
-      <li><a href={path(lang, '/rss.xml')}><Icon name="rss" size={14} />RSS</a></li>
-      {social.map(([label, href]) => <li><a href={href} rel="noopener">{label}<Icon name="ext" size={14} /></a></li>)}
-    </ul>
+    <div class="hang" id="hangout">
+      <h2>{t(lang, 'navHangout')}</h2>
+      <ul class="social">
+        {spots.map((s) => <li><a href={s.url} rel="noopener" data-spot={s.id}><BrandIcon name={s.id} />{s.name}</a></li>)}
+      </ul>
+    </div>
     <div class="legal">
       <span>© {new Date().getFullYear()} Simon Zwenger</span>
       <a href={path(lang, '/impressum/')}>{t(lang, 'impressum')}</a>
@@ -33,7 +36,10 @@ const social = [
   .word { margin: 0; font: 600 clamp(1.6rem, 3vw, 2.2rem)/1 var(--display); letter-spacing: -.03em; }
   .word span { color: var(--accent); }
   .line { margin: 12px 0 0; color: var(--muted); max-width: 32em; }
+  .hang { max-width: 440px; }
+  .hang h2 { margin: 0 0 12px; font: 500 .95rem/1.2 var(--font); letter-spacing: 0; color: var(--muted); }
   .social { display: flex; flex-wrap: wrap; align-content: start; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .more { margin-top: 20px; }
   .social a { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: 1px solid var(--line); border-radius: 99px; text-decoration: none; font-weight: 500; font-size: .9rem; transition: border-color .15s, color .15s; }
   .social a:hover { border-color: var(--accent); color: var(--accent-ink); }
   .social :global(.icon) { color: var(--muted); }

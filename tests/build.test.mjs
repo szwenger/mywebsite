@@ -47,23 +47,37 @@ test('no private data in build', { skip: privateTerms.length ? false : `${PRIVAT
   }
 });
 
-test('nav links to sections and the Hangout page (language-prefixed); footer to legal pages and YouTube', () => {
+test('nav links to the sections (language-prefixed); footer to legal pages', () => {
   for (const [lang, f] of Object.entries(PAGES)) {
     const h = read(f);
     const nav = h.split('<nav')[1].split('</nav>')[0];
-    for (const p of ['/blog/', '/videos/', '/tools/', '/hardware/', '/hangout/']) assert.ok(nav.includes(`href="${pre(lang)}${p}"`), `${p} in nav of ${f}`);
-    assert.ok(!h.split('</header>')[0].includes('href="https://www.twitch.tv/galuin"'), `header of ${f} should link to the Hangout page, not straight to Twitch`);
+    for (const p of ['/blog/', '/videos/', '/tools/', '/hardware/']) assert.ok(nav.includes(`href="${pre(lang)}${p}"`), `${p} in nav of ${f}`);
+    assert.ok(!nav.includes('/hangout/'), `Hangout moved to the footer, ${f}`);
+    assert.ok(!h.split('</header>')[0].includes('href="https://www.twitch.tv/galuin"'), `header of ${f} should not link straight to Twitch`);
     const foot = h.split('<footer')[1];
     for (const p of ['/impressum/', '/privacy/']) assert.ok(foot.includes(`href="${pre(lang)}${p}"`), `${p} in footer of ${f}`);
-    assert.ok(foot.includes('href="https://www.youtube.com/@Galuin"'), `youtube in footer of ${f}`);
-    assert.ok(foot.includes('href="https://www.twitch.tv/galuin"'), `twitch in footer of ${f}`);
   }
 });
 
-test('Hangout page exists in every language and links out to Twitch, YouTube, X and Discord', () => {
-  for (const f of ['hangout/index.html', 'de/hangout/index.html', 'ru/hangout/index.html']) {
-    const h = read(f);
-    for (const url of ['https://www.twitch.tv/galuin', 'https://www.youtube.com/@Galuin', 'https://x.com/GaluinGaming', 'https://discord.gg/Nm9b9pe']) assert.ok(h.includes(`href="${url}"`), `${url} on ${f}`);
+test('footer Hangout links to Twitch, YouTube, X and Discord, each with its brand icon', () => {
+  for (const f of Object.values(PAGES)) {
+    const foot = read(f).split('<footer')[1];
+    assert.ok(foot.includes('id="hangout"'), `hangout anchor in footer of ${f}`);
+    const hang = foot.split('id="hangout"')[1].split('</div>')[0];
+    assert.ok(!hang.includes('rss.xml') && !hang.includes('simon.zwenger.dev'), `RSS and the portfolio stay out of the Hangout block, ${f}`);
+    assert.ok(foot.includes('rss.xml') && foot.includes('https://simon.zwenger.dev/'), `RSS and portfolio links stay in the footer, ${f}`);
+    for (const url of ['https://www.twitch.tv/galuin', 'https://www.youtube.com/@Galuin', 'https://x.com/GaluinGaming', 'https://discord.gg/Nm9b9pe']) {
+      const a = foot.split(`<a href="${url}"`)[1]?.split('</a>')[0];
+      assert.ok(a, `${url} in footer of ${f}`);
+      assert.match(a, /<svg[^>]*class="icon brand"[^>]*fill="currentColor"/, `brand icon on ${url} in ${f}`);
+    }
+  }
+});
+
+test('the old Hangout page redirects to the footer section in every language', () => {
+  for (const lang of ['en', 'de', 'ru']) {
+    const h = read(`${lang === 'en' ? '' : `${lang}/`}hangout/index.html`);
+    assert.ok(h.includes(`url=${pre(lang)}/#hangout`), `hangout redirect in ${lang}`);
   }
 });
 
@@ -461,7 +475,8 @@ test('the PDF page ships every tool panel, the tab buttons and the not-possible 
 test('no built script loads from a CDN, and the pdf.js worker ships with the site', () => {
   const scripts = readdirSync(jsDir).filter((n) => /\.m?js$/.test(n));
   assert.ok(scripts.some((n) => n.includes('pdf.worker')), 'worker file present');
-  for (const n of scripts) assert.doesNotMatch(chunkSrc(n), /cdn\.|unpkg|jsdelivr|cdnjs/i, n);
+  // Relative imports are dropped first: a content hash in a chunk name can spell "cdn." by chance (list.BnsPIcdN.js).
+  for (const n of scripts) assert.doesNotMatch(chunkSrc(n).replace(/["'`]\.\/[^"'`]+["'`]/g, ''), /cdn\.|unpkg|jsdelivr|cdnjs/i, n);
 });
 
 // ---- Task 8: image converter ----

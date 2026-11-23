@@ -1,0 +1,6 @@
+---
+import { brands, type BrandName } from '../data/brands';
+interface Props { name: BrandName; size?: number }
+const { name, size = 16 } = Astro.props;
+---
+<svg class="icon brand" viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true" focusable="false"><path d={brands[name]} /></svg>
