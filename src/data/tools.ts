@@ -515,6 +515,20 @@ export const tools: Tool[] = [
     },
   },
   {
+    slug: 'tiles',
+    cat: 'images',
+    accepts: ['png', 'jpg', 'webp', 'gif', 'bmp', 'heic'],
+    produces: ['png', 'jpg', 'webp', 'zip'],
+    tags: 'image split slice grid tiles instagram panorama stitch join merge combine collage side by side',
+    icon: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
+    name: { en: 'Image splitter and stitcher', de: 'Bild teilen und zusammenfügen', ru: 'Нарезка и склейка изображений' },
+    blurb: {
+      en: 'Cut an image into a grid of tiles (a seamless Instagram panorama, for one), or join several images side by side or one above the other.',
+      de: 'Ein Bild in ein Raster aus Kacheln schneiden (etwa für ein nahtloses Instagram-Panorama) oder mehrere Bilder neben- oder untereinander zusammenfügen.',
+      ru: 'Нарезка изображения на сетку частей (например, для бесшовной панорамы Instagram) или склейка нескольких изображений рядом или друг под другом.',
+    },
+  },
+  {
     slug: 'crop',
     cat: 'images',
     accepts: ['png', 'jpg', 'webp', 'gif', 'bmp', 'heic'],

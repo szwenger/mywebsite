@@ -1,0 +1,65 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { langOf, toolPaths } from '../../../../i18n/tool-page';
+import { s as strings } from '../../../../i18n/tools/tiles';
+
+export const getStaticPaths = toolPaths;
+const lang = langOf(Astro.params);
+const s = strings[lang];
+const accept = 'image/png,image/jpeg,image/webp,image/gif,image/bmp,image/heic,image/heif,.heic,.heif';
+---
+<ToolLayout lang={lang} slug="tiles">
+  <div class="tl two" data-tiles data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <div class="row tabs" role="group">
+        <label class="check"><input type="radio" name="mode" value="split" checked /> {s.split}</label>
+        <label class="check"><input type="radio" name="mode" value="stitch" /> {s.stitch}</label>
+      </div>
+
+      <div class="stack" data-when="split">
+        <label class="drop" data-drop="split"><span>{s.dropSplit}</span><input type="file" accept={accept} data-input="split" /></label>
+        <div class="row">
+          <label>{s.cols}<input name="cols" type="number" min="1" max="30" value="3" inputmode="numeric" /></label>
+          <label>{s.rows}<input name="rows" type="number" min="1" max="30" value="1" inputmode="numeric" /></label>
+        </div>
+      </div>
+
+      <div class="stack" data-when="stitch" hidden>
+        <label class="drop" data-drop="stitch"><span>{s.dropStitch}</span><input type="file" accept={accept} multiple data-input="stitch" /></label>
+        <div class="thumbs" data-list></div>
+        <div class="row">
+          <label>{s.dir}<select name="dir"><option value="h">{s.across}</option><option value="v">{s.down}</option></select></label>
+          <label>{s.gap}<input name="gap" type="number" min="0" max="500" value="0" inputmode="numeric" /></label>
+          <label>{s.bg}<input name="bg" type="color" value="#ffffff" /></label>
+        </div>
+        <label class="check"><input type="checkbox" name="match" checked /> {s.match}</label>
+      </div>
+
+      <div class="row">
+        <label>{s.fmt}<select name="fmt"><option value="png">PNG</option><option value="jpeg">JPG</option><option value="webp">WebP</option></select></label>
+        <label>{s.quality}<input name="quality" type="range" min="40" max="100" step="5" value="90" /></label>
+      </div>
+      <p class="note" data-error role="alert" hidden></p>
+      <p class="meta">{s.hint}</p>
+    </div>
+    <div class="card pane">
+      <canvas data-preview hidden></canvas>
+      <p class="meta" data-size></p>
+      <div class="actions">
+        <button type="button" class="btn" data-go disabled></button>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/tiles/tiles.ts';
+</script>
+<style>
+  .stack { display: grid; gap: 14px; }
+  canvas { max-width: 100%; height: auto; border: 1px solid var(--line); border-radius: var(--radius-sm); background: repeating-conic-gradient(#8883 0 25%, transparent 0 50%) 0 0 / 16px 16px; }
+  :global(.thumbs) { display: flex; flex-wrap: wrap; gap: 10px; }
+  :global(.thumbs .thumb) { display: grid; gap: 4px; justify-items: center; padding: 6px; border: 1px solid var(--line); border-radius: var(--radius-sm); font-size: .75rem; color: var(--muted); }
+  :global(.thumbs .thumb img) { display: block; width: 84px; height: 64px; object-fit: contain; }
+  :global(.thumbs .thumb .ctl) { display: flex; }
+  input[type='color'] { width: 64px; height: 40px; padding: 2px; }
+</style>
