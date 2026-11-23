@@ -1,19 +1,11 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
-import { LANGS, type Lang } from '../../../../i18n/ui';
+import { langOf, toolPaths } from '../../../../i18n/tool-page';
+import { s as strings } from '../../../../i18n/tools/gen';
 
-export function getStaticPaths() {
-  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
-}
-const lang = (Astro.params.lang ?? 'en') as Lang;
-const s = {
-  en: { password: 'Password', uuid: 'UUID', token: 'Random token', length: 'Length', lower: 'Lowercase (a-z)', upper: 'Uppercase (A-Z)', digits: 'Digits (0-9)', symbols: 'Symbols (!@#…)', ambiguous: 'Include look-alike characters (0 O 1 l I)', version: 'Version', v4: 'v4 (random)', v7: 'v7 (sorted by time)', count: 'How many', bytes: 'Bytes', format: 'Format', regen: 'Generate again', copy: 'Copy', copyAll: 'Copy all', entropy: 'Strength', bits: 'bits', none: 'Choose at least one character set.',
-    note: 'Generated in your browser with the secure random generator. Nothing is sent or stored.' },
-  de: { password: 'Passwort', uuid: 'UUID', token: 'Zufalls-Token', length: 'Länge', lower: 'Kleinbuchstaben (a-z)', upper: 'Großbuchstaben (A-Z)', digits: 'Ziffern (0-9)', symbols: 'Sonderzeichen (!@#…)', ambiguous: 'Verwechselbare Zeichen einschließen (0 O 1 l I)', version: 'Version', v4: 'v4 (zufällig)', v7: 'v7 (nach Zeit sortiert)', count: 'Anzahl', bytes: 'Bytes', format: 'Format', regen: 'Neu erzeugen', copy: 'Kopieren', copyAll: 'Alle kopieren', entropy: 'Stärke', bits: 'Bit', none: 'Wähle mindestens eine Zeichengruppe.',
-    note: 'Wird im Browser mit dem sicheren Zufallsgenerator erzeugt. Nichts wird gesendet oder gespeichert.' },
-  ru: { password: 'Пароль', uuid: 'UUID', token: 'Случайный токен', length: 'Длина', lower: 'Строчные (a-z)', upper: 'Заглавные (A-Z)', digits: 'Цифры (0-9)', symbols: 'Символы (!@#…)', ambiguous: 'Включать похожие символы (0 O 1 l I)', version: 'Версия', v4: 'v4 (случайный)', v7: 'v7 (по времени)', count: 'Сколько', bytes: 'Байты', format: 'Формат', regen: 'Создать заново', copy: 'Копировать', copyAll: 'Копировать всё', entropy: 'Стойкость', bits: 'бит', none: 'Выберите хотя бы один набор символов.',
-    note: 'Создаётся в браузере защищённым генератором случайных чисел. Ничего не отправляется и не сохраняется.' },
-}[lang];
+export const getStaticPaths = toolPaths;
+const lang = langOf(Astro.params);
+const s = strings[lang];
 ---
 <ToolLayout lang={lang} slug="gen">
   <div class="tl two" data-gen data-s={JSON.stringify(s)}>
