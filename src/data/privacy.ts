@@ -30,6 +30,7 @@ export const privacy: Record<Lang, PrivacyDoc> = {
       { h: 'Kontakt per E-Mail', p: [
         `Wenn du mir schreibst (${MAIL}), verarbeite ich deine Nachricht und Absenderadresse nur, um zu antworten. Ich lösche sie, sobald die Angelegenheit erledigt ist und keine Aufbewahrungspflicht besteht.`,
         `Mails an diese Adresse leitet mein Domain-Anbieter Squarespace (Squarespace Ireland Limited) in mein Postfach weiter; laut DNS-Eintrag nimmt dafür ein Mailserver von Mailgun (USA) die Nachricht an. Nach eigener Angabe stützt sich Squarespace bei Übermittlungen in die USA auf das EU-US Data Privacy Framework und Standardvertragsklauseln (<a href="${SQ}" rel="noopener">Datenschutzerklärung von Squarespace</a>). Wie lange weitergeleitete Nachrichten dort gespeichert werden, nennt Squarespace dort nicht.`,
+        `Mein Postfach ist ein Gmail-Konto (Google). Dort liegen die weitergeleiteten Nachrichten und meine Antworten; Google kann sie auch in den USA verarbeiten, siehe die <a href="${YT}" rel="noopener">Datenschutzerklärung von Google</a>.`,
       ] },
       { h: 'Deine Rechte', p: ['Du hast das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) und Widerspruch (Art. 21). Eine erteilte Einwilligung kannst du jederzeit mit Wirkung für die Zukunft widerrufen. Außerdem hast du das Recht auf Beschwerde bei einer Datenschutz-Aufsichtsbehörde. Schreib dazu einfach an ' + MAIL + '.'] },
     ],
@@ -54,6 +55,7 @@ export const privacy: Record<Lang, PrivacyDoc> = {
       { h: 'Contact by email', p: [
         `If you write to me (${MAIL}), I use your message and address only to reply. I delete them once the matter is closed and no retention duty applies.`,
         `My domain provider Squarespace (Squarespace Ireland Limited) forwards mail to this address into my mailbox; according to the DNS record, a Mailgun (USA) mail server accepts the message for that. By its own statement, Squarespace relies on the EU-US Data Privacy Framework and standard contractual clauses for transfers to the USA (<a href="${SQ}" rel="noopener">Squarespace privacy policy</a>). Squarespace does not say there how long forwarded messages are kept.`,
+        `My mailbox is a Gmail account (Google). The forwarded messages and my replies are stored there; Google may also process them in the USA, see the <a href="${YT}" rel="noopener">Google privacy policy</a>.`,
       ] },
       { h: 'Your rights', p: ['You have the right of access (Art. 15 GDPR), rectification (Art. 16), erasure (Art. 17), restriction (Art. 18), data portability (Art. 20) and objection (Art. 21). You can withdraw consent at any time with effect for the future. You can also lodge a complaint with a data protection supervisory authority. To exercise any of these, email ' + MAIL + '.'] },
     ],
@@ -78,6 +80,7 @@ export const privacy: Record<Lang, PrivacyDoc> = {
       { h: 'Связь по почте', p: [
         `Если вы пишете мне (${MAIL}), я использую письмо и адрес только для ответа и удаляю их, когда вопрос решён и нет обязанности хранить.`,
         `Почту на этот адрес пересылает в мой ящик регистратор домена Squarespace (Squarespace Ireland Limited); по записи DNS письмо принимает почтовый сервер Mailgun (США). По собственному заявлению, при передаче в США Squarespace опирается на EU-US Data Privacy Framework и стандартные договорные положения (<a href="${SQ}" rel="noopener">политика конфиденциальности Squarespace</a>). Как долго пересланные письма хранятся, Squarespace там не указывает.`,
+        `Мой почтовый ящик — аккаунт Gmail (Google). Там хранятся пересланные письма и мои ответы; Google может обрабатывать их и в США, см. <a href="${YT}" rel="noopener">политику конфиденциальности Google</a>.`,
       ] },
       { h: 'Ваши права', p: ['Вы вправе получить доступ к данным (ст. 15 GDPR), исправить (ст. 16), удалить (ст. 17), ограничить обработку (ст. 18), перенести данные (ст. 20) и возразить (ст. 21). Согласие можно отозвать в любой момент на будущее. Также можно подать жалобу в надзорный орган по защите данных. Для этого напишите на ' + MAIL + '.'] },
     ],
