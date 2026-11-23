@@ -53,11 +53,12 @@ export const tools: Tool[] = [
     featured: true,
     produces: ['png', 'svg'],
     icon: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h3v3h-3zM20 14v.01M14 20h.01M20 20v.01M17 17v3',
-    name: { en: 'QR code generator', de: 'QR-Code-Generator', ru: 'Генератор QR-кодов' },
+    tags: 'qr barcode code128 ean13 ean8 upc ean generator label product wifi vcard',
+    name: { en: 'QR codes and barcodes', de: 'QR-Codes und Barcodes', ru: 'QR-коды и штрихкоды' },
     blurb: {
-      en: 'Make QR codes for links, Wi-Fi and contacts. Download as PNG or SVG.',
-      de: 'QR-Codes für Links, WLAN und Kontakte erstellen. Als PNG oder SVG laden.',
-      ru: 'QR-коды для ссылок, Wi-Fi и контактов. Скачивание в PNG или SVG.',
+      en: 'Make QR codes for links, Wi-Fi and contacts, or Code 128, EAN and UPC barcodes with the check digit worked out. Download as PNG or SVG.',
+      de: 'QR-Codes für Links, WLAN und Kontakte oder Barcodes in Code 128, EAN und UPC mit berechneter Prüfziffer erstellen. Als PNG oder SVG laden.',
+      ru: 'QR-коды для ссылок, Wi-Fi и контактов, а также штрихкоды Code 128, EAN и UPC с автоматической контрольной цифрой. Скачивание в PNG или SVG.',
     },
   },
   {
@@ -489,19 +490,6 @@ export const tools: Tool[] = [
       en: 'Add campaign tracking parameters to a link. Existing parameters stay, empty fields are left out.',
       de: 'Kampagnen-Parameter an einen Link hängen. Vorhandene Parameter bleiben, leere Felder entfallen.',
       ru: 'Добавление меток кампании к ссылке. Существующие параметры сохраняются, пустые поля пропускаются.',
-    },
-  },
-  {
-    slug: 'barcode',
-    cat: 'images',
-    produces: ['png', 'svg'],
-    tags: 'barcode code128 ean13 ean8 upc ean generator label product',
-    icon: 'M4 5v14M7 5v14M11 5v14M14 5v14M17 5v14M20 5v14',
-    name: { en: 'Barcode generator', de: 'Barcode-Generator', ru: 'Генератор штрихкодов' },
-    blurb: {
-      en: 'Code 128, EAN-13, EAN-8 and UPC-A barcodes with the check digit worked out. PNG or SVG.',
-      de: 'Barcodes in Code 128, EAN-13, EAN-8 und UPC-A, die Prüfziffer wird berechnet. PNG oder SVG.',
-      ru: 'Штрихкоды Code 128, EAN-13, EAN-8 и UPC-A, контрольная цифра считается сама. PNG или SVG.',
     },
   },
   {

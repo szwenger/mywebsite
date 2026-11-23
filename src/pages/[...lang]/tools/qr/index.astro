@@ -1,6 +1,8 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
+import IconButton from '../../../../components/IconButton.astro';
 import { LANGS, type Lang } from '../../../../i18n/ui';
+import { s as barcodeStrings } from '../../../../i18n/tools/barcode';
 
 export function getStaticPaths() {
   return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
@@ -8,6 +10,7 @@ export function getStaticPaths() {
 const lang = (Astro.params.lang ?? 'en') as Lang;
 const s = {
   en: {
+    kinds: 'Type', kQr: 'QR code', kBar: 'Barcode',
     modes: 'Content', link: 'Link / text', wifi: 'Wi-Fi', contact: 'Contact',
     text: 'Text or link', ssid: 'Network name (SSID)', password: 'Password', security: 'Security', none: 'No password', hidden: 'Hidden network',
     name: 'Name', phone: 'Phone', email: 'Email', url: 'Website', org: 'Organisation',
@@ -17,6 +20,7 @@ const s = {
     empty: 'Fill in the form to see your code.', tooLong: 'Too much data for a QR code. Shorten the text.',
   },
   de: {
+    kinds: 'Art', kQr: 'QR-Code', kBar: 'Barcode',
     modes: 'Inhalt', link: 'Link / Text', wifi: 'WLAN', contact: 'Kontakt',
     text: 'Text oder Link', ssid: 'Netzwerkname (SSID)', password: 'Passwort', security: 'Sicherheit', none: 'Kein Passwort', hidden: 'Verstecktes Netzwerk',
     name: 'Name', phone: 'Telefon', email: 'E-Mail', url: 'Webseite', org: 'Organisation',
@@ -26,6 +30,7 @@ const s = {
     empty: 'Fülle das Formular aus, um deinen Code zu sehen.', tooLong: 'Zu viele Daten für einen QR-Code. Kürze den Text.',
   },
   ru: {
+    kinds: 'Тип', kQr: 'QR-код', kBar: 'Штрихкод',
     modes: 'Содержимое', link: 'Ссылка / текст', wifi: 'Wi-Fi', contact: 'Контакт',
     text: 'Текст или ссылка', ssid: 'Имя сети (SSID)', password: 'Пароль', security: 'Защита', none: 'Без пароля', hidden: 'Скрытая сеть',
     name: 'Имя', phone: 'Телефон', email: 'Эл. почта', url: 'Сайт', org: 'Организация',
@@ -35,9 +40,14 @@ const s = {
     empty: 'Заполните форму, чтобы увидеть код.', tooLong: 'Слишком много данных для QR-кода. Сократите текст.',
   },
 }[lang];
+const bs = barcodeStrings[lang];
 ---
 <ToolLayout lang={lang} slug="qr">
-  <div class="qr" data-qr data-too-long={s.tooLong}>
+  <div class="kinds" role="group" aria-label={s.kinds}>
+    <label class="check"><input type="radio" name="kind" value="qr" checked /> {s.kQr}</label>
+    <label class="check"><input type="radio" name="kind" value="barcode" /> {s.kBar}</label>
+  </div>
+  <div class="qr" data-qr data-too-long={s.tooLong} data-kind="qr">
     <div class="controls card">
       <div class="tabs" role="tablist" aria-label={s.modes}>
         <button type="button" role="tab" id="tab-link" aria-controls="panel-link" aria-selected="true" data-mode="link">{s.link}</button>
@@ -85,9 +95,32 @@ const s = {
       </div>
     </div>
   </div>
+
+    <div class="tl two" data-barcode data-kind="barcode" hidden data-s={JSON.stringify(bs)}>
+      <div class="card pane">
+        <label>{bs.type}<select name="kind"><option value="code128">Code 128</option><option value="ean13">EAN-13</option><option value="ean8">EAN-8</option><option value="upca">UPC-A</option></select></label>
+        <label>{bs.text}<input name="text" class="mono" value="GALUIN-2026" autocomplete="off" spellcheck="false" /></label>
+        <p class="meta" data-hint></p>
+        <div class="row">
+          <label>{bs.size}<input name="module" type="range" min="1" max="6" value="2" /></label>
+          <label>{bs.height}<input name="height" type="range" min="40" max="200" value="90" /></label>
+        </div>
+        <p class="meta">{bs.note}</p>
+      </div>
+      <div class="card pane" aria-live="polite">
+        <p class="note bad" data-error role="alert" hidden></p>
+        <div class="preview" data-preview></div>
+        <div class="actions">
+          <button type="button" class="btn" data-png>{bs.png}</button>
+          <button type="button" class="btn alt" data-svg>{bs.svg}</button>
+          <IconButton icon="copy" label={bs.copy} data-copy />
+        </div>
+      </div>
+    </div>
 </ToolLayout>
 <script>
   import '../../../../tools/qr/qr.ts';
+  import '../../../../tools/qr/barcode.ts';
 </script>
 <style>
   .qr { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
@@ -98,7 +131,7 @@ const s = {
   .panel { display: grid; gap: 14px; }
   .panel[hidden] { display: none; }
   label { display: grid; gap: 6px; font-size: .88rem; color: var(--muted); }
-  input:not([type='checkbox'], [type='color'], [type='range']), textarea, select {
+  input:not([type='checkbox'], [type='radio'], [type='color'], [type='range']), textarea, select {
     width: 100%; padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); color: var(--fg); font: inherit; font-size: .95rem;
   }
   textarea { resize: vertical; }
@@ -113,5 +146,10 @@ const s = {
   .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
   .btn[disabled] { opacity: .45; cursor: not-allowed; }
   .btn.alt { background: transparent; color: var(--fg); border: 1px solid var(--line); }
+  .kinds { display: flex; gap: 18px; margin-bottom: 16px; }
+  .kinds .check { display: flex; align-items: center; gap: 8px; }
+  .preview { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px; overflow: auto; display: grid; justify-items: center; }
+  :global(.preview svg) { max-width: 100%; height: auto; }
+  [data-kind][hidden] { display: none; }
   @media (max-width: 860px) { .qr { grid-template-columns: minmax(0, 1fr); } }
 </style>

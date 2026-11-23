@@ -1,5 +1,5 @@
 import { copy, download } from '../dom';
-import { encode, label, toSvg, type Kind } from './logic';
+import { encode, label, toSvg, type Kind } from './barcode-logic';
 
 const root = document.querySelector<HTMLElement>('[data-barcode]');
 if (root) {

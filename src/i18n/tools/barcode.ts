@@ -1,13 +1,5 @@
----
-import ToolLayout from '../../../../components/ToolLayout.astro';
-import IconButton from '../../../../components/IconButton.astro';
-import { LANGS, type Lang } from '../../../../i18n/ui';
-
-export function getStaticPaths() {
-  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
-}
-const lang = (Astro.params.lang ?? 'en') as Lang;
-const s = {
+/** Strings of the barcode panel on /tools/qr/, passed to its client script via data-s. tests/toolstrings.test.mjs keeps the three languages in step. */
+export const s = {
   en: { type: 'Barcode type', text: 'Content', size: 'Bar width', height: 'Height', png: 'Download PNG', svg: 'Download SVG', copy: 'Copy number',
     hints: { code128: 'Any text or number (letters, digits and punctuation, no accents). Digits are packed to save space.', ean13: '12 digits, or 13 with the check digit. Retail products worldwide.', ean8: '7 digits, or 8 with the check digit. Small packages.', upca: '11 digits, or 12 with the check digit. Retail products in North America.' },
     chars: 'Code 128 supports printable ASCII only: no accents or non-Latin letters. Use a QR code for those.', empty: 'Enter the content.', digits: 'Only digits are allowed for this type.', length: 'Wrong number of digits for this type.', check: 'The last digit is not the right check digit.', note: 'Quiet zones are included. Print at least 80% of the natural size and test with a scanner.' },
@@ -17,35 +9,4 @@ const s = {
   ru: { type: 'Тип штрихкода', text: 'Содержимое', size: 'Ширина штриха', height: 'Высота', png: 'Скачать PNG', svg: 'Скачать SVG', copy: 'Копировать номер',
     hints: { code128: 'Любой текст или число (буквы, цифры, знаки, без диакритики). Цифры упаковываются для экономии места.', ean13: '12 цифр или 13 с контрольной. Товары по всему миру.', ean8: '7 цифр или 8 с контрольной. Маленькие упаковки.', upca: '11 цифр или 12 с контрольной. Товары в Северной Америке.' },
     chars: 'Code 128 поддерживает только печатный ASCII: без диакритики и нелатинских букв. Для них используйте QR-код.', empty: 'Введите содержимое.', digits: 'Для этого типа допустимы только цифры.', length: 'Неверное количество цифр для этого типа.', check: 'Последняя цифра не является верной контрольной.', note: 'Свободные поля включены. Печатайте не менее 80 % натурального размера и проверяйте сканером.' },
-}[lang];
----
-<ToolLayout lang={lang} slug="barcode">
-  <div class="tl two" data-barcode data-s={JSON.stringify(s)}>
-    <div class="card pane">
-      <label>{s.type}<select name="kind"><option value="code128">Code 128</option><option value="ean13">EAN-13</option><option value="ean8">EAN-8</option><option value="upca">UPC-A</option></select></label>
-      <label>{s.text}<input name="text" class="mono" value="GALUIN-2026" autocomplete="off" spellcheck="false" /></label>
-      <p class="meta" data-hint></p>
-      <div class="row">
-        <label>{s.size}<input name="module" type="range" min="1" max="6" value="2" /></label>
-        <label>{s.height}<input name="height" type="range" min="40" max="200" value="90" /></label>
-      </div>
-      <p class="meta">{s.note}</p>
-    </div>
-    <div class="card pane" aria-live="polite">
-      <p class="note bad" data-error role="alert" hidden></p>
-      <div class="preview" data-preview></div>
-      <div class="actions">
-        <button type="button" class="btn" data-png>{s.png}</button>
-        <button type="button" class="btn alt" data-svg>{s.svg}</button>
-        <IconButton icon="copy" label={s.copy} data-copy />
-      </div>
-    </div>
-  </div>
-</ToolLayout>
-<script>
-  import '../../../../tools/barcode/barcode.ts';
-</script>
-<style>
-  .preview { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px; overflow: auto; display: grid; justify-items: center; }
-  :global(.preview svg) { max-width: 100%; height: auto; }
-</style>
+};

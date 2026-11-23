@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { WIDTHS, code128Values, code128, checkDigit, withCheck, ean13, ean8, upca, label, toSvg } from '../src/tools/barcode/logic.ts';
+import { WIDTHS, code128Values, code128, checkDigit, withCheck, ean13, ean8, upca, label, toSvg } from '../src/tools/qr/barcode-logic.ts';
 
 test('the Code 128 table is well formed: 11 modules per symbol, 3 bars and 3 spaces, all different', () => {
   assert.equal(WIDTHS.length, 107);

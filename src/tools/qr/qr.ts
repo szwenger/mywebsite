@@ -97,3 +97,14 @@ function init(root: HTMLElement) {
   root.addEventListener('input', render);
   render();
 }
+
+// QR code or barcode: both panels live on the page, the radio switches them. /tools/qr/#barcode opens the second.
+const kinds = [...document.querySelectorAll<HTMLInputElement>('input[name="kind"][type="radio"]')];
+const showKind = () => {
+  const on = kinds.find((k) => k.checked)?.value;
+  document.querySelectorAll<HTMLElement>('[data-kind]').forEach((el) => { el.hidden = el.dataset.kind !== on; });
+};
+const wanted = kinds.find((k) => k.value === location.hash.slice(1));
+if (wanted) wanted.checked = true;
+kinds.forEach((k) => k.addEventListener('change', showKind));
+showKind();
