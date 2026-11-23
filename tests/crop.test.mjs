@@ -38,3 +38,55 @@ test('quarter turns swap the sides', () => {
   assert.deepEqual(turned(400, 300, 180), { w: 400, h: 300 });
   assert.deepEqual(turned(400, 300, 270), { w: 300, h: 400 });
 });
+
+import { trimBox, detectSkew, rotatedSize } from '../src/tools/crop/logic.ts';
+
+/** w×h RGBA buffer, every pixel `fill`, then `paint(x, y)` may return a replacement. */
+const img = (w, h, fill, paint = () => null) => {
+  const d = new Uint8ClampedArray(w * h * 4);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) d.set(paint(x, y) ?? fill, (y * w + x) * 4);
+  return d;
+};
+
+test('trimBox finds the opaque content of an image with a transparent border', () => {
+  const d = img(20, 10, [0, 0, 0, 0], (x, y) => (x >= 5 && x < 12 && y >= 2 && y < 8 ? [200, 10, 10, 255] : null));
+  assert.deepEqual(trimBox(d, 20, 10), { x: 5, y: 2, w: 7, h: 6 });
+});
+
+test('trimBox also trims a solid border colour, and ignores noise within the tolerance', () => {
+  const white = [255, 255, 255, 255];
+  const d = img(20, 10, white, (x, y) => (x === 0 && y === 0 ? [250, 250, 250, 255] : x >= 4 && x < 10 && y >= 3 && y < 5 ? [0, 0, 0, 255] : null));
+  assert.deepEqual(trimBox(d, 20, 10, 12), { x: 4, y: 3, w: 6, h: 2 });
+});
+
+test('trimBox gives null for an image that is all border, or has no border to trim', () => {
+  assert.equal(trimBox(img(8, 8, [0, 0, 0, 0]), 8, 8), null);
+  assert.equal(trimBox(img(8, 8, [9, 9, 9, 255]), 8, 8), null);
+});
+
+/** Grey buffer of dark text-like lines that tilt by `deg` (positive: descending to the right). */
+const lines = (w, h, deg) => {
+  const g = new Uint8Array(w * h).fill(255);
+  const t = Math.tan((deg * Math.PI) / 180);
+  for (let y0 = 20; y0 < h - 20; y0 += 14) for (let x = 15; x < w - 15; x++) for (let k = 0; k < 3; k++) {
+    const y = Math.round(y0 + (x - w / 2) * t) + k;
+    if (y >= 0 && y < h) g[y * w + x] = 0;
+  }
+  return g;
+};
+
+test('detectSkew measures how far lines of text tilt, within a quarter of a degree', () => {
+  for (const deg of [0, 2.5, -4, 7, -9.5]) assert.ok(Math.abs(detectSkew(lines(360, 260, deg), 360, 260) - deg) <= 0.4, `${deg}`);
+});
+
+test('detectSkew returns 0 for a blank or flat image', () => {
+  assert.equal(detectSkew(new Uint8Array(100 * 100).fill(255), 100, 100), 0);
+  assert.equal(detectSkew(new Uint8Array(100 * 100).fill(120), 100, 100), 0);
+});
+
+test('rotatedSize is the bounding box of the turned image', () => {
+  assert.deepEqual(rotatedSize(100, 50, 0), { w: 100, h: 50 });
+  assert.deepEqual(rotatedSize(100, 50, 90), { w: 50, h: 100 });
+  const r = rotatedSize(100, 100, 45);
+  assert.ok(Math.abs(r.w - 142) <= 1 && Math.abs(r.h - 142) <= 1);
+});

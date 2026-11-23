@@ -519,13 +519,13 @@ export const tools: Tool[] = [
     cat: 'images',
     accepts: ['png', 'jpg', 'webp', 'gif', 'bmp', 'heic'],
     produces: ['png', 'jpg', 'webp'],
-    tags: 'image crop resize rotate aspect ratio photo thumbnail square avatar',
+    tags: 'image crop resize rotate aspect ratio photo thumbnail square avatar straighten deskew skew level horizon trim transparent border scan',
     icon: 'M7 3v14h14M3 7h14v14',
     name: { en: 'Image crop and resize', de: 'Bild zuschneiden und skalieren', ru: 'Обрезка и изменение размера' },
     blurb: {
-      en: 'Crop to a shape such as 1:1 or 16:9, zoom, rotate, set a width and save as PNG, JPG or WebP.',
-      de: 'Auf eine Form wie 1:1 oder 16:9 zuschneiden, zoomen, drehen, eine Breite setzen und als PNG, JPG oder WebP speichern.',
-      ru: 'Обрезка до формата вроде 1:1 или 16:9, масштаб, поворот, ширина и сохранение в PNG, JPG или WebP.',
+      en: 'Crop to a shape such as 1:1 or 16:9, zoom, rotate, straighten a skewed scan or photo, trim transparent or solid borders, set a width and save as PNG, JPG or WebP.',
+      de: 'Auf eine Form wie 1:1 oder 16:9 zuschneiden, zoomen, drehen, schiefe Scans oder Fotos geraderichten, transparente oder einfarbige Ränder abschneiden, eine Breite setzen und als PNG, JPG oder WebP speichern.',
+      ru: 'Обрезка до формата вроде 1:1 или 16:9, масштаб, поворот, выравнивание наклонных сканов и фото, обрезка прозрачных или однотонных полей, ширина и сохранение в PNG, JPG или WebP.',
     },
   },
   {
