@@ -415,6 +415,18 @@ export const tools: Tool[] = [
     },
   },
   {
+    slug: 'http',
+    cat: 'dev',
+    tags: 'http status code codes error 404 500 301 302 redirect rest api response header',
+    icon: 'M4 6h16v12H4zM8 10l-2 2 2 2M16 10l2 2-2 2M13 9l-2 6',
+    name: { en: 'HTTP status codes', de: 'HTTP-Statuscodes', ru: 'Коды состояния HTTP' },
+    blurb: {
+      en: 'Every HTTP status code in plain words, searchable by number, class (4xx) or a word like redirect or cache.',
+      de: 'Jeder HTTP-Statuscode in klaren Worten, durchsuchbar nach Nummer, Klasse (4xx) oder einem Wort wie Weiterleitung oder Cache.',
+      ru: 'Каждый код состояния HTTP простыми словами, поиск по номеру, классу (4xx) или слову вроде редирект или кеш.',
+    },
+  },
+  {
     slug: 'subnet',
     cat: 'dev',
     topics: ['math'],

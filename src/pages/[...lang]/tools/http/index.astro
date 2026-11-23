@@ -1,0 +1,46 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { langOf, toolPaths } from '../../../../i18n/tool-page';
+import { s as strings } from '../../../../i18n/tools/http';
+import { CODES, classOf } from '../../../../tools/http/logic';
+
+export const getStaticPaths = toolPaths;
+const lang = langOf(Astro.params);
+const s = strings[lang] as Record<string, string>;
+const groups = [1, 2, 3, 4, 5].map((c) => ({ c, codes: CODES.filter((x) => classOf(x.code) === c) }));
+---
+<ToolLayout lang={lang} slug="http">
+  <div class="tl" data-http data-none={s.none}>
+    <div class="card pane">
+      <label>{s.search}<input type="search" name="q" class="mono" autocomplete="off" spellcheck="false" placeholder={s.placeholder} /></label>
+      <p class="meta" data-none-msg role="status" hidden>{s.none}</p>
+    </div>
+    {groups.map((g) => (
+      <section class="card pane" data-group>
+        <h2 class="h">{g.c}xx · {s[`cls${g.c}`]}</h2>
+        <ul class="codes">
+          {g.codes.map((x) => (
+            <li id={String(x.code)} data-code={x.code} data-hay={`${x.name} ${s[`c${x.code}`]}`}>
+              <b class="num">{x.code}</b>
+              <div><strong>{x.name}</strong><span>{s[`c${x.code}`]}</span></div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+    <p class="meta">{s.note}</p>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/http/http.ts';
+</script>
+<style>
+  .h { margin: 0; font: 600 1rem/1.3 var(--display); }
+  .codes { list-style: none; margin: 0; padding: 0; display: grid; }
+  .codes li { display: grid; grid-template-columns: 3.2rem 1fr; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); scroll-margin-top: 90px; }
+  .codes li:last-child { border-bottom: 0; }
+  .codes li:target { background: var(--surface-2); box-shadow: inset 3px 0 0 var(--accent); padding-left: 10px; }
+  .num { font: 700 1.05rem/1.4 var(--mono, ui-monospace, monospace); font-variant-numeric: tabular-nums; }
+  .codes strong { display: block; font-weight: 600; }
+  .codes span { color: var(--muted); font-size: .92rem; }
+</style>
