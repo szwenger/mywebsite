@@ -50,8 +50,9 @@ export function flagInvalid(field: HTMLElement, bad: boolean): void {
 
 export const $ =<T extends HTMLElement>(root: ParentNode, sel: string): T => root.querySelector<T>(sel)!;
 
-/** Wires a file input and a drop target to one handler. */
-export function onFiles(drop: HTMLElement, input: HTMLInputElement, fn: (files: File[]) => void): void {
+/** Wires a file input and a drop target to one handler. `paste` also takes files pasted anywhere on the page (a screenshot with Ctrl+V); pasted text is left alone. */
+export function onFiles(drop: HTMLElement, input: HTMLInputElement, fn: (files: File[]) => void, opts: { paste?: boolean } = {}): void {
+  if (opts.paste) document.addEventListener('paste', (e) => { const fs = [...(e.clipboardData?.files ?? [])]; if (fs.length) { e.preventDefault(); fn(fs); } });
   input.addEventListener('change', () => { fn([...input.files!]); input.value = ''; });
   drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('over'); });
   drop.addEventListener('dragleave', () => drop.classList.remove('over'));

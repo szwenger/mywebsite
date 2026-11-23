@@ -110,7 +110,7 @@ function init(root: HTMLElement) {
     else if (out.length) download(new Blob([zip(out)], { type: 'application/zip' }), 'marked-images.zip');
   }
 
-  onFiles(q('[data-drop]'), q<HTMLInputElement>('[data-file]'), (x) => void setFiles(x));
+  onFiles(q('[data-drop]'), q<HTMLInputElement>('[data-file]'), (x) => void setFiles(x), { paste: true });
   const logoInput = q<HTMLInputElement>('[data-logo]');
   logoInput.addEventListener('change', async () => {
     const file = logoInput.files?.[0];

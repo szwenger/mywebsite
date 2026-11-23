@@ -105,5 +105,5 @@ if (root) {
     download(blob, outName(file.replace(/(\.[^.]+)?$/, '-crop$1'), fmt));
   });
 
-  onFiles(q('[data-drop]'), q<HTMLInputElement>('[data-file]'), load);
+  onFiles(q('[data-drop]'), q<HTMLInputElement>('[data-file]'), load, { paste: true });
 }

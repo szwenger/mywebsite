@@ -57,11 +57,9 @@ function init(root: HTMLElement) {
     text.value = exportPalette(swatches, kind.value as 'css');
   }
 
-  onFiles(drop, input, (f) => void load(f));
+  onFiles(drop, input, (f) => void load(f), { paste: true });
   count.addEventListener('input', render);
   kind.addEventListener('change', render);
   q('[data-copy]').addEventListener('click', (e) => void copy(text.value, e.currentTarget as HTMLElement, s.copied));
   q('[data-other]').addEventListener('click', () => input.click());
-  // Pasting a screenshot works as well as dropping a file.
-  document.addEventListener('paste', (e) => { const f = [...(e.clipboardData?.files ?? [])]; if (f.length) void load(f); });
 }

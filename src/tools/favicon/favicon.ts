@@ -58,7 +58,7 @@ if (root) {
     }
   }
 
-  onFiles(q('[data-drop]'), q<HTMLInputElement>('[data-input]'), (fs) => { if (fs[0]) void load(fs[0]); });
+  onFiles(q('[data-drop]'), q<HTMLInputElement>('[data-input]'), (fs) => { if (fs[0]) void load(fs[0]); }, { paste: true });
   root.addEventListener('change', (e) => { if ((e.target as HTMLElement).tagName === 'SELECT') void render(); });
   q('[data-zip]').addEventListener('click', () => download(new Blob([buildZip(files)], { type: 'application/zip' }), 'favicons.zip'));
   q('[data-copy]').addEventListener('click', (e) => copy(root!.dataset.snippet!, e.currentTarget as HTMLElement));

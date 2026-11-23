@@ -1,6 +1,7 @@
 import * as pdfjs from 'pdfjs-dist';
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { clampPage, elapsedMs, fmtTime, isOver } from './logic';
+import { onFiles } from '../dom';
 
 // The worker is bundled into our own assets; nothing is loaded from a CDN.
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
@@ -170,10 +171,7 @@ function init(root: HTMLElement) {
   }
 
   // ---- wiring ----
-  fileInput.addEventListener('change', () => { const f = fileInput.files?.[0]; if (f) void load(f); fileInput.value = ''; });
-  for (const ev of ['dragover', 'dragenter']) dropEl.addEventListener(ev, (e) => { e.preventDefault(); dropEl.classList.add('over'); });
-  for (const ev of ['dragleave', 'drop']) dropEl.addEventListener(ev, () => dropEl.classList.remove('over'));
-  dropEl.addEventListener('drop', (e) => { e.preventDefault(); const f = (e as DragEvent).dataTransfer?.files[0]; if (f) void load(f); });
+  onFiles(dropEl, fileInput, ([f]) => { if (f) void load(f); });
 
   prevBtn.addEventListener('click', () => goTo(page - 1));
   nextBtn.addEventListener('click', () => goTo(page + 1));

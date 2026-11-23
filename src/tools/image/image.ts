@@ -1,5 +1,5 @@
 import { accepts, fitsCanvas, isHeic, outName, targetSize, type Format } from './logic';
-import { iconButton, iconSvg } from '../dom';
+import { iconButton, iconSvg, onFiles } from '../dom';
 import { canvasBlob, decodeImage } from '../imageio';
 
 const root = document.querySelector<HTMLElement>('[data-image]');
@@ -150,10 +150,7 @@ function init(root: HTMLElement) {
   // 'change' (not 'input') so typing a number or dragging the slider converts once, on commit.
   options.addEventListener('change', () => { syncQuality(); run(); });
 
-  fileInput.addEventListener('change', () => { addFiles([...fileInput.files!]); fileInput.value = ''; });
-  dropEl.addEventListener('dragover', (e) => { e.preventDefault(); dropEl.classList.add('over'); });
-  dropEl.addEventListener('dragleave', () => dropEl.classList.remove('over'));
-  dropEl.addEventListener('drop', (e) => { e.preventDefault(); dropEl.classList.remove('over'); addFiles([...(e.dataTransfer?.files ?? [])]); });
+  onFiles(dropEl, fileInput, addFiles, { paste: true });
 
   q('[data-clear]').addEventListener('click', () => { gen++; revoke(); items = []; showError(''); statusEl.textContent = ''; render(); });
   allBtn.addEventListener('click', async () => {
