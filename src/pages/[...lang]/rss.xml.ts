@@ -1,3 +1,4 @@
+import { statSync } from 'node:fs';
 import { getCollection } from 'astro:content';
 import { LANGS, t, type Lang } from '../../i18n/ui';
 import { rssXml } from '../../lib/feed';
@@ -13,6 +14,6 @@ export async function GET({ params }: { params: { lang?: string } }) {
     const [slug, l] = e.id.split('/');
     return { slug, lang: l as Lang, title: e.data.title, date: e.data.date, updated: e.data.updated, cover: e.data.cover, tags: e.data.tags, body: e.body ?? '' };
   });
-  const xml = rssXml(lang, `Galuin · ${t(lang, 'navBlog')}`, t(lang, 'blogIntro'), postsFor(lang, all));
+  const xml = rssXml(lang, `Galuin · ${t(lang, 'navBlog')}`, t(lang, 'blogIntro'), postsFor(lang, all), (cover) => statSync(`public${cover}`).size);
   return new Response(xml, { headers: { 'Content-Type': 'application/rss+xml; charset=utf-8' } });
 }
