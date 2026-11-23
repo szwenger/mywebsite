@@ -8,6 +8,7 @@ export const icons = {
   twitch: '<circle cx="12" cy="12" r="1.8"/><path d="M8 8a5.5 5.5 0 0 0 0 8M16 8a5.5 5.5 0 0 1 0 8M5 5a10 10 0 0 0 0 14M19 5a10 10 0 0 1 0 14"/>',
   hangout: '<path d="M4 5.5h16v10H12l-4.5 4v-4H4z"/>',
   youtube: '<rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="M10 9.5v5l4.5-2.5z"/>',
+  rss: '<path d="M5 12a7 7 0 0 1 7 7M5 5a14 14 0 0 1 14 14"/><circle cx="6" cy="18" r="1.3"/>',
   x: '<path d="M5 4.5l14 15M19 4.5l-14 15"/>',
   discord: '<path d="M5.5 7.5C7.5 6.5 9.5 6 12 6s4.5.5 6.5 1.5c1.5 3 2.2 6 2 9.5-1.5 1-3 1.7-4.5 2l-1-2c-1 .3-2 .4-3 .4s-2-.1-3-.4l-1 2c-1.5-.3-3-1-4.5-2-.2-3.5.5-6.5 2-9.5z"/><circle cx="9" cy="12.5" r="1.2"/><circle cx="15" cy="12.5" r="1.2"/>',
   // desk parts (same ids as the spots)

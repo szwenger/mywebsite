@@ -574,3 +574,16 @@ test('every icon-only button has an aria-label in all languages', () => {
     for (const b of m) assert.match(b, /aria-label="[^"]+"/, `${lang}: ${b}`);
   }
 });
+
+test('RSS feed per language, advertised on every page', () => {
+  for (const lang of ['en', 'de', 'ru']) {
+    const x = read(`${lang === 'en' ? '' : lang + '/'}rss.xml`);
+    assert.match(x, /<rss version="2.0"/, lang);
+    assert.ok((x.match(/<item>/g) ?? []).length >= 8, `${lang} items`);
+    assert.ok(read(PAGES[lang]).includes(`type="application/rss+xml"`), `${lang} autodiscovery`);
+  }
+});
+
+test('footer links the RSS feed in every language', () => {
+  for (const [lang, f] of Object.entries(PAGES)) assert.ok(read(f).split('<footer')[1].includes(`href="${pre(lang)}/rss.xml"`), f);
+});

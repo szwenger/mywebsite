@@ -16,6 +16,7 @@ const social = [
       <p class="line">{t(lang, 'footerLine')}</p>
     </div>
     <ul class="social">
+      <li><a href={path(lang, '/rss.xml')}><Icon name="rss" size={14} />RSS</a></li>
       {social.map(([label, href]) => <li><a href={href} rel="noopener">{label}<Icon name="ext" size={14} /></a></li>)}
     </ul>
     <div class="legal">
