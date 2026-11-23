@@ -1,0 +1,81 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+import { POSITIONS } from '../../../../tools/imgmark/logic';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { drop: 'Drop images here', or: 'or', browse: 'Choose images', hint: 'Several images get the same mark and come back as one ZIP. Nothing is uploaded.', kindText: 'Text', kindLogo: 'Logo', text: 'Text', textDef: '© Your name', color: 'Colour', shadow: 'Shadow', logo: 'Logo picture', logoPick: 'Choose a logo (PNG with a transparent background works best)', size: 'Size (% of width)', opacity: 'Opacity (%)', angle: 'Angle (°)', margin: 'Margin (% of width)', tile: 'Repeat over the whole picture', pos: 'Position', posNames: ['Top left', 'Top', 'Top right', 'Left', 'Centre', 'Right', 'Bottom left', 'Bottom', 'Bottom right'], save: 'Save marked images', preview: 'Preview', badType: 'That is not an image.', failed: 'This image could not be read.', tooBig: 'Too large to process in the browser.' },
+  de: { drop: 'Bilder hier ablegen', or: 'oder', browse: 'Bilder wählen', hint: 'Mehrere Bilder bekommen dieselbe Marke und kommen als ein ZIP zurück. Nichts wird hochgeladen.', kindText: 'Text', kindLogo: 'Logo', text: 'Text', textDef: '© Dein Name', color: 'Farbe', shadow: 'Schatten', logo: 'Logo-Bild', logoPick: 'Logo wählen (PNG mit transparentem Hintergrund passt am besten)', size: 'Größe (% der Breite)', opacity: 'Deckkraft (%)', angle: 'Winkel (°)', margin: 'Abstand (% der Breite)', tile: 'Über das ganze Bild wiederholen', pos: 'Position', posNames: ['Oben links', 'Oben', 'Oben rechts', 'Links', 'Mitte', 'Rechts', 'Unten links', 'Unten', 'Unten rechts'], save: 'Markierte Bilder speichern', preview: 'Vorschau', badType: 'Das ist kein Bild.', failed: 'Dieses Bild konnte nicht gelesen werden.', tooBig: 'Zu groß für die Verarbeitung im Browser.' },
+  ru: { drop: 'Перетащите сюда изображения', or: 'или', browse: 'Выбрать изображения', hint: 'Несколько изображений получают одну и ту же метку и возвращаются одним ZIP. Ничего не загружается.', kindText: 'Текст', kindLogo: 'Логотип', text: 'Текст', textDef: '© Ваше имя', color: 'Цвет', shadow: 'Тень', logo: 'Картинка-логотип', logoPick: 'Выберите логотип (лучше всего PNG с прозрачным фоном)', size: 'Размер (% от ширины)', opacity: 'Непрозрачность (%)', angle: 'Угол (°)', margin: 'Отступ (% от ширины)', tile: 'Повторить по всей картинке', pos: 'Положение', posNames: ['Сверху слева', 'Сверху', 'Сверху справа', 'Слева', 'По центру', 'Справа', 'Снизу слева', 'Снизу', 'Снизу справа'], save: 'Сохранить с меткой', preview: 'Предпросмотр', badType: 'Это не изображение.', failed: 'Не удалось прочитать это изображение.', tooBig: 'Слишком большое изображение для обработки в браузере.' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="imgmark">
+  <div class="tl imgmark" data-mark data-s={JSON.stringify(s)}>
+    <div class="drop card" data-drop>
+      <p class="big">{s.drop}</p>
+      <p class="meta">{s.or}</p>
+      <label class="btn pick">{s.browse}<input type="file" accept="image/*" multiple class="sr-only" data-file /></label>
+      <p class="meta">{s.hint}</p>
+    </div>
+    <p class="note bad" role="alert" data-error hidden></p>
+    <div class="work" data-work hidden>
+      <div class="card pane">
+        <canvas data-canvas class="cv" aria-label={s.preview}></canvas>
+        <p class="meta" data-list></p>
+      </div>
+      <div class="card pane">
+        <div class="row">
+          <label class="check"><input type="radio" name="kind" value="text" checked />{s.kindText}</label>
+          <label class="check"><input type="radio" name="kind" value="logo" />{s.kindLogo}</label>
+        </div>
+        <div class="row" data-text-opts>
+          <label class="grow">{s.text}<input name="text" value={s.textDef} autocomplete="off" /></label>
+          <label>{s.color}<input type="color" name="color" value="#ffffff" /></label>
+          <label class="check"><input type="checkbox" name="shadow" checked />{s.shadow}</label>
+        </div>
+        <div data-logo-opts hidden>
+          <label>{s.logo}<span class="btn alt pick">{s.logoPick}<input type="file" accept="image/*" class="sr-only" data-logo /></span></label>
+        </div>
+        <div class="row">
+          <label>{s.size}<input type="range" name="size" min="5" max="100" value="30" /></label>
+          <label>{s.opacity}<input type="range" name="opacity" min="5" max="100" value="70" /></label>
+          <label>{s.angle}<input type="range" name="angle" min="-90" max="90" value="0" /></label>
+        </div>
+        <div class="row">
+          <fieldset class="grid" aria-label={s.pos}>
+            {POSITIONS.map((p, i) => <label class="cell" title={s.posNames[i]}><input type="radio" name="pos" value={p} checked={p === 'br'} aria-label={s.posNames[i]} /><i></i></label>)}
+          </fieldset>
+          <div class="col">
+            <label>{s.margin}<input type="range" name="margin" min="0" max="15" value="3" /></label>
+            <label class="check"><input type="checkbox" name="tile" />{s.tile}</label>
+          </div>
+        </div>
+        <div class="actions"><button type="button" class="btn" data-save>{s.save}</button><span class="meta" data-status></span></div>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/imgmark/imgmark.ts';
+</script>
+<style>
+  .drop { display: grid; justify-items: center; gap: 8px; padding: clamp(24px, 4vw, 40px); text-align: center; border-style: dashed; }
+  .drop.over { border-color: var(--accent); }
+  .big { margin: 0; font-size: 1.15rem; }
+  .pick { cursor: pointer; position: relative; }
+  .work { display: grid; gap: 20px; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 860px) { .work { grid-template-columns: minmax(0, 1fr); } }
+  .cv { display: block; max-width: 100%; height: auto; border-radius: 6px; background: repeating-conic-gradient(#8883 0 25%, transparent 0 50%) 0 0 / 16px 16px; }
+  .grow { flex: 1 1 200px; }
+  .col { display: grid; gap: 12px; flex: 1 1 180px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 34px); gap: 4px; margin: 0; padding: 0; border: 0; }
+  .cell { position: relative; display: block; width: 34px; height: 34px; cursor: pointer; }
+  .cell input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .cell i { display: block; width: 100%; height: 100%; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-2); }
+  .cell input:checked + i { background: var(--accent-strong); border-color: var(--accent); }
+  .cell input:focus-visible + i { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>

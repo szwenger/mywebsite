@@ -15,7 +15,7 @@ const SEL = ['all', 'none', 'odd', 'even', 'invert', 'rotr', 'rotl', 'del', 'kee
 const NEEDS = ['del', 'keep', 'dup', 'first', 'last', 'save'];
 const POS = ['tl', 'tc', 'tr', 'bl', 'bc', 'br'];
 const SHEETS = ['A4', 'A3', 'A5', 'A6', 'Letter', 'Legal', 'Tabloid'];
-const TPL = ['{n}', 'Page {n} of {total}', '{n} / {total}', '– {n} –'];
+const TPL = ['{n}', { en: 'Page {n} of {total}', de: 'Seite {n} von {total}', ru: 'Страница {n} из {total}' }[Astro.params.lang ?? 'en'] ?? 'Page {n} of {total}', '{n} / {total}', '– {n} –'];
 const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
 ---
 <ToolLayout lang={lang} slug="pdf">

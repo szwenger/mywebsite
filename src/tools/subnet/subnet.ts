@@ -7,7 +7,7 @@ if (root) {
   const cidr = q<HTMLInputElement>('[name="cidr"]');
   const to = q<HTMLInputElement>('[name="to"]');
   const fmt = new Intl.NumberFormat();
-  const err = (e: unknown) => { const el = q('[data-error]'); el.hidden = false; el.textContent = s[(e as Error).message] ?? String(e); };
+  const err = (e: unknown) => { const el = q('[data-error]'); el.hidden = false; el.textContent = s[(e as Error).message === 'mask' ? 'badmask' : (e as Error).message] ?? String(e); };
   const line = (th: string, td: string) => { const tr = document.createElement('tr'); tr.append(Object.assign(document.createElement('th'), { textContent: th }), Object.assign(document.createElement('td'), { className: 'mono', textContent: td })); return tr; };
 
   function render() {

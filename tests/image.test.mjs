@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { targetSize, outName, accepts } from '../src/tools/image/logic.ts';
+import { targetSize, outName, accepts, isHeic } from '../src/tools/image/logic.ts';
 
 test('targetSize keeps the aspect ratio and fits the width', () => {
   assert.deepEqual(targetSize(4000, 3000, 1000), { w: 1000, h: 750 });
@@ -43,4 +43,13 @@ test('fitsCanvas: within the 16.7 MP iOS canvas limit, judged on the output size
   assert.equal(fitsCanvas({ w: 4096, h: 4097 }), false);
   assert.equal(fitsCanvas(targetSize(8000, 6000)), false, '48 MP phone photo, no limit set');
   assert.equal(fitsCanvas(targetSize(8000, 6000, 4000)), true, 'same photo with a max width');
+});
+
+test('isHeic accepts the HEIC types and, for an empty type, the extension', () => {
+  assert.ok(isHeic({ name: 'a.bin', type: 'image/heic' }));
+  assert.ok(isHeic({ name: 'a.bin', type: 'image/heif' }));
+  assert.ok(isHeic({ name: 'IMG_0001.HEIC', type: '' }));
+  assert.ok(isHeic({ name: 'x.heif', type: '' }));
+  assert.ok(!isHeic({ name: 'x.png', type: 'image/png' }));
+  assert.ok(!isHeic({ name: 'heic.txt', type: '' }));
 });

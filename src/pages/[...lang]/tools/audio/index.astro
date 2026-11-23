@@ -1,0 +1,52 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { drop: 'Drop an audio file here', or: 'or', browse: 'Choose a file', hint: 'MP3, WAV, OGG, M4A, FLAC and most video files work, as far as your browser can play them. The cut is saved as a WAV file. Nothing is uploaded.', start: 'Start', end: 'End', play: 'Play selection', stop: 'Stop', selected: 'Selection', drag: 'Drag on the waveform to move the nearer handle.', fadein: 'Fade in (s)', fadeout: 'Fade out (s)', norm: 'Make it as loud as possible without clipping', toMono: 'Convert to mono', save: 'Save as WAV', badType: 'That is not an audio or video file.', failed: 'The browser could not read this file.', mono: 'mono', stereo: 'stereo' },
+  de: { drop: 'Audiodatei hier ablegen', or: 'oder', browse: 'Datei wählen', hint: 'MP3, WAV, OGG, M4A, FLAC und die meisten Videodateien funktionieren, soweit dein Browser sie abspielen kann. Der Ausschnitt wird als WAV-Datei gespeichert. Nichts wird hochgeladen.', start: 'Anfang', end: 'Ende', play: 'Auswahl abspielen', stop: 'Stopp', selected: 'Auswahl', drag: 'Auf der Wellenform ziehen, um den näheren Griff zu verschieben.', fadein: 'Einblenden (s)', fadeout: 'Ausblenden (s)', norm: 'So laut wie möglich ohne Übersteuern', toMono: 'In Mono umwandeln', save: 'Als WAV speichern', badType: 'Das ist keine Audio- oder Videodatei.', failed: 'Der Browser konnte diese Datei nicht lesen.', mono: 'Mono', stereo: 'Stereo' },
+  ru: { drop: 'Перетащите сюда аудиофайл', or: 'или', browse: 'Выбрать файл', hint: 'Подойдут MP3, WAV, OGG, M4A, FLAC и большинство видеофайлов, если браузер умеет их воспроизводить. Фрагмент сохраняется в WAV. Ничего не загружается.', start: 'Начало', end: 'Конец', play: 'Прослушать фрагмент', stop: 'Стоп', selected: 'Фрагмент', drag: 'Тяните по волне, чтобы сдвинуть ближайший маркер.', fadein: 'Нарастание (с)', fadeout: 'Затухание (с)', norm: 'Сделать как можно громче без искажений', toMono: 'Преобразовать в моно', save: 'Сохранить в WAV', badType: 'Это не аудио- и не видеофайл.', failed: 'Браузер не смог прочитать этот файл.', mono: 'моно', stereo: 'стерео' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="audio">
+  <div class="tl audio" data-audio data-s={JSON.stringify(s)}>
+    <div class="drop card" data-drop>
+      <p class="big">{s.drop}</p>
+      <p class="meta">{s.or}</p>
+      <label class="btn pick">{s.browse}<input type="file" accept="audio/*,video/*" class="sr-only" data-file /></label>
+      <p class="meta">{s.hint}</p>
+    </div>
+    <p class="note bad" role="alert" data-error hidden></p>
+    <div class="card pane" data-work hidden>
+      <p class="meta" data-info></p>
+      <canvas class="wave" data-wave aria-label={s.drag}></canvas>
+      <p class="meta">{s.drag} <strong data-len></strong></p>
+      <div class="row">
+        <label>{s.start}<input name="start" class="mono" inputmode="decimal" autocomplete="off" /></label>
+        <label>{s.end}<input name="end" class="mono" inputmode="decimal" autocomplete="off" /></label>
+        <button type="button" class="btn alt" data-play>{s.play}</button>
+      </div>
+      <div class="row">
+        <label>{s.fadein}<input name="fadein" type="number" min="0" step="0.1" value="0" /></label>
+        <label>{s.fadeout}<input name="fadeout" type="number" min="0" step="0.1" value="0" /></label>
+      </div>
+      <label class="check"><input type="checkbox" name="norm" />{s.norm}</label>
+      <label class="check"><input type="checkbox" name="mono" />{s.toMono}</label>
+      <div class="actions"><button type="button" class="btn" data-save>{s.save}</button></div>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/audio/audio.ts';
+</script>
+<style>
+  .drop { display: grid; justify-items: center; gap: 8px; padding: clamp(24px, 4vw, 40px); text-align: center; border-style: dashed; }
+  .drop.over { border-color: var(--accent); }
+  .big { margin: 0; font-size: 1.15rem; }
+  .pick { cursor: pointer; }
+  .wave { display: block; width: 100%; height: 150px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); touch-action: none; cursor: ew-resize; }
+</style>

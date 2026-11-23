@@ -1,4 +1,4 @@
-import { accepts, fitsCanvas, outName, targetSize, type Format } from './logic';
+import { accepts, fitsCanvas, isHeic, outName, targetSize, type Format } from './logic';
 
 const root = document.querySelector<HTMLElement>('[data-image]');
 if (root) init(root);
@@ -30,6 +30,7 @@ function init(root: HTMLElement) {
   const maxWEl = q<HTMLInputElement>('[data-maxw]');
   const maxHEl = q<HTMLInputElement>('[data-maxh]');
   const allBtn = q<HTMLButtonElement>('[data-all]');
+  const heicMode = root.hasAttribute('data-heic');
 
   let items: Item[] = [];
   let gen = 0; // bumped on every conversion run so a stale run stops
@@ -51,10 +52,16 @@ function init(root: HTMLElement) {
     return support.get(fmt)!;
   };
 
+  /** The browser's own decoder first (Safari reads HEIC); otherwise HEIC goes through libheif, loaded only when needed. */
+  async function decode(file: File): Promise<ImageBitmap> {
+    try { return await createImageBitmap(file); } catch (e) { if (!isHeic(file)) throw e; }
+    return (await import('./heic')).decodeHeic(file);
+  }
+
   /** Draws the file into a canvas at the target size and encodes it, or says why it cannot. */
   async function convert(file: File, fmt: Format, quality: number, maxW?: number, maxH?: number): Promise<Blob | 'unsupported' | 'too-big'> {
     if (!(await canExport(fmt))) return 'unsupported';
-    const bmp = await createImageBitmap(file);
+    const bmp = await decode(file);
     try {
       const size = targetSize(bmp.width, bmp.height, maxW, maxH);
       if (!fitsCanvas(size)) return 'too-big';
@@ -137,7 +144,7 @@ function init(root: HTMLElement) {
   function addFiles(files: File[]) {
     const problems: string[] = [];
     for (const f of files) {
-      if (accepts(f)) items.push({ file: f });
+      if (accepts(f) || (heicMode && isHeic(f))) items.push({ file: f });
       else problems.push(`${f.name}: ${s.badType}`);
     }
     showError(problems.join(' '));

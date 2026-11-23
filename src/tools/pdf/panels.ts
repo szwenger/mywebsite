@@ -161,26 +161,31 @@ export function initPanels(c: Ctx) {
   panel('number')?.querySelectorAll<HTMLElement>('[data-tpl]').forEach((b) => b.addEventListener('click', () => { const i = panel('number')!.querySelector<HTMLInputElement>('[name="template"]')!; i.value = b.dataset.tpl!; i.dispatchEvent(new Event('input', { bubbles: true })); }));
 
   // ---- watermark ----
+  /** One centred picture per page (or per listed page); null when no picture is chosen. */
+  const imageMarks = async (doc: Bytes, f: ReturnType<typeof field>, pages: number[] | null): Promise<Item[] | null> => {
+    const file = f.file('wmimg');
+    if (!file) return null;
+    const raw = new Uint8Array(await file.arrayBuffer());
+    const bmp = await createImageBitmap(file);
+    const type = raw[0] === 0xff ? 'image/jpeg' as const : 'image/png' as const;
+    let bytes = raw;
+    if (raw[0] !== 0xff && !(raw[0] === 0x89 && raw[1] === 0x50)) { const cv = document.createElement('canvas'); cv.width = bmp.width; cv.height = bmp.height; cv.getContext('2d')!.drawImage(bmp, 0, 0); bytes = new Uint8Array(await (await new Promise<Blob>((d) => cv.toBlob((b) => d(b!), 'image/png'))).arrayBuffer()); }
+    const w = f.num('imgsize', 50) / 100;
+    const pdf = await PDFDocument.load(doc);
+    return pdf.getPages().flatMap((pg, i): Item[] => {
+      if (pages && !pages.includes(i)) return [];
+      const sz = pg.getSize();
+      const h = (w * sz.width * bmp.height) / bmp.width / sz.height;
+      return [{ kind: 'image', page: i, bytes, type: bytes === raw ? type : 'image/png', x: (1 - w) / 2, y: (1 - h) / 2, w, opacity: f.num('imgopacity', 30) / 100 }];
+    });
+  };
   wire('watermark', {
     watermark: async (p, f) => {
       const pages = maybePages(f.str('pages'));
       if (pages === 'bad') return;
       if (f.pick('wmkind') === 'image') {
-        const file = f.file('wmimg');
-        if (!file) { c.error(s.pickImage); return; }
-        const raw = new Uint8Array(await file.arrayBuffer());
-        const bmp = await createImageBitmap(file);
-        const type = raw[0] === 0xff ? 'image/jpeg' as const : 'image/png' as const;
-        let bytes = raw;
-        if (raw[0] !== 0xff && !(raw[0] === 0x89 && raw[1] === 0x50)) { const cv = document.createElement('canvas'); cv.width = bmp.width; cv.height = bmp.height; cv.getContext('2d')!.drawImage(bmp, 0, 0); bytes = new Uint8Array(await (await new Promise<Blob>((d) => cv.toBlob((b) => d(b!), 'image/png'))).arrayBuffer()); }
-        const w = f.num('imgsize', 50) / 100;
-        const doc = await PDFDocument.load(c.doc());
-        const items: Item[] = doc.getPages().flatMap((pg, i): Item[] => {
-          if (pages && !pages.includes(i)) return [];
-          const sz = pg.getSize();
-          const h = (w * sz.width * bmp.height) / bmp.width / sz.height;
-          return [{ kind: 'image', page: i, bytes, type: bytes === raw ? type : 'image/png', x: (1 - w) / 2, y: (1 - h) / 2, w, opacity: f.num('imgopacity', 30) / 100 }];
-        });
+        const items = await imageMarks(c.doc(), f, pages);
+        if (!items) { c.error(s.pickImage); return; }
         await c.apply(await applyItems(c.doc(), items), identity());
         return;
       }
@@ -350,10 +355,11 @@ export function initPanels(c: Ctx) {
     },
   });
   pv('watermark', {
-    slot: 'watermark', watch: ['wmkind', 'text', 'size', 'angle', 'opacity', 'color'],
+    slot: 'watermark', watch: ['wmkind', 'text', 'size', 'angle', 'opacity', 'color', 'wmimg', 'imgsize', 'imgopacity'],
     build: async (sample) => {
       const f = F('watermark');
-      if (f.pick('wmkind') === 'image' || !f.str('text').trim()) return null;
+      if (f.pick('wmkind') === 'image') { const items = await imageMarks(sample, f, null); return items ? applyItems(sample, items) : null; }
+      if (!f.str('text').trim()) return null;
       return watermark(sample, { text: f.str('text'), size: f.num('size', 64), angle: f.num('angle', 45), opacity: f.num('opacity', 20) / 100, color: hexToRgb(f.str('color') || '#808080'), pages: null }, c.render);
     },
   });

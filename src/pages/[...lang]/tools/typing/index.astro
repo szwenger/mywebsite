@@ -64,13 +64,13 @@ const s = {
     resNet: 'Чистая скорость', resRaw: 'Общая скорость', resAcc: 'Точность', resErr: 'Ошибки', resTime: 'Время', retry: 'Ещё раз', next: 'Следующий уровень',
     passed: 'Уровень пройден.', failed: 'Пока нет. Нужно {wpm} WPM при точности {acc}%.', newBest: 'Новый личный рекорд.', tooShort: 'Слишком коротко для зачёта. Наберите хотя бы 10 символов.',
     resHelp: 'Чистая скорость учитывает только верные символы. Общая считает каждую нажатую клавишу.',
-    runsT: 'Заходы', bestT: 'Лучшая скорость', avgT: 'Среднее, последние 10', accT: 'Точность, последние 10', timeT: 'Время набора', unitMin: 'мин',
-    trendH: 'Скорость со временем', histH: 'Где попадают ваши заходы', calH: 'Календарь занятий', kbH: 'Клавиатура', weakH: 'Клавиши с ошибками', slowH: 'Самые медленные клавиши', lvH: 'Прогресс по уровням',
-    kbSpeed: 'Скорость', kbErr: 'Ошибки', empty: 'Пока нет заходов. Закончите тест, и здесь появится статистика.', needMore: 'Пока мало данных (нужно 8 нажатий на клавишу).',
+    runsT: 'Попытки', bestT: 'Лучшая скорость', avgT: 'Среднее, последние 10', accT: 'Точность, последние 10', timeT: 'Время набора', unitMin: 'мин',
+    trendH: 'Скорость со временем', histH: 'Как распределяются ваши попытки', calH: 'Календарь занятий', kbH: 'Клавиатура', weakH: 'Клавиши с ошибками', slowH: 'Самые медленные клавиши', lvH: 'Прогресс по уровням',
+    kbSpeed: 'Скорость', kbErr: 'Ошибки', empty: 'Пока нет попыток. Закончите тест, и здесь появится статистика.', needMore: 'Пока мало данных (нужно 8 нажатий на клавишу).',
     lvSum: 'Пройдено уровней: {done} из 50, звёзд: {stars} из 150.', clear: 'Удалить мои данные', clearSure: 'Нажмите ещё раз, чтобы удалить всё', storeNote: 'Статистика хранится в этом браузере (localStorage). Ничего не отправляется.', storeOff: 'Браузер блокирует локальное хранилище, поэтому между визитами ничего не сохраняется.',
-    backupH: 'Резервная копия', backupHelp: 'Сохраните результаты в файл, чтобы не потерять их или перенести на другое устройство. Импорт добавляет данные к имеющимся и ничего не удаляет.', export: 'Экспорт данных', import: 'Импорт данных', imported: 'Импортировано: новых заходов {n}. Уровни и статистика клавиш объединены.', importBad: 'Этот файл не является экспортом тренажёра.', exportEmpty: 'Пока нечего экспортировать.',
-    wpm: 'WPM', net: 'Чистая', raw: 'Общая', second: 'Секунда {n}', mistakes: 'ошибок: {n}', mistakesLegend: 'Ошибки', runChart: 'Скорость по секундам этого захода', trend: 'Скорость каждого захода', eachRun: 'Каждый заход', avg10: 'Среднее за последние 10',
-    hist: 'Число заходов по диапазонам скорости', runs: 'Заходы', runsN: 'заходов: {n}', calendar: 'Минуты набора по дням', minutes: '{n} мин', noTyping: 'без набора', days: 'Пн,Вт,Ср,Чт,Пт,Сб,Вс', less: 'Меньше', more: 'Больше',
+    backupH: 'Резервная копия', backupHelp: 'Сохраните результаты в файл, чтобы не потерять их или перенести на другое устройство. Импорт добавляет данные к имеющимся и ничего не удаляет.', export: 'Экспорт данных', import: 'Импорт данных', imported: 'Импортировано: новых попыток {n}. Уровни и статистика клавиш объединены.', importBad: 'Этот файл не является экспортом тренажёра.', exportEmpty: 'Пока нечего экспортировать.',
+    wpm: 'WPM', net: 'Чистая', raw: 'Общая', second: 'Секунда {n}', mistakes: 'ошибок: {n}', mistakesLegend: 'Ошибки', runChart: 'Скорость по секундам этой попытки', trend: 'Скорость каждой попытки', eachRun: 'Каждая попытка', avg10: 'Среднее за последние 10',
+    hist: 'Число попыток по диапазонам скорости', runs: 'Попытки', runsN: 'попыток: {n}', calendar: 'Минуты набора по дням', minutes: '{n} мин', noTyping: 'без набора', days: 'Пн,Вт,Ср,Чт,Пт,Сб,Вс', less: 'Меньше', more: 'Больше',
     acc: 'точность', noData: 'данных пока нет', mistakesWord: 'ошибок', pressed: 'нажатий: {n}', slowKey: 'Медленно', fastKey: 'Быстро', fewMistakes: 'Мало ошибок', manyMistakes: 'Много ошибок',
   },
 }[lang];
@@ -250,7 +250,7 @@ const kinds = ['words', 'long', 'caps', 'punct', 'numbers', 'sentences', 'code',
   .tt-big em { font-style: normal; color: var(--muted); font-size: .9rem; }
   .tt-result { display: grid; gap: 14px; }
 
-  .tt-stats { display: grid; gap: 22px; }
+  .tt-stats { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; }
   .tt-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
   .tt-tiles .tile { padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); }
   .tt-tiles .tile b { display: block; font: 600 1.35rem/1.3 var(--display); font-variant-numeric: tabular-nums; }
@@ -315,7 +315,9 @@ const kinds = ['words', 'long', 'caps', 'punct', 'numbers', 'sentences', 'code',
 
   @media (max-width: 700px) {
     .tt-text { font-size: 1.15rem; }
-    .tt .key { font-size: .65rem; }
+    .tt .key { width: 2em; height: 2.2em; font-size: .65rem; }
+    .tt-kb { gap: 4px; }
+    .tt-kb .kr { gap: 3px; margin-left: calc(var(--off, 0) * 2.2em); }
     .tt .key.space { width: 10em; }
   }
   @media (prefers-reduced-motion: reduce) { .tt-inner, .tt-grid .lv { transition: none; } }

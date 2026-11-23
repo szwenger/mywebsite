@@ -17,3 +17,6 @@ export function outName(name: string, fmt: Format): string {
 
 const INPUT = ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/bmp'];
 export const accepts = (file: { type: string }): boolean => INPUT.includes(file.type);
+
+/** HEIC/HEIF photos (iPhone, many Android phones). Chrome and Firefox often give them an empty type, so the extension counts too. */
+export const isHeic = (file: { name: string; type: string }): boolean => /^image\/hei[cf]$/.test(file.type) || /\.hei[cf]$/i.test(file.name);

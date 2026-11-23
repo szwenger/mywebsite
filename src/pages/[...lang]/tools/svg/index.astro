@@ -1,0 +1,73 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { drop: 'Drop an SVG file here', or: 'or', browse: 'Choose an SVG', paste: 'Or paste the SVG code', ph: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">…</svg>', prevAlt: 'Preview of the SVG', toImage: 'Save as an image', scale: 'Scale', width: 'Width (px)', widthHint: 'Empty uses the scale.', fmt: 'Format', bg: 'Fill the background', save: 'Download image',
+    minify: 'Minify', minifyH: 'Make the SVG smaller', precision: 'Decimals in paths', keepTitle: 'Keep title and description', minified: 'Minified SVG', copy: 'Copy', copied: '✓', dl: 'Download .svg', hint: 'Removes comments, editor data, metadata and indentation and rounds path numbers. Shapes are not rewritten, so it looks the same.',
+    notSvg: 'That is not SVG code. It must start with <svg>.', failed: 'The browser could not draw this SVG. It may link to files it cannot load.', tooBig: 'Too large. Pick a smaller scale or width.', unsupported: 'This browser cannot save that format.' },
+  de: { drop: 'SVG-Datei hier ablegen', or: 'oder', browse: 'SVG wählen', paste: 'Oder den SVG-Code einfügen', ph: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">…</svg>', prevAlt: 'Vorschau der SVG', toImage: 'Als Bild speichern', scale: 'Maßstab', width: 'Breite (px)', widthHint: 'Leer nutzt den Maßstab.', fmt: 'Format', bg: 'Hintergrund füllen', save: 'Bild herunterladen',
+    minify: 'Verkleinern', minifyH: 'Die SVG verkleinern', precision: 'Nachkommastellen in Pfaden', keepTitle: 'Titel und Beschreibung behalten', minified: 'Verkleinerte SVG', copy: 'Kopieren', copied: '✓', dl: '.svg herunterladen', hint: 'Entfernt Kommentare, Editor-Daten, Metadaten und Einrückungen und rundet Pfadzahlen. Formen werden nicht umgeschrieben, das Bild sieht gleich aus.',
+    notSvg: 'Das ist kein SVG-Code. Er muss mit <svg> beginnen.', failed: 'Der Browser konnte diese SVG nicht zeichnen. Eventuell verweist sie auf Dateien, die er nicht laden kann.', tooBig: 'Zu groß. Wähle einen kleineren Maßstab oder eine kleinere Breite.', unsupported: 'Dieser Browser kann das Format nicht speichern.' },
+  ru: { drop: 'Перетащите сюда файл SVG', or: 'или', browse: 'Выбрать SVG', paste: 'Или вставьте код SVG', ph: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">…</svg>', prevAlt: 'Предпросмотр SVG', toImage: 'Сохранить как картинку', scale: 'Масштаб', width: 'Ширина (px)', widthHint: 'Пусто — по масштабу.', fmt: 'Формат', bg: 'Залить фон', save: 'Скачать картинку',
+    minify: 'Сжать', minifyH: 'Уменьшить SVG', precision: 'Знаков после запятой в путях', keepTitle: 'Оставить заголовок и описание', minified: 'Сжатый SVG', copy: 'Копировать', copied: '✓', dl: 'Скачать .svg', hint: 'Убирает комментарии, данные редакторов, метаданные и отступы и округляет числа в путях. Фигуры не переписываются, картинка выглядит так же.',
+    notSvg: 'Это не код SVG. Он должен начинаться с <svg>.', failed: 'Браузер не смог нарисовать этот SVG. Возможно, он ссылается на файлы, которые не загрузить.', tooBig: 'Слишком большой размер. Выберите меньший масштаб или ширину.', unsupported: 'Этот браузер не умеет сохранять в этот формат.' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="svg">
+  <div class="tl two svg" data-svg data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <div class="drop" data-drop>
+        <span>{s.drop} {s.or}</span>
+        <label class="btn pick">{s.browse}<input type="file" accept=".svg,image/svg+xml" data-file /></label>
+      </div>
+      <label>{s.paste}<textarea name="src" class="mono" rows="10" spellcheck="false" placeholder={s.ph}></textarea></label>
+      <p class="note bad" role="alert" data-error hidden></p>
+      <button type="button" class="btn alt" data-minify>{s.minify}</button>
+      <div data-minbox hidden>
+        <h2 class="h">{s.minified} <small data-saved></small></h2>
+        <textarea name="min" class="mono" rows="7" readonly spellcheck="false"></textarea>
+        <div class="actions"><button type="button" class="btn" data-copy>{s.copy}</button><button type="button" class="btn alt" data-save>{s.dl}</button></div>
+      </div>
+      <div class="row">
+        <label>{s.precision}<select name="precision"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></label>
+        <label class="check"><input type="checkbox" name="keeptitle" checked />{s.keepTitle}</label>
+      </div>
+      <p class="meta">{s.hint}</p>
+    </div>
+    <div class="card pane">
+      <div class="view"><img data-prev alt={s.prevAlt} /></div>
+      <p class="meta" data-info></p>
+      <h2 class="h">{s.toImage}</h2>
+      <div class="row">
+        <label>{s.scale}<select name="scale"><option value="1">1×</option><option value="2" selected>2×</option><option value="3">3×</option><option value="4">4×</option><option value="8">8×</option></select></label>
+        <label>{s.width}<input name="width" type="number" min="1" inputmode="numeric" /></label>
+        <label>{s.fmt}<select name="fmt"><option value="png">PNG</option><option value="jpeg">JPG</option><option value="webp">WebP</option></select></label>
+      </div>
+      <div class="row">
+        <label class="check"><input type="checkbox" name="bg" />{s.bg}</label>
+        <input type="color" name="bgcolor" value="#ffffff" aria-label={s.bg} />
+      </div>
+      <p class="meta">{s.widthHint}</p>
+      <div class="actions"><button type="button" class="btn" data-raster>{s.save}</button></div>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/svg/svg.ts';
+</script>
+<style>
+  .h { margin: 0; font: 600 1rem/1.3 var(--display); }
+  .h small { margin-left: 8px; color: var(--muted); font: 400 .85rem var(--font); }
+  .drop { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px; border: 1px dashed var(--line); border-radius: var(--radius-sm); color: var(--muted); }
+  .drop.over { border-color: var(--accent); color: var(--fg); }
+  .pick { cursor: pointer; position: relative; }
+  .pick input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .view { display: grid; place-items: center; min-height: 160px; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: repeating-conic-gradient(#8883 0 25%, transparent 0 50%) 0 0 / 16px 16px; }
+  .view img { max-width: 100%; max-height: 320px; }
+  .view img:not([src]) { display: none; }
+</style>
