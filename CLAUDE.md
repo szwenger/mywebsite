@@ -20,7 +20,7 @@ Run `npm run build && npm test` before every commit.
 ## Architecture
 
 - **i18n:** `en` (no URL prefix), `de`, `ru`, with `trailingSlash: 'always'`. Shared pages live in `src/pages/[...lang]/` and return `lang: l === 'en' ? undefined : l` from `getStaticPaths`. Strings are in `src/i18n/ui.ts`; page-specific strings sit in an `s` table inside the page.
-- **Posts:** `src/content/posts/<slug>/<lang>.md`. No `cover` in the front matter is a short note, a `cover` makes a long post (the newest becomes the lead story; with none, the newest video leads).
+- **Posts:** `src/content/posts/YYYY-MM-DD_<slug>/<lang>.md` (the date prefix is stripped, URL is `/blog/<slug>/`). No `cover` in the front matter is a short note, a `cover` makes a long post (the newest becomes the lead story; with none, the newest video leads).
 - **Videos:** `scripts/fetch-videos.mjs` (npm `prebuild`) reads the YouTube RSS feed into `src/data/videos.json` and `public/thumbs/`. It never fails the build and falls back to the cache. Both paths are git-ignored; CI caches them.
 - **Tools:** each tool has `src/tools/<slug>/logic.ts` (pure, unit-tested), a client script, and a page in `src/pages/[...lang]/tools/<slug>/`. Register it in `src/data/tools.ts`. Everything runs in the browser; no third-party loads on page load, no CDN scripts (a build test checks this).
 - **Impressum:** `src/data/legal.ts` holds the address. While it is `TODO-ADDRESS` the page says the address is pending, is `noindex`, and builds print a warning.
@@ -34,3 +34,6 @@ Run `npm run build && npm test` before every commit.
 - `docs/` and `HANDOFF.md` are git-ignored on purpose. Stage explicit paths rather than `git add -A`.
 - Hardware links to Amazon are plain links, not affiliate links.
 - The `CNAME` file in `public/` maps the deployment to `galuin.com`.
+
+## Session handoff
+Chats do not sync between devices. Follow the HANDOFF.md convention from `C:\Users\Simon\Documents\02_Dev\CLAUDE.md`: read `HANDOFF.md` at session start if present; at the end of a meaningful session (or when the user switches device) rewrite it (goal, state, next steps, how to verify, uncommitted work, decisions, open questions; under ~60 lines, no secrets). Commit or push only when asked.
