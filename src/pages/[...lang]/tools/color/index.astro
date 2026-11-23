@@ -1,40 +1,96 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
-import { LANGS, type Lang } from '../../../../i18n/ui';
+import IconButton from '../../../../components/IconButton.astro';
+import { langOf, toolPaths } from '../../../../i18n/tool-page';
+import { s as strings } from '../../../../i18n/tools/color';
+import { SCHEMES, KINDS } from '../../../../tools/color/logic';
 
-export function getStaticPaths() {
-  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
-}
-const lang = (Astro.params.lang ?? 'en') as Lang;
-const s = {
-  en: { fg: 'Text colour', bg: 'Background colour', swap: 'Swap', formats: 'Formats of the text colour', contrast: 'Contrast', bad: 'Not a colour. Try #6a78d1, rgb(106 120 209) or hsl(231 53% 62%).', sample: 'The quick brown fox', large: 'Large text (18 pt or bold 14 pt)', normal: 'Normal text', pass: 'Pass', fail: 'Fail', copy: 'Copy', note: 'WCAG 2 contrast. Transparency is ignored.' },
-  de: { fg: 'Textfarbe', bg: 'Hintergrundfarbe', swap: 'Tauschen', formats: 'Formate der Textfarbe', contrast: 'Kontrast', bad: 'Keine Farbe. Versuche #6a78d1, rgb(106 120 209) oder hsl(231 53% 62%).', sample: 'Franz jagt im komplett verwahrlosten Taxi', large: 'Großer Text (18 pt oder fett 14 pt)', normal: 'Normaler Text', pass: 'Bestanden', fail: 'Nicht bestanden', copy: 'Kopieren', note: 'WCAG-2-Kontrast. Transparenz wird ignoriert.' },
-  ru: { fg: 'Цвет текста', bg: 'Цвет фона', swap: 'Поменять', formats: 'Форматы цвета текста', contrast: 'Контраст', bad: 'Это не цвет. Попробуйте #6a78d1, rgb(106 120 209) или hsl(231 53% 62%).', sample: 'Съешь же ещё этих мягких булок', large: 'Крупный текст (18 pt или полужирный 14 pt)', normal: 'Обычный текст', pass: 'Да', fail: 'Нет', copy: 'Копировать', note: 'Контраст по WCAG 2. Прозрачность не учитывается.' },
-}[lang];
+export const getStaticPaths = toolPaths;
+const lang = langOf(Astro.params);
+const s = strings[lang] as Record<string, string>;
+const tabs = ['contrast', 'palette', 'gradient', 'blind'] as const;
+const tabName = { contrast: s.tabContrast, palette: s.tabPalette, gradient: s.tabGradient, blind: s.tabBlind };
 ---
 <ToolLayout lang={lang} slug="color">
-  <div class="tl two" data-color data-s={JSON.stringify(s)}>
+  <div class="stackv" data-color data-s={JSON.stringify(s)}>
     <div class="card pane">
-      <div class="pick">
-        <label>{s.fg}<span class="in"><input name="fg" value="#6a78d1" spellcheck="false" autocomplete="off" /><input type="color" data-pick="fg" value="#6a78d1" aria-label={s.fg} /></span></label>
-        <button type="button" class="btn alt" data-swap>{s.swap}</button>
-        <label>{s.bg}<span class="in"><input name="bg" value="#0d0f14" spellcheck="false" autocomplete="off" /><input type="color" data-pick="bg" value="#0d0f14" aria-label={s.bg} /></span></label>
+      <div class="row tabs" role="group">
+        {tabs.map((k, i) => <label class="check"><input type="radio" name="tab" value={k} checked={i === 0} /> {tabName[k]}</label>)}
       </div>
-      <p class="note bad" data-error role="alert" hidden>{s.bad}</p>
-      <h2 class="sub">{s.formats}</h2>
-      <table><tbody data-formats></tbody></table>
     </div>
-    <div class="card pane" aria-live="polite">
-      <div class="sample" data-sample><b>{s.sample}</b><span>{s.sample}</span></div>
-      <p class="out-big" data-ratio></p>
-      <table>
-        <thead><tr><th></th><th>{s.normal}</th><th>{s.large}</th></tr></thead>
-        <tbody>
-          <tr><th>AA</th><td data-g="aaNormal"></td><td data-g="aaLarge"></td></tr>
-          <tr><th>AAA</th><td data-g="aaaNormal"></td><td data-g="aaaLarge"></td></tr>
-        </tbody>
-      </table>
-      <p class="meta">{s.note}</p>
+
+    <div class="tl two" data-when="contrast">
+      <div class="card pane">
+        <div class="pick">
+          <label>{s.fg}<span class="in"><input name="fg" value="#6a78d1" spellcheck="false" autocomplete="off" /><input type="color" data-pick="fg" value="#6a78d1" aria-label={s.fg} /></span></label>
+          <button type="button" class="btn alt" data-swap>{s.swap}</button>
+          <label>{s.bg}<span class="in"><input name="bg" value="#0d0f14" spellcheck="false" autocomplete="off" /><input type="color" data-pick="bg" value="#0d0f14" aria-label={s.bg} /></span></label>
+        </div>
+        <p class="note bad" data-error role="alert" hidden>{s.bad}</p>
+        <h2 class="sub">{s.formats}</h2>
+        <table><tbody data-formats></tbody></table>
+      </div>
+      <div class="card pane" aria-live="polite">
+        <div class="sample" data-sample><b>{s.sample}</b><span>{s.sample}</span></div>
+        <p class="out-big" data-ratio></p>
+        <table>
+          <thead><tr><th></th><th>{s.normal}</th><th>{s.large}</th></tr></thead>
+          <tbody>
+            <tr><th>AA</th><td data-g="aaNormal"></td><td data-g="aaLarge"></td></tr>
+            <tr><th>AAA</th><td data-g="aaaNormal"></td><td data-g="aaaLarge"></td></tr>
+          </tbody>
+        </table>
+        <p class="meta">{s.note}</p>
+      </div>
+    </div>
+
+    <div class="tl two" data-when="palette" hidden>
+      <div class="card pane">
+        <label>{s.base}<span class="in"><input name="base" value="#6a78d1" spellcheck="false" autocomplete="off" /><input type="color" data-pickto="base" value="#6a78d1" aria-label={s.base} /></span></label>
+        <label>{s.scheme}<select name="scheme">{SCHEMES.map((k) => <option value={k}>{s[k]}</option>)}</select></label>
+        <p class="note bad" data-xerror="palette" role="alert" hidden>{s.noColours}</p>
+        <p class="meta">{s.clickCopy}</p>
+      </div>
+      <div class="card pane">
+        <div class="swrow" data-harmony></div>
+        <h2 class="sub">{s.shades}</h2>
+        <div class="swrow scale" data-shades></div>
+      </div>
+    </div>
+
+    <div class="tl two" data-when="gradient" hidden>
+      <div class="card pane">
+        <label>{s.from}<span class="in"><input name="ga" value="#6a78d1" spellcheck="false" autocomplete="off" /><input type="color" data-pickto="ga" value="#6a78d1" aria-label={s.from} /></span></label>
+        <label>{s.to}<span class="in"><input name="gb" value="#f4a261" spellcheck="false" autocomplete="off" /><input type="color" data-pickto="gb" value="#f4a261" aria-label={s.to} /></span></label>
+        <label><span>{s.stops}: <output name="stepsOut">7</output></span><input name="steps" type="range" min="2" max="12" value="7" aria-label={s.stops} /></label>
+        <p class="note bad" data-xerror="gradient" role="alert" hidden>{s.noColours}</p>
+      </div>
+      <div class="card pane">
+        <div class="gradbar" data-gradbar></div>
+        <div class="swrow" data-gradstops></div>
+        <h2 class="sub">{s.css}</h2>
+        <pre class="mono" data-css></pre>
+        <div class="actions"><IconButton icon="copy" label={s.copy} data-copycss /></div>
+      </div>
+    </div>
+
+    <div class="tl two" data-when="blind" hidden>
+      <div class="card pane">
+        <label>{s.list}<textarea name="list" rows="8" spellcheck="false">#e63946
+#2a9d8f
+#f4a261
+#264653
+#6a78d1</textarea></label>
+        <p class="note bad" data-xerror="blind" role="alert" hidden>{s.noColours}</p>
+        <p class="meta">{s.clickCopy}</p>
+        <p class="meta">{s.blindNote}</p>
+      </div>
+      <div class="card pane">
+        <div class="blind" data-blind></div>
+        <div class="legend meta" data-legend>
+          <span>{s.original}</span>{KINDS.map((k) => <span>{s[k]}</span>)}
+        </div>
+      </div>
     </div>
   </div>
 </ToolLayout>
@@ -53,4 +109,13 @@ const s = {
   .no { color: #d65a5a; font-weight: 600; }
   button.val { padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: copy; text-align: left; }
   button.val:hover { color: var(--accent-ink); }
+  .stackv { display: grid; gap: var(--gap, 20px); }
+  .swrow { display: flex; flex-wrap: wrap; gap: 8px; }
+  :global(.swrow .sw) { flex: 1 1 64px; min-height: 56px; padding: 6px; border: 1px solid var(--line); border-radius: var(--radius-sm); font: .78rem/1.2 var(--mono, ui-monospace, monospace); cursor: copy; display: flex; align-items: end; }
+  .scale :global(.sw) { flex: 1 1 48px; min-height: 64px; }
+  .gradbar { height: 64px; border-radius: var(--radius-sm); border: 1px solid var(--line); }
+  .blind { display: grid; gap: 8px; }
+  :global(.blind .brow) { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  :global(.blind .sw) { min-height: 48px; padding: 4px; border: 1px solid var(--line); border-radius: var(--radius-sm); font: .7rem/1.2 var(--mono, ui-monospace, monospace); cursor: copy; display: flex; align-items: end; }
+  .legend { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; font-size: .74rem; }
 </style>

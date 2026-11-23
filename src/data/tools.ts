@@ -284,13 +284,13 @@ export const tools: Tool[] = [
   {
     slug: 'color',
     cat: 'dev',
-    tags: 'color colour hex rgb hsl oklch contrast wcag accessibility converter picker',
+    tags: 'color colour hex rgb hsl oklch contrast wcag accessibility converter picker palette harmony shades tints gradient css colorblind colourblind daltonism protanopia deuteranopia simulator',
     icon: 'M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11zM9.5 14.5a2.5 2.5 0 0 0 2.5 2.5',
-    name: { en: 'Colour converter and contrast checker', de: 'Farb-Umrechner und Kontrast-Prüfer', ru: 'Конвертер цветов и проверка контраста' },
+    name: { en: 'Colour tools: converter, contrast, palette and gradient', de: 'Farbwerkzeuge: Umrechner, Kontrast, Palette und Verlauf', ru: 'Цвет: конвертер, контраст, палитра и градиент' },
     blurb: {
-      en: 'Convert between HEX, RGB, HSL and OKLCH and check the WCAG contrast of text on a background.',
-      de: 'Zwischen HEX, RGB, HSL und OKLCH umrechnen und den WCAG-Kontrast von Text auf einem Hintergrund prüfen.',
-      ru: 'Перевод между HEX, RGB, HSL и OKLCH и проверка контраста текста на фоне по WCAG.',
+      en: 'Convert between HEX, RGB, HSL and OKLCH, check WCAG contrast, build harmonies, shade scales and gradients, and preview colours as colour-blind readers see them.',
+      de: 'Zwischen HEX, RGB, HSL und OKLCH umrechnen, WCAG-Kontrast prüfen, Harmonien, Abstufungen und Verläufe bauen und Farben so ansehen, wie Farbfehlsichtige sie sehen.',
+      ru: 'Перевод между HEX, RGB, HSL и OKLCH, проверка контраста по WCAG, гармонии, шкалы оттенков и градиенты, а также просмотр цветов глазами дальтоников.',
     },
   },
   {

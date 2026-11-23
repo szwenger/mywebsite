@@ -46,3 +46,55 @@ test('formats shows alpha only when the colour is transparent', () => {
   assert.equal(formats(parseColor('rgb(255 0 0 / 0.5)')).RGB, 'rgb(255 0 0 / 0.5)');
   assert.match(formats(parseColor('#ff0000')).OKLCH, /^oklch\(62\.8% 0\.258 29\.2\)$/);
 });
+
+import { gradient, harmony, shades, simulate, SCHEMES, KINDS } from '../src/tools/color/logic.ts';
+
+const rgb = (r, g, b) => ({ r, g, b, a: 1 });
+
+test('gradient runs through OKLab, keeps both ends and has the asked number of stops', () => {
+  const g = gradient(rgb(255, 0, 0), rgb(0, 0, 255), 5);
+  assert.equal(g.length, 5);
+  assert.deepEqual(g[0], rgb(255, 0, 0));
+  assert.deepEqual(g[4], rgb(0, 0, 255));
+  assert.deepEqual(gradient(rgb(0, 0, 0), rgb(255, 255, 255), 3)[1], rgb(99, 99, 99)); // OKLab midpoint of black and white is about #636363
+  assert.equal(gradient(rgb(1, 2, 3), rgb(9, 9, 9), 1).length, 2); // at least both ends
+});
+
+test('harmony rotates the hue and keeps saturation and lightness', () => {
+  const base = parseColor('hsl(10 60% 50%)');
+  const comp = harmony(base, 'complementary');
+  assert.equal(comp.length, 2);
+  assert.deepEqual(comp[0], base);
+  assert.equal(toHsl(comp[1]).h, 190);
+  assert.deepEqual(harmony(base, 'triadic').map((c) => toHsl(c).h), [10, 130, 250]);
+  assert.deepEqual(harmony(base, 'analogous').map((c) => toHsl(c).h), [340, 10, 40]);
+  for (const k of SCHEMES) assert.ok(harmony(base, k).length >= 2, k);
+});
+
+test('shade scale: eleven steps from light to dark, same hue, always inside sRGB', () => {
+  const base = parseColor('#6a78d1');
+  const sc = shades(base);
+  assert.equal(sc.length, 11);
+  const ls = sc.map((c) => toOklch(c).l);
+  for (let i = 1; i < ls.length; i++) assert.ok(ls[i] < ls[i - 1], `step ${i}`);
+  assert.ok(ls[0] > 0.9 && ls[10] < 0.35);
+  for (const c of sc.slice(2, 9)) assert.ok(Math.abs(toOklch(c).h - toOklch(base).h) < 8, toHex(c));
+  for (const c of sc) for (const v of [c.r, c.g, c.b]) assert.ok(Number.isInteger(v) && v >= 0 && v <= 255);
+});
+
+test('shade scale of a grey stays grey', () => {
+  for (const c of shades(rgb(128, 128, 128))) assert.ok(c.r === c.g && c.g === c.b);
+});
+
+test('colour-blindness simulation leaves greys alone and collapses red and green', () => {
+  for (const k of KINDS) {
+    for (const v of [0, 90, 200, 255]) assert.deepEqual(simulate(rgb(v, v, v), k), rgb(v, v, v), `${k} ${v}`);
+  }
+  const red = simulate(rgb(255, 0, 0), 'protanopia');
+  assert.ok(Math.abs(red.r - 109) <= 2 && Math.abs(red.g - 95) <= 2 && red.b <= 2, JSON.stringify(red));
+  const a = simulate(rgb(255, 0, 0), 'deuteranopia'), b = simulate(rgb(0, 160, 0), 'deuteranopia');
+  assert.ok(Math.abs(a.r - b.r) < 80 && a.r > a.b && b.r > b.b, 'both land in the yellow-brown range');
+  const gray = simulate(rgb(255, 0, 0), 'achromatopsia');
+  assert.ok(gray.r === gray.g && gray.g === gray.b);
+  assert.ok(gray.r > 40 && gray.r < 130); // red is dark in luminance
+});

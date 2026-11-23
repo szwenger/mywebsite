@@ -1,5 +1,6 @@
 import { contrast, formats, grades, parseColor, toHex } from './logic';
 import { copy } from '../dom';
+import { initExtras } from './extras';
 
 const root = document.querySelector<HTMLElement>('[data-color]');
 if (root) {
@@ -34,11 +35,18 @@ if (root) {
     }));
   }
 
+  const extras = initExtras(root);
+  const tab = () => root.querySelector<HTMLInputElement>('[name="tab"]:checked')!.value;
+  function showTab() {
+    root!.querySelectorAll<HTMLElement>('[data-when]').forEach((el) => { el.hidden = el.dataset.when !== tab(); });
+    (tab() === 'contrast' ? render : extras[tab()])?.();
+  }
   root.addEventListener('input', (e) => {
     const t = e.target as HTMLInputElement;
     if (t.dataset.pick) f(t.dataset.pick).value = t.value;
-    render();
+    if (t.closest('[data-when="contrast"]')) render();
   });
+  root.addEventListener('change', (e) => { if ((e.target as HTMLInputElement).name === 'tab') showTab(); });
   q('[data-swap]').addEventListener('click', () => { const a = f('fg').value; f('fg').value = f('bg').value; f('bg').value = a; render(); });
   render();
 }
