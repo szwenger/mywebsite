@@ -1,0 +1,62 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { data: 'Data', hint: 'Paste a table or drop a CSV file. The first column is the x axis, every other column is one line, bar or dot series (up to 8). A first row with names is detected on its own.', browse: 'Open a CSV file', kind: 'Chart', line: 'Line', bar: 'Bars', scatter: 'Scatter', title: 'Title', xlabel: 'X axis label', ylabel: 'Y axis label', size: 'Size', grid: 'Grid lines', legend: 'Legend', zero: 'Start the y axis at zero', svg: 'Download SVG', png: 'Download PNG', copy: 'Copy SVG', series: 'series', points: 'rows', dropped: '{n} more columns ignored', empty: 'There is no data to draw.', cols: 'Add at least one column of numbers next to the first column.', note: 'Drawn in your browser. The data is never uploaded. PNG files are saved at twice the size for sharp text.', sample: 'Month,Sales,Costs\nJan,12,9\nFeb,15,10\nMar,14,11\nApr,19,12\nMay,23,14\nJun,27,15' },
+  de: { data: 'Daten', hint: 'Tabelle einfügen oder CSV-Datei ablegen. Die erste Spalte ist die x-Achse, jede weitere Spalte ist eine Linien-, Balken- oder Punktreihe (bis zu 8). Eine erste Zeile mit Namen wird automatisch erkannt.', browse: 'CSV-Datei öffnen', kind: 'Diagramm', line: 'Linie', bar: 'Balken', scatter: 'Punkte', title: 'Titel', xlabel: 'Beschriftung x-Achse', ylabel: 'Beschriftung y-Achse', size: 'Größe', grid: 'Gitternetz', legend: 'Legende', zero: 'y-Achse bei null beginnen', svg: 'SVG herunterladen', png: 'PNG herunterladen', copy: 'SVG kopieren', series: 'Reihen', points: 'Zeilen', dropped: '{n} weitere Spalten ignoriert', empty: 'Es gibt keine Daten zum Zeichnen.', cols: 'Füge neben der ersten Spalte mindestens eine Spalte mit Zahlen hinzu.', note: 'Wird in deinem Browser gezeichnet. Die Daten werden nie hochgeladen. PNG-Dateien werden doppelt so groß gespeichert, damit die Schrift scharf bleibt.', sample: 'Monat,Umsatz,Kosten\nJan,12,9\nFeb,15,10\nMär,14,11\nApr,19,12\nMai,23,14\nJun,27,15' },
+  ru: { data: 'Данные', hint: 'Вставьте таблицу или перетащите файл CSV. Первый столбец — ось X, каждый следующий — отдельная линия, столбики или точки (до 8). Первая строка с названиями определяется сама.', browse: 'Открыть файл CSV', kind: 'График', line: 'Линия', bar: 'Столбики', scatter: 'Точки', title: 'Заголовок', xlabel: 'Подпись оси X', ylabel: 'Подпись оси Y', size: 'Размер', grid: 'Сетка', legend: 'Легенда', zero: 'Начинать ось Y с нуля', svg: 'Скачать SVG', png: 'Скачать PNG', copy: 'Копировать SVG', series: 'рядов', points: 'строк', dropped: 'лишних столбцов пропущено: {n}', empty: 'Нет данных для графика.', cols: 'Добавьте рядом с первым столбцом хотя бы один столбец с числами.', note: 'Рисуется в вашем браузере. Данные никуда не загружаются. PNG сохраняется вдвое крупнее, чтобы текст был чётким.', sample: 'Месяц,Продажи,Расходы\nЯнв,12,9\nФев,15,10\nМар,14,11\nАпр,19,12\nМай,23,14\nИюн,27,15' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="plot">
+  <div class="tl plot" data-plot data-s={JSON.stringify(s)}>
+    <div class="work">
+      <div class="card pane" data-drop>
+        <label>{s.data}<textarea name="data" spellcheck="false" rows="12" class="mono"></textarea></label>
+        <p class="meta">{s.hint}</p>
+        <label class="btn alt pick">{s.browse}<input type="file" accept=".csv,.tsv,.txt,text/csv,text/plain" class="sr-only" data-file /></label>
+        <div class="row">
+          <label>{s.kind}<select name="kind"><option value="line">{s.line}</option><option value="bar">{s.bar}</option><option value="scatter">{s.scatter}</option></select></label>
+          <label>{s.size}<select name="size"><option value="800x450">800 × 450</option><option value="1200x675">1200 × 675</option><option value="600x600">600 × 600</option><option value="1000x400">1000 × 400</option></select></label>
+        </div>
+        <div class="row">
+          <label class="grow">{s.title}<input name="title" autocomplete="off" /></label>
+          <label class="grow">{s.xlabel}<input name="xlabel" autocomplete="off" /></label>
+          <label class="grow">{s.ylabel}<input name="ylabel" autocomplete="off" /></label>
+        </div>
+        <div class="row">
+          <label class="check"><input type="checkbox" name="grid" checked />{s.grid}</label>
+          <label class="check"><input type="checkbox" name="legend" checked />{s.legend}</label>
+          <label class="check"><input type="checkbox" name="zero" />{s.zero}</label>
+        </div>
+      </div>
+      <div class="card pane">
+        <p class="note bad" role="alert" data-error hidden></p>
+        <div class="view" data-view></div>
+        <p class="meta" data-info></p>
+        <div class="actions">
+          <button type="button" class="btn" data-png-save data-needs>{s.png}</button>
+          <button type="button" class="btn alt" data-svg-save data-needs>{s.svg}</button>
+          <button type="button" class="btn alt" data-copy data-needs>{s.copy}</button>
+        </div>
+        <p class="meta">{s.note}</p>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/plot/plot.ts';
+</script>
+<style>
+  .work { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); align-items: start; }
+  @media (max-width: 900px) { .work { grid-template-columns: minmax(0, 1fr); } }
+  .pick { cursor: pointer; justify-self: start; }
+  .grow { flex: 1 1 140px; }
+  [data-drop].over { outline: 2px dashed var(--accent); outline-offset: 2px; }
+  .view { border-radius: var(--radius-sm); overflow: hidden; background: #fff; line-height: 0; }
+  .view :global(svg) { display: block; width: 100%; height: auto; }
+</style>

@@ -535,7 +535,7 @@ test('the tools overview has a filter chip for every category, each with at leas
 });
 
 test('simple tool pages do not pull in the PDF or QR code libraries', () => {
-  for (const slug of ['vram', 'checksum', 'tz', 'bitrate', 'compose', 'json', 'gen', 'diff', 'favicon', 'epoch', 'csv', 'subnet', 'chmod', 'utm', 'barcode', 'crop', 'typing', 'units', 'palette', 'svg', 'imgmark', 'audio']) {
+  for (const slug of ['vram', 'checksum', 'tz', 'bitrate', 'compose', 'json', 'gen', 'diff', 'favicon', 'epoch', 'csv', 'subnet', 'chmod', 'utm', 'barcode', 'crop', 'typing', 'units', 'palette', 'svg', 'imgmark', 'audio', 'markdown', 'plot', 'latex']) {
     for (const dir of Object.values(LANG_DIRS)) {
       const html = read(`${dir}tools/${slug}/index.html`);
       const entries = [...html.matchAll(/\/_astro\/([^"'`\s]+\.js)/g)].map((m) => m[1]);

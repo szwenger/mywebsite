@@ -1,0 +1,47 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const sample = 'e^{i\\pi} + 1 = 0 \\qquad \\int_{-\\infty}^{\\infty} e^{-x^2}\\,dx = \\sqrt{\\pi}';
+const s = {
+  en: { src: 'LaTeX formula', hint: 'Type the formula without dollar signs. Buttons below add common pieces at the cursor.', display: 'Large display style', size: 'Size', preview: 'Result', copyTex: 'Copy LaTeX', copyMml: 'Copy MathML', note: 'MathML pastes as an editable formula into Word and LibreOffice. Rendering runs in your browser with KaTeX, nothing is uploaded.', sample },
+  de: { src: 'LaTeX-Formel', hint: 'Formel ohne Dollarzeichen eingeben. Die Knöpfe darunter fügen gängige Bausteine an der Schreibmarke ein.', display: 'Große Darstellung', size: 'Größe', preview: 'Ergebnis', copyTex: 'LaTeX kopieren', copyMml: 'MathML kopieren', note: 'MathML lässt sich in Word und LibreOffice als bearbeitbare Formel einfügen. Das Rendern läuft mit KaTeX in deinem Browser, nichts wird hochgeladen.', sample },
+  ru: { src: 'Формула LaTeX', hint: 'Вводите формулу без знаков доллара. Кнопки ниже вставляют типовые элементы в позицию курсора.', display: 'Крупный вид', size: 'Размер', preview: 'Результат', copyTex: 'Копировать LaTeX', copyMml: 'Копировать MathML', note: 'MathML вставляется в Word и LibreOffice как редактируемая формула. Отрисовка идёт в вашем браузере через KaTeX, ничего не загружается.', sample },
+}[lang];
+---
+<ToolLayout lang={lang} slug="latex">
+  <div class="tl latex" data-latex data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <label>{s.src}<textarea name="src" spellcheck="false" rows="5" class="mono"></textarea></label>
+      <p class="meta">{s.hint}</p>
+      <div class="actions" data-chips></div>
+      <div class="row">
+        <label class="check"><input type="checkbox" name="display" checked />{s.display}</label>
+        <label>{s.size}<input type="range" name="size" min="80" max="300" value="150" /></label>
+      </div>
+    </div>
+    <div class="card pane">
+      <p class="meta lbl">{s.preview}</p>
+      <p class="note bad" role="alert" data-error hidden></p>
+      <div class="view" data-view></div>
+      <div class="actions">
+        <button type="button" class="btn" data-copy-tex data-needs>{s.copyTex}</button>
+        <button type="button" class="btn alt" data-copy-mml data-needs>{s.copyMml}</button>
+      </div>
+      <p class="meta">{s.note}</p>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/latex/latex.ts';
+</script>
+<style>
+  .lbl { margin: 0; }
+  .chip { padding: 6px 12px; font-size: .85rem; font-weight: 500; }
+  .view { overflow-x: auto; overflow-y: hidden; min-height: 3em; padding: 8px 0; }
+  .view :global(.katex-display) { margin: .4em 0; }
+</style>

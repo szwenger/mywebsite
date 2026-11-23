@@ -273,6 +273,42 @@ export const tools: Tool[] = [
     },
   },
   {
+    slug: 'markdown',
+    cat: 'text',
+    tags: 'md preview render html readme editor',
+    icon: 'M3 6h18v12H3zM6.5 15V9l2.5 3 2.5-3v6M16 9v6M14 13l2 2 2-2',
+    name: { en: 'Markdown preview', de: 'Markdown-Vorschau', ru: 'Просмотр Markdown' },
+    blurb: {
+      en: 'Write Markdown, see it rendered live and save it as a clean HTML page.',
+      de: 'Markdown schreiben, live gerendert sehen und als saubere HTML-Seite speichern.',
+      ru: 'Пишите Markdown, смотрите результат сразу и сохраняйте как чистую HTML-страницу.',
+    },
+  },
+  {
+    slug: 'plot',
+    cat: 'images',
+    tags: 'chart graph plot diagram line bar scatter csv data visualization',
+    icon: 'M4 4v16h16M8 15l3-4 3 2 5-6',
+    name: { en: 'Chart maker', de: 'Diagramm-Ersteller', ru: 'Построитель графиков' },
+    blurb: {
+      en: 'Paste a table or CSV and get a line, bar or scatter chart as SVG or PNG.',
+      de: 'Tabelle oder CSV einfügen und ein Linien-, Balken- oder Punktdiagramm als SVG oder PNG erhalten.',
+      ru: 'Вставьте таблицу или CSV и получите линейный, столбчатый или точечный график в SVG или PNG.',
+    },
+  },
+  {
+    slug: 'latex',
+    cat: 'text',
+    tags: 'math formula equation katex tex mathml',
+    icon: 'M6 4h12M6 20h12M7 4l6 8-6 8M13 12h5',
+    name: { en: 'LaTeX formulas', de: 'LaTeX-Formeln', ru: 'Формулы LaTeX' },
+    blurb: {
+      en: 'Type a LaTeX formula, see it typeset live and copy it as MathML for Word.',
+      de: 'LaTeX-Formel eingeben, live gesetzt sehen und als MathML für Word kopieren.',
+      ru: 'Введите формулу LaTeX, смотрите набор сразу и копируйте как MathML для Word.',
+    },
+  },
+  {
     slug: 'ffmpeg',
     cat: 'media',
     tags: 'ffmpeg video compress trim cut gif audio extract mp3 nvenc h264 h265 av1 command',

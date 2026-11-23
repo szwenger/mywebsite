@@ -1,0 +1,59 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { LANGS, type Lang } from '../../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = {
+  en: { src: 'Markdown', preview: 'Preview', open: 'Open a .md file', copy: 'Copy HTML', html: 'Download HTML page', save: 'Download .md', words: 'words', chars: 'characters', empty: 'Nothing to show yet.', note: 'Raw HTML in the text is shown as text, and unsafe links are removed. Your text is kept in this browser only and never uploaded.', sample: '# Hello\n\nWrite **Markdown** on the left and see it on the right.\n\n- Lists, [links](https://example.com) and `code`\n- [x] Task lists\n\n| Tables | Work |\n|--------|------|\n| yes    | too  |\n\n> A quote.\n' },
+  de: { src: 'Markdown', preview: 'Vorschau', open: '.md-Datei öffnen', copy: 'HTML kopieren', html: 'HTML-Seite herunterladen', save: '.md herunterladen', words: 'Wörter', chars: 'Zeichen', empty: 'Noch nichts anzuzeigen.', note: 'Rohes HTML im Text wird als Text angezeigt, unsichere Links werden entfernt. Dein Text bleibt nur in diesem Browser und wird nie hochgeladen.', sample: '# Hallo\n\nSchreib links **Markdown** und sieh rechts das Ergebnis.\n\n- Listen, [Links](https://example.com) und `Code`\n- [x] Aufgabenlisten\n\n| Tabellen | gehen |\n|----------|-------|\n| ja       | auch  |\n\n> Ein Zitat.\n' },
+  ru: { src: 'Markdown', preview: 'Предпросмотр', open: 'Открыть файл .md', copy: 'Копировать HTML', html: 'Скачать HTML-страницу', save: 'Скачать .md', words: 'слов', chars: 'символов', empty: 'Пока нечего показывать.', note: 'Сырой HTML в тексте показывается как текст, небезопасные ссылки удаляются. Текст хранится только в этом браузере и никуда не загружается.', sample: '# Привет\n\nПишите **Markdown** слева и смотрите результат справа.\n\n- Списки, [ссылки](https://example.com) и `код`\n- [x] Списки задач\n\n| Таблицы | тоже |\n|---------|------|\n| да      | да   |\n\n> Цитата.\n' },
+}[lang];
+---
+<ToolLayout lang={lang} slug="markdown">
+  <div class="tl md" data-md data-lang={lang} data-s={JSON.stringify(s)}>
+    <div class="cols">
+      <div class="card pane">
+        <label>{s.src}<textarea name="src" spellcheck="false" rows="18" class="mono"></textarea></label>
+        <p class="meta" data-stat></p>
+      </div>
+      <div class="card pane">
+        <p class="meta lbl">{s.preview}</p>
+        <div class="view" data-view></div>
+      </div>
+    </div>
+    <div class="actions">
+      <label class="btn alt pick">{s.open}<input type="file" accept=".md,.markdown,.txt,text/markdown,text/plain" class="sr-only" data-file /></label>
+      <button type="button" class="btn" data-copy>{s.copy}</button>
+      <button type="button" class="btn alt" data-html>{s.html}</button>
+      <button type="button" class="btn alt" data-md-save>{s.save}</button>
+    </div>
+    <p class="meta">{s.note}</p>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/markdown/markdown.ts';
+</script>
+<style>
+  .cols { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 860px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+  .lbl { margin: 0; }
+  .pick { cursor: pointer; }
+  .view { overflow-wrap: anywhere; line-height: 1.6; }
+  .view :global(> :first-child) { margin-top: 0; }
+  .view :global(h1), .view :global(h2), .view :global(h3) { font-family: var(--display); letter-spacing: -.02em; line-height: 1.2; margin: 1.2em 0 .5em; }
+  .view :global(h1) { font-size: 1.6rem; }
+  .view :global(h2) { font-size: 1.3rem; }
+  .view :global(h3) { font-size: 1.1rem; }
+  .view :global(p), .view :global(ul), .view :global(ol), .view :global(blockquote), .view :global(pre), .view :global(table) { margin: 0 0 .9em; }
+  .view :global(blockquote) { padding-left: 1em; border-left: 3px solid var(--line); color: var(--muted); }
+  .view :global(code) { font-family: var(--mono, ui-monospace, Consolas, monospace); font-size: .9em; padding: .1em .35em; border-radius: 4px; background: var(--surface-2); }
+  .view :global(pre) { padding: 12px 14px; overflow: auto; border-radius: var(--radius-sm); background: var(--surface-2); }
+  .view :global(pre code) { padding: 0; background: none; }
+  .view :global(table) { border-collapse: collapse; display: block; overflow-x: auto; }
+  .view :global(th), .view :global(td) { border: 1px solid var(--line); padding: 5px 10px; }
+  .view :global(img) { max-width: 100%; }
+  .view :global(hr) { border: 0; border-top: 1px solid var(--line); }
+</style>
