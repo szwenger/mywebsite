@@ -264,6 +264,17 @@ test('hardware, impressum and privacy exist in every language', () => {
   }
 });
 
+test('licences page names libheif (LGPL-3.0), links the licence text and is linked from every footer', () => {
+  assert.match(read('licenses/LGPL-3.0.txt'), /GNU LESSER GENERAL PUBLIC LICENSE/);
+  for (const dir of Object.values(LANG_DIRS)) {
+    const h = read(`${dir}licenses/index.html`);
+    assert.match(h, /libheif/);
+    assert.match(h, /LGPL-3\.0/);
+    assert.ok(hrefs(h).includes('/licenses/LGPL-3.0.txt'), `text link in ${dir}`);
+    assert.ok(hrefs(read(`${dir}impressum/index.html`)).includes(`/${dir}licenses/`), `footer link in ${dir}`);
+  }
+});
+
 test('hardware lists 6 PC parts, 6 peripherals, 3 audio items, the Quest 2 and the 12 kept original links', () => {
   const ORIGINAL = [
     'https://amzn.eu/d/4hkrHid', 'https://amzn.eu/d/9HwxtbE', 'https://amzn.eu/d/5oOMUjF', 'https://amzn.eu/d/4JcwcsO',
@@ -541,5 +552,23 @@ test('simple tool pages do not pull in the PDF or QR code libraries', () => {
       const entries = [...html.matchAll(/\/_astro\/([^"'`\s]+\.js)/g)].map((m) => m[1]);
       assert.ok(!closure(entries).some((n) => chunkSrc(n).includes('PDFDocument.load') || chunkSrc(n).includes('WIFI:T:')), `${dir}${slug}`);
     }
+  }
+});
+
+test('shared motion layer: press scale, shake, height animation and a reduced-motion switch-off ship in the global CSS', () => {
+  const css = walk(join('dist', '_astro')).filter((f) => f.endsWith('.css')).map((f) => readFileSync(f, 'utf8')).join('\n');
+  assert.match(css, /button:not\(:disabled\):active[^{]*\{scale:\.97\}/, 'press scale');
+  assert.match(css, /@keyframes shake/, 'shake keyframes');
+  assert.match(css, /interpolate-size:allow-keywords/, 'interpolate-size');
+  assert.match(css, /prefers-reduced-motion:reduce\)\{[^}]*animation:none!important/, 'reduced motion');
+  assert.match(css, /\.btn\.ib\{[^}]*width:40px;height:40px/, 'icon button hit area');
+});
+
+test('every icon-only button has an aria-label in all languages', () => {
+  for (const [lang, f] of Object.entries(PAGES)) {
+    const html = read(`${f.replace(/index\.html$/, '')}tools/csv/index.html`);
+    const m = [...html.matchAll(/<button[^>]*class="[^"]*\bib\b[^"]*"[^>]*>/g)].map((x) => x[0]);
+    assert.ok(m.length > 0, `icon buttons on csv ${lang}`);
+    for (const b of m) assert.match(b, /aria-label="[^"]+"/, `${lang}: ${b}`);
   }
 });

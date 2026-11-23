@@ -1,0 +1,10 @@
+---
+import Icon from './Icon.astro';
+import type { IconName } from '../data/icons';
+// Icon-only button: the label is the accessible name and the tooltip (scripts/tip.ts). Extra attributes (data-copy, disabled, ...) pass through.
+interface Props { icon: IconName; label: string; alt?: boolean; [attr: string]: unknown }
+const { icon, label, alt = true, ...rest } = Astro.props;
+---
+<button type="button" class:list={['btn', alt && 'alt', 'ib']} aria-label={label} {...rest}>
+  <span class="glyph"><Icon name={icon} /></span><span class="done"><Icon name="check" /></span>
+</button>

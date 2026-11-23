@@ -20,7 +20,7 @@ const { s, heic = false, accept } = Astro.props;
       </select>
     </label>
     <label>{s.quality} <output data-quality-out></output>
-      <input type="range" min="10" max="100" step="5" value="85" data-quality />
+      <input type="range" min="10" max="100" step="5" value="85" data-quality aria-label={s.quality} />
     </label>
     <label>{s.maxW}<input type="number" min="1" inputmode="numeric" data-maxw /></label>
     <label>{s.maxH}<input type="number" min="1" inputmode="numeric" data-maxh /></label>

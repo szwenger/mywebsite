@@ -1,4 +1,4 @@
-import { copy } from '../dom';
+import { copy, iconButton } from '../dom';
 import { iso, isoWeek, parseStamp, stamps, type Unit } from './logic';
 
 const root = document.querySelector<HTMLElement>('[data-epoch]');
@@ -21,8 +21,8 @@ if (root) {
     const tr = document.createElement('tr');
     const th = Object.assign(document.createElement('th'), { textContent: label });
     const td = Object.assign(document.createElement('td'), { className: 'val mono' });
-    const b = Object.assign(document.createElement('button'), { type: 'button', className: 'cp', textContent: s.copy });
-    b.addEventListener('click', () => copy(value, b, s.copied).then(() => { b.textContent = s.copy; }));
+    const b = iconButton('copy', s.copy, true);
+    b.addEventListener('click', () => copy(value, b));
     td.append(value, b);
     tr.append(th, td);
     return tr;

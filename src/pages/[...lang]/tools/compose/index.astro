@@ -1,5 +1,6 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
+import IconButton from '../../../../components/IconButton.astro';
 import { LANGS, type Lang } from '../../../../i18n/ui';
 
 export function getStaticPaths() {
@@ -22,8 +23,8 @@ const example = 'docker run -d -p 3000:8080 --gpus all \\\n  -v open-webui:/app/
     <div class="card pane">
       <label>{s.output}<pre data-yaml></pre></label>
       <div class="actions">
-        <button type="button" class="btn alt" data-copy>{s.copy}</button>
-        <button type="button" class="btn alt" data-save>{s.download}</button>
+        <IconButton icon="copy" label={s.copy} data-copy />
+        <IconButton icon="download" label={s.download} data-save />
       </div>
       <div data-warn hidden>
         <p class="meta">{s.warnings}</p>

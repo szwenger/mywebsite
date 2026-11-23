@@ -1,5 +1,6 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
+import Icon from '../../../../components/Icon.astro';
 import { LANGS, type Lang } from '../../../../i18n/ui';
 
 export function getStaticPaths() {
@@ -36,7 +37,7 @@ const s = {
       </div>
       <label class="check"><input type="checkbox" name="norm" />{s.norm}</label>
       <label class="check"><input type="checkbox" name="mono" />{s.toMono}</label>
-      <div class="actions"><button type="button" class="btn" data-save>{s.save}</button></div>
+      <div class="actions"><button type="button" class="btn" data-save><Icon name="download" size={16} />{s.save}</button></div>
     </div>
   </div>
 </ToolLayout>

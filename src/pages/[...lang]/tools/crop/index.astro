@@ -1,5 +1,6 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
+import Icon from '../../../../components/Icon.astro';
 import { LANGS, type Lang } from '../../../../i18n/ui';
 import { PRESETS } from '../../../../tools/crop/logic';
 
@@ -45,7 +46,7 @@ const s = {
         </div>
         <p class="meta full" data-size></p>
         <div class="row full">
-          <button type="button" class="btn" data-download>{s.download}</button>
+          <button type="button" class="btn" data-download><Icon name="download" size={16} />{s.download}</button>
           <button type="button" class="btn alt" data-other>{s.other}</button>
         </div>
       </div>

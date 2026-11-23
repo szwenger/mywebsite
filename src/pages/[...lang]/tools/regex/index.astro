@@ -1,5 +1,6 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
+import IconButton from '../../../../components/IconButton.astro';
 import { LANGS, type Lang } from '../../../../i18n/ui';
 
 export function getStaticPaths() {
@@ -33,7 +34,7 @@ const s = {
       <table><thead><tr><th>{s.nr}</th><th>{s.pos}</th><th>{s.match}</th><th>{s.groups}</th></tr></thead><tbody data-rows></tbody></table>
       <h2 class="sub">{s.replaced}</h2>
       <pre data-replaced hidden></pre>
-      <div class="actions"><button type="button" class="btn alt" data-copy>{s.copy}</button></div>
+      <div class="actions"><IconButton icon="copy" label={s.copy} data-copy /></div>
       <p class="meta">{s.note}</p>
     </div>
   </div>

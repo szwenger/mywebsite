@@ -67,7 +67,7 @@ const s = {
       <div class="style">
         <label>{s.fg}<input type="color" name="fg" value="#000000" /></label>
         <label>{s.bg}<input type="color" name="bg" value="#ffffff" /></label>
-        <label class="size"><span>{s.size}: <output name="sizeOut">512</output> {s.px}</span><input type="range" name="size" min="128" max="1024" step="16" value="512" /></label>
+        <label class="size"><span>{s.size}: <output name="sizeOut">512</output> {s.px}</span><input type="range" name="size" aria-label={s.size} min="128" max="1024" step="16" value="512" /></label>
       </div>
       <p class="warn" role="status" data-warn data-text={s.low} hidden></p>
     </div>

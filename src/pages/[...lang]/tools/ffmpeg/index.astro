@@ -1,5 +1,6 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
+import IconButton from '../../../../components/IconButton.astro';
 import { LANGS, type Lang } from '../../../../i18n/ui';
 
 export function getStaticPaths() {
@@ -26,7 +27,7 @@ const s = {
         </label>
       </div>
       <div class="stack" data-for="compress trim">
-        <label data-for="compress trim"><span>{s.quality}: <output name="qOut">23</output></span><input name="quality" type="range" min="14" max="38" value="23" /></label>
+        <label data-for="compress trim"><span>{s.quality}: <output name="qOut">23</output></span><input name="quality" aria-label={s.quality} type="range" min="14" max="38" value="23" /></label>
       </div>
       <div class="row" data-for="compress trim">
         <label>{s.height}<select name="height"><option value="0">{s.original}</option><option value="2160">2160p</option><option value="1440">1440p</option><option value="1080">1080p</option><option value="720">720p</option><option value="480">480p</option></select></label>
@@ -54,7 +55,7 @@ const s = {
       <h2 class="sub">{s.command}</h2>
       <pre class="cmd" data-out></pre>
       <p class="note bad" data-warn role="alert" hidden>{s.tooSmall}</p>
-      <div class="actions"><button type="button" class="btn" data-copy>{s.copy}</button></div>
+      <div class="actions"><IconButton icon="copy" label={s.copy} alt={false} data-copy /></div>
       <p class="meta">{s.how}</p>
       <p class="meta">{s.note}</p>
     </div>

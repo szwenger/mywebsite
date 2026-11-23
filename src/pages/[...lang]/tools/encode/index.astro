@@ -1,5 +1,6 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
+import IconButton from '../../../../components/IconButton.astro';
 import { LANGS, type Lang } from '../../../../i18n/ui';
 
 export function getStaticPaths() {
@@ -36,7 +37,7 @@ const s = {
       <p class="note bad" data-error role="alert" hidden></p>
       <div data-plain>
         <label>{s.output}<textarea name="out" spellcheck="false" rows="12" readonly></textarea></label>
-        <div class="actions pad"><button type="button" class="btn alt" data-copy>{s.copy}</button><button type="button" class="btn alt" data-use>{s.use}</button></div>
+        <div class="actions pad"><IconButton icon="copy" label={s.copy} data-copy /><button type="button" class="btn alt" data-use>{s.use}</button></div>
       </div>
       <div data-jwt hidden>
         <p class="note">{s.jwtNote}</p>

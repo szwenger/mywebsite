@@ -1,5 +1,6 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
+import IconButton from '../../../../components/IconButton.astro';
 import { LANGS, type Lang } from '../../../../i18n/ui';
 
 export function getStaticPaths() {
@@ -36,7 +37,7 @@ const s = {
       <div class="actions">
         <button type="button" class="btn" data-png>{s.png}</button>
         <button type="button" class="btn alt" data-svg>{s.svg}</button>
-        <button type="button" class="btn alt" data-copy>{s.copy}</button>
+        <IconButton icon="copy" label={s.copy} data-copy />
       </div>
     </div>
   </div>

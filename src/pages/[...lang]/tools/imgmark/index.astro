@@ -1,5 +1,6 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
+import Icon from '../../../../components/Icon.astro';
 import { LANGS, type Lang } from '../../../../i18n/ui';
 import { POSITIONS } from '../../../../tools/imgmark/logic';
 
@@ -54,7 +55,7 @@ const s = {
             <label class="check"><input type="checkbox" name="tile" />{s.tile}</label>
           </div>
         </div>
-        <div class="actions"><button type="button" class="btn" data-save>{s.save}</button><span class="meta" data-status></span></div>
+        <div class="actions"><button type="button" class="btn" data-save><Icon name="download" size={16} />{s.save}</button><span class="meta" data-status></span></div>
       </div>
     </div>
   </div>

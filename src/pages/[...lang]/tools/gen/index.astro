@@ -24,7 +24,7 @@ const s = {
         <label class="check"><input type="radio" name="kind" value="token" /> {s.token}</label>
       </div>
       <div data-when="password" class="stack">
-        <label><span>{s.length}: <output name="lenOut">20</output></span><input name="length" type="range" min="6" max="64" value="20" /></label>
+        <label><span>{s.length}: <output name="lenOut">20</output></span><input name="length" aria-label={s.length} type="range" min="6" max="64" value="20" /></label>
         <label class="check"><input type="checkbox" name="lower" checked /> {s.lower}</label>
         <label class="check"><input type="checkbox" name="upper" checked /> {s.upper}</label>
         <label class="check"><input type="checkbox" name="digits" checked /> {s.digits}</label>

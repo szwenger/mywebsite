@@ -1,5 +1,6 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
+import IconButton from '../../../../components/IconButton.astro';
 import { LANGS, type Lang } from '../../../../i18n/ui';
 
 export function getStaticPaths() {
@@ -31,7 +32,7 @@ const s = {
       <div class="card pane">
         <div class="row">
           <label>{s.exp}<select name="kind"><option value="css">{s.css}</option><option value="json">{s.json}</option><option value="list">{s.list}</option></select></label>
-          <button type="button" class="btn" data-copy>{s.copy}</button>
+          <IconButton icon="copy" label={s.copy} alt={false} data-copy />
           <button type="button" class="btn alt" data-other>{s.other}</button>
         </div>
         <textarea name="export" class="mono" rows="8" readonly spellcheck="false"></textarea>

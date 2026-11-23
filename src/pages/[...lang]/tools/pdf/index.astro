@@ -1,5 +1,6 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
+import Icon from '../../../../components/Icon.astro';
 import { LANGS, type Lang } from '../../../../i18n/ui';
 import { pdfStrings, TABS } from '../../../../tools/pdf/strings';
 import '../../../../styles/tools.css';
@@ -52,7 +53,7 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
         <div class="row end">
           <button type="button" class="btn alt" data-undo disabled>{s.undo}</button>
           <button type="button" class="btn alt" data-reset>{s.reset}</button>
-          <button type="button" class="btn" data-download>{s.download}</button>
+          <button type="button" class="btn" data-download><Icon name="download" size={16} />{s.download}</button>
         </div>
       </div>
 

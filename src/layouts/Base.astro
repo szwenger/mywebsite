@@ -65,5 +65,9 @@ const OG_LOCALE = { en: 'en_US', de: 'de_DE', ru: 'ru_RU' } as const;
     </main>
     <Footer lang={lang} />
     <Lightbox lang={lang} />
+    <script>
+      import { initTips } from '../scripts/tip';
+      initTips();
+    </script>
   </body>
 </html>
