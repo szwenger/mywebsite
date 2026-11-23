@@ -3,11 +3,14 @@ export interface Unit {
   id: string; // symbol shown in the lists, also the key
   name: string; // English name, used when Intl has no localised one
   intl?: string; // sanctioned ECMA-402 unit id, so the browser can name it in the page language
-  f?: number; // factor to the base unit
+  f?: number | ((c: Ctx) => number); // factor to the base unit, or a function of the screen settings
   to?: (x: number) => number; // to base
   from?: (b: number) => number; // from base
 }
-export interface Category { id: string; units: Unit[] }
+/** Screen settings the pixel and rem units depend on. */
+export interface Ctx { rem?: number; ppi?: number }
+export const CTX_DEFAULT = { rem: 16, ppi: 96 };
+export interface Category { id: string; units: Unit[]; ctx?: boolean; base?: boolean } // ctx: needs the screen settings; base: number bases, handled by convertBase
 
 const u = (id: string, name: string, f: number, intl?: string): Unit => ({ id, name, f, intl });
 
@@ -27,6 +30,13 @@ export const CATEGORIES: Category[] = [
   { id: 'pressure', units: [u('Pa', 'pascal', 1), u('kPa', 'kilopascal', 1e3), u('bar', 'bar', 1e5), u('psi', 'pound per square inch', 6894.757293168), u('atm', 'standard atmosphere', 101325), u('mmHg', 'millimetre of mercury', 133.322387415)] },
   { id: 'energy', units: [u('J', 'joule', 1), u('kJ', 'kilojoule', 1e3), u('cal', 'calorie', 4.184), u('kcal', 'kilocalorie', 4184), u('Wh', 'watt hour', 3600), u('kWh', 'kilowatt hour', 3.6e6), u('BTU', 'British thermal unit', 1055.05585262)] },
   { id: 'power', units: [u('W', 'watt', 1), u('kW', 'kilowatt', 1e3), u('hp', 'horsepower (mechanical)', 745.69987158), u('PS', 'metric horsepower', 735.49875)] },
+  // Base is the inch. A pixel is 1/ppi inch (96 is the CSS reference pixel), a rem is the root font size in pixels.
+  { id: 'screen', ctx: true, units: [
+    { id: 'px', name: 'pixel', f: (c) => 1 / c.ppi! },
+    { id: 'rem', name: 'rem (root font size)', f: (c) => c.rem! / c.ppi! },
+    u('pt', 'point', 1 / 72), u('pc', 'pica', 1 / 6), u('in', 'inch', 1, 'inch'), u('cm', 'centimetre', 1 / 2.54, 'centimeter'), u('mm', 'millimetre', 1 / 25.4, 'millimeter'),
+  ] },
+  { id: 'bases', base: true, units: [u('2', 'binary', 2), u('8', 'octal', 8), u('10', 'decimal', 10), u('16', 'hexadecimal', 16), u('32', 'base 32', 32), u('36', 'base 36', 36)] }, // f is the radix here
   { id: 'angle', units: [u('°', 'degree', 1, 'degree'), u('rad', 'radian', 180 / Math.PI), u('grad', 'gradian', 0.9), u('turn', 'full turn', 360)] },
   // Base is litres per 100 km. Consumption and distance-per-volume are reciprocal, so these are functions, and 0 has no answer.
   { id: 'fuel', units: [
@@ -41,11 +51,32 @@ export const category = (id: string): Category => CATEGORIES.find((c) => c.id ==
 const unit = (cat: Category, id: string): Unit => cat.units.find((x) => x.id === id) ?? cat.units[0];
 
 /** Converts `value` between two units of one category. NaN when the value has no answer (e.g. 0 mpg). */
-export function convert(catId: string, from: string, to: string, value: number): number {
+export function convert(catId: string, from: string, to: string, value: number, ctx: Ctx = {}): number {
   const cat = category(catId);
+  const c = { ...CTX_DEFAULT, ...ctx };
   const a = unit(cat, from), b = unit(cat, to);
-  const base = a.to ? a.to(value) : value * a.f!;
-  return b.from ? b.from(base) : base / b.f!;
+  const fa = typeof a.f === 'function' ? a.f(c) : a.f!, fb = typeof b.f === 'function' ? b.f(c) : b.f!;
+  const base = a.to ? a.to(value) : value * fa;
+  return b.from ? b.from(base) : base / fb;
+}
+
+const DIGITS = '0123456789abcdefghijklmnopqrstuvwxyz';
+const PREFIX: Record<number, string> = { 2: '0b', 8: '0o', 16: '0x' };
+
+/** Converts an integer written in one base to another, exactly (BigInt). Spaces and underscores are ignored, a 0b/0o/0x prefix of the same base is allowed. '' when the text is not a whole number in that base. */
+export function convertBase(text: string, from: number, to: number): string {
+  let t = text.toLowerCase().replace(/[\s_']/g, '');
+  const neg = t.startsWith('-');
+  if (neg || t.startsWith('+')) t = t.slice(1);
+  if (PREFIX[from] && t.startsWith(PREFIX[from])) t = t.slice(2);
+  if (!t) return '';
+  let n = 0n;
+  for (const ch of t) {
+    const d = DIGITS.indexOf(ch);
+    if (d < 0 || d >= from) return '';
+    n = n * BigInt(from) + BigInt(d);
+  }
+  return (neg && n ? '-' : '') + n.toString(to).toUpperCase();
 }
 
 /** Ten significant digits, no trailing zeros, exponent form for very large or small numbers. */

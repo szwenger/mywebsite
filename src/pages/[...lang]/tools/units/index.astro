@@ -1,29 +1,11 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
-import { LANGS, type Lang } from '../../../../i18n/ui';
+import { langOf, toolPaths } from '../../../../i18n/tool-page';
+import { s as strings } from '../../../../i18n/tools/units';
 
-export function getStaticPaths() {
-  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
-}
-const lang = (Astro.params.lang ?? 'en') as Lang;
-// `names` only needs the units the browser cannot name itself (Intl covers the common ones in every language).
-const s = {
-  en: {
-    locale: 'en', value: 'Value', from: 'From', to: 'To', swap: 'Swap units', all: 'In every unit', hint: 'Click a row to make it the target and copy its value.', copied: '✓',
-    cats: { length: 'Length', mass: 'Mass', volume: 'Volume', temperature: 'Temperature', speed: 'Speed', area: 'Area', time: 'Time', data: 'Data', pressure: 'Pressure', energy: 'Energy', power: 'Power', angle: 'Angle', fuel: 'Fuel economy' },
-    names: {},
-  },
-  de: {
-    locale: 'de', value: 'Wert', from: 'Von', to: 'Nach', swap: 'Einheiten tauschen', all: 'In jeder Einheit', hint: 'Klick auf eine Zeile macht sie zum Ziel und kopiert den Wert.', copied: '✓',
-    cats: { length: 'Länge', mass: 'Masse', volume: 'Volumen', temperature: 'Temperatur', speed: 'Geschwindigkeit', area: 'Fläche', time: 'Zeit', data: 'Daten', pressure: 'Druck', energy: 'Energie', power: 'Leistung', angle: 'Winkel', fuel: 'Verbrauch' },
-    names: { 'µm': 'Mikrometer', nmi: 'Seemeile', mg: 'Milligramm', t: 'Tonne', 'm³': 'Kubikmeter', qt: 'US-Quart', pt: 'US-Pint', cup: 'US-Cup', tbsp: 'US-Esslöffel', tsp: 'US-Teelöffel', 'imp gal': 'Imperiale Gallone', K: 'Kelvin', 'm/s': 'Meter pro Sekunde', kn: 'Knoten', 'ft/s': 'Fuß pro Sekunde', 'm²': 'Quadratmeter', 'km²': 'Quadratkilometer', 'cm²': 'Quadratzentimeter', 'ft²': 'Quadratfuß', 'in²': 'Quadratzoll', 'yd²': 'Quadratyard', 'mi²': 'Quadratmeile', d: 'Tag', wk: 'Woche', mo: 'Monat (Durchschnitt)', yr: 'Jahr (Durchschnitt)', kB: 'Kilobyte (1000)', MB: 'Megabyte (1000²)', GB: 'Gigabyte (1000³)', TB: 'Terabyte (1000⁴)', PB: 'Petabyte (1000⁵)', KiB: 'Kibibyte (1024)', MiB: 'Mebibyte (1024²)', GiB: 'Gibibyte (1024³)', TiB: 'Tebibyte (1024⁴)', Pa: 'Pascal', kPa: 'Kilopascal', bar: 'Bar', psi: 'Pfund pro Quadratzoll', atm: 'Physikalische Atmosphäre', mmHg: 'Millimeter Quecksilbersäule', J: 'Joule', kJ: 'Kilojoule', cal: 'Kalorie', kcal: 'Kilokalorie', Wh: 'Wattstunde', kWh: 'Kilowattstunde', BTU: 'British thermal unit', W: 'Watt', kW: 'Kilowatt', hp: 'Pferdestärke (mechanisch)', PS: 'Pferdestärke (metrisch)', rad: 'Radiant', grad: 'Gon', turn: 'Volle Drehung', 'L/100km': 'Liter pro 100 km', mpg: 'Meilen pro US-Gallone', 'mpg UK': 'Meilen pro imperialer Gallone', 'km/L': 'Kilometer pro Liter' },
-  },
-  ru: {
-    locale: 'ru', value: 'Значение', from: 'Из', to: 'В', swap: 'Поменять единицы', all: 'Во всех единицах', hint: 'Щелчок по строке делает её целевой единицей и копирует значение.', copied: '✓',
-    cats: { length: 'Длина', mass: 'Масса', volume: 'Объём', temperature: 'Температура', speed: 'Скорость', area: 'Площадь', time: 'Время', data: 'Данные', pressure: 'Давление', energy: 'Энергия', power: 'Мощность', angle: 'Угол', fuel: 'Расход топлива' },
-    names: { 'µm': 'Микрометр', nmi: 'Морская миля', mg: 'Миллиграмм', t: 'Тонна', 'm³': 'Кубический метр', qt: 'Кварта США', pt: 'Пинта США', cup: 'Стакан США', tbsp: 'Столовая ложка США', tsp: 'Чайная ложка США', 'imp gal': 'Британский галлон', K: 'Кельвин', 'm/s': 'Метр в секунду', kn: 'Узел', 'ft/s': 'Фут в секунду', 'm²': 'Квадратный метр', 'km²': 'Квадратный километр', 'cm²': 'Квадратный сантиметр', 'ft²': 'Квадратный фут', 'in²': 'Квадратный дюйм', 'yd²': 'Квадратный ярд', 'mi²': 'Квадратная миля', d: 'Сутки', wk: 'Неделя', mo: 'Месяц (в среднем)', yr: 'Год (в среднем)', kB: 'Килобайт (1000)', MB: 'Мегабайт (1000²)', GB: 'Гигабайт (1000³)', TB: 'Терабайт (1000⁴)', PB: 'Петабайт (1000⁵)', KiB: 'Кибибайт (1024)', MiB: 'Мебибайт (1024²)', GiB: 'Гибибайт (1024³)', TiB: 'Тебибайт (1024⁴)', Pa: 'Паскаль', kPa: 'Килопаскаль', bar: 'Бар', psi: 'Фунт на квадратный дюйм', atm: 'Атмосфера', mmHg: 'Миллиметр ртутного столба', J: 'Джоуль', kJ: 'Килоджоуль', cal: 'Калория', kcal: 'Килокалория', Wh: 'Ватт-час', kWh: 'Киловатт-час', BTU: 'Британская тепловая единица', W: 'Ватт', kW: 'Киловатт', hp: 'Лошадиная сила (механическая)', PS: 'Лошадиная сила (метрическая)', rad: 'Радиан', grad: 'Град', turn: 'Полный оборот', 'L/100km': 'Литров на 100 км', mpg: 'Миль на галлон США', 'mpg UK': 'Миль на британский галлон', 'km/L': 'Километров на литр' },
-  },
-}[lang];
+export const getStaticPaths = toolPaths;
+const lang = langOf(Astro.params);
+const s = strings[lang];
 ---
 <ToolLayout lang={lang} slug="units">
   <div class="tl units" data-units data-s={JSON.stringify(s)}>
@@ -35,12 +17,18 @@ const s = {
         <button type="button" class="btn alt swap" data-swap aria-label={s.swap} title={s.swap}>⇄</button>
         <label>{s.to}<select name="to"></select></label>
       </div>
+      <div class="row" data-ctx hidden>
+        <label>{s.rem}<input name="rem" class="mono" inputmode="decimal" value="16" /></label>
+        <label>{s.ppi}<input name="ppi" class="mono" inputmode="decimal" value="96" /></label>
+      </div>
       <p class="out-big" data-out aria-live="polite"></p>
     </div>
     <div class="card pane">
       <h2 class="h">{s.all}</h2>
       <div class="table" data-table></div>
       <p class="meta">{s.hint}</p>
+      <p class="meta" data-hint="screen" hidden>{s.hintScreen}</p>
+      <p class="meta" data-hint="bases" hidden>{s.hintBase}</p>
     </div>
   </div>
 </ToolLayout>

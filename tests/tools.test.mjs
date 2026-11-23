@@ -30,3 +30,8 @@ test('topics: every one used is defined in three languages, and each groups at l
   for (const t of tools) for (const k of t.topics ?? []) assert.ok(topics[k], `${t.slug}: unknown topic ${k}`);
   for (const k of Object.keys(topics)) assert.ok(tools.filter((t) => t.topics?.includes(k)).length >= 3, `${k} has fewer than three tools`);
 });
+
+test('the unit converter can be found by what it now converts (px, rem, ppi, hex, binary)', () => {
+  const words = new Set(tools.find((t) => t.slug === 'units').tags.split(' '));
+  for (const w of ['px', 'rem', 'ppi', 'hex', 'binary']) assert.ok(words.has(w), w);
+});

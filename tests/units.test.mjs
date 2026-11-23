@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { CATEGORIES, category, convert, format, parseNumber } from '../src/tools/units/logic.ts';
+import { CATEGORIES, category, convert, convertBase, format, parseNumber } from '../src/tools/units/logic.ts';
 
 const close = (a, b, eps = 1e-9) => assert.ok(Math.abs(a - b) <= eps * Math.max(1, Math.abs(b)), `${a} vs ${b}`);
 
@@ -82,4 +82,43 @@ test('parseNumber reads both decimal separators and thousands marks', () => {
   assert.equal(parseNumber('-3e2'), -300);
   assert.ok(Number.isNaN(parseNumber('abc')));
   assert.ok(Number.isNaN(parseNumber('')));
+});
+
+test('screen units: CSS reference pixel, points and a root font size', () => {
+  close(convert('screen', 'px', 'pt', 16), 12);
+  close(convert('screen', 'pt', 'in', 72), 1);
+  close(convert('screen', 'pc', 'pt', 1), 12);
+  close(convert('screen', 'px', 'mm', 96), 25.4);
+  close(convert('screen', 'rem', 'px', 1), 16);
+  close(convert('screen', 'rem', 'px', 1.5, { rem: 20 }), 30);
+  close(convert('screen', 'px', 'rem', 24, { rem: 12 }), 2);
+});
+
+test('screen units: the pixel density only moves pixels, never the physical units', () => {
+  close(convert('screen', 'px', 'mm', 300, { ppi: 300 }), 25.4);
+  close(convert('screen', 'in', 'px', 2, { ppi: 220 }), 440);
+  close(convert('screen', 'in', 'cm', 1, { ppi: 220 }), 2.54);
+  close(convert('screen', 'rem', 'px', 1, { ppi: 220 }), 16);
+});
+
+test('number bases convert exactly, however big the number is', () => {
+  assert.equal(convertBase('ff', 16, 10), '255');
+  assert.equal(convertBase('255', 10, 16), 'FF');
+  assert.equal(convertBase('0xFF', 16, 2), '11111111');
+  assert.equal(convertBase('0b101', 2, 8), '5');
+  assert.equal(convertBase('0o17', 8, 10), '15');
+  assert.equal(convertBase('123456789012345678901234567890', 10, 16), '18EE90FF6C373E0EE4E3F0AD2');
+  assert.equal(convertBase('18EE90FF6C373E0EE4E3F0AD2', 16, 10), '123456789012345678901234567890');
+  assert.equal(convertBase('zz', 36, 10), '1295');
+});
+
+test('number bases: sign, separators and zero are handled; wrong digits give no answer', () => {
+  assert.equal(convertBase('-10', 2, 10), '-2');
+  assert.equal(convertBase('1111 0000', 2, 10), '240');
+  assert.equal(convertBase('ff_ff', 16, 10), '65535');
+  assert.equal(convertBase('0', 10, 2), '0');
+  assert.equal(convertBase('-0', 10, 2), '0');
+  assert.equal(convertBase('0b1', 16, 10), '177'); // the b is a hex digit here, not a prefix
+  for (const bad of ['', '-', '0x', 'g', '1.5']) assert.equal(convertBase(bad, 16, 10), '', JSON.stringify(bad));
+  assert.equal(convertBase('2', 2, 10), '');
 });

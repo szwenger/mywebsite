@@ -495,13 +495,13 @@ export const tools: Tool[] = [
     slug: 'units',
     cat: 'text',
     topics: ['math'],
-    tags: 'unit converter length mass weight temperature celsius fahrenheit kelvin miles km pounds kg gallons litres speed area data mpg fuel',
+    tags: 'unit converter length mass weight temperature celsius fahrenheit kelvin miles km pounds kg gallons litres speed area data mpg fuel px rem em pt pica pixel css ppi dpi screen density base binary hex hexadecimal octal decimal bin oct dec number base radix',
     icon: 'M4 17h16M4 17V9M8 17v-4M12 17V9M16 17v-4M20 17V9M4 9h16',
     name: { en: 'Unit converter', de: 'Einheiten-Umrechner', ru: 'Конвертер единиц' },
     blurb: {
-      en: 'Length, weight, volume, temperature, speed, data sizes, fuel economy and more, with every unit shown at once.',
-      de: 'Länge, Gewicht, Volumen, Temperatur, Geschwindigkeit, Datengrößen, Verbrauch und mehr, mit allen Einheiten auf einen Blick.',
-      ru: 'Длина, вес, объём, температура, скорость, размеры данных, расход топлива и не только, сразу во всех единицах.',
+      en: 'Length, weight, volume, temperature, speed, data sizes, fuel economy, px to rem and points with your PPI, and number bases up to 36, with every unit shown at once.',
+      de: 'Länge, Gewicht, Volumen, Temperatur, Geschwindigkeit, Datengrößen, Verbrauch, px zu rem und Punkt mit deiner PPI sowie Zahlensysteme bis 36, mit allen Einheiten auf einen Blick.',
+      ru: 'Длина, вес, объём, температура, скорость, размеры данных, расход топлива, px в rem и пункты с вашим PPI, системы счисления до 36, сразу во всех единицах.',
     },
   },
   {
