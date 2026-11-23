@@ -6,6 +6,7 @@ const GH = 'https://docs.github.com/en/site-policy/privacy-policies/github-gener
 const TW = 'https://www.twitch.tv/p/en/legal/privacy-notice/';
 const YT = 'https://policies.google.com/privacy';
 const AZ = 'https://www.amazon.de/gp/help/customer/display.html?nodeId=201909010';
+const SQ = 'https://www.squarespace.com/privacy';
 const MAIL = '<a href="mailto:request@galuin.com">request@galuin.com</a>';
 
 export const privacy: Record<Lang, PrivacyDoc> = {
@@ -26,7 +27,10 @@ export const privacy: Record<Lang, PrivacyDoc> = {
         `<a href="${YT}" rel="noopener">YouTube (Google)</a>, <a href="${TW}" rel="noopener">Twitch</a>, <a href="${AZ}" rel="noopener">Amazon</a>.`,
       ] },
       { h: 'Browser-Tools', p: ['Die Tools (z. B. QR-Code, PDF, Bildkonverter) verarbeiten deine Dateien ausschließlich lokal im Browser. Es wird nichts hochgeladen oder an einen Server gesendet.'] },
-      { h: 'Kontakt per E-Mail', p: [`Wenn du mir schreibst (${MAIL}), verarbeite ich deine Nachricht und Absenderadresse nur, um zu antworten. Ich lösche sie, sobald die Angelegenheit erledigt ist und keine Aufbewahrungspflicht besteht.`] },
+      { h: 'Kontakt per E-Mail', p: [
+        `Wenn du mir schreibst (${MAIL}), verarbeite ich deine Nachricht und Absenderadresse nur, um zu antworten. Ich lösche sie, sobald die Angelegenheit erledigt ist und keine Aufbewahrungspflicht besteht.`,
+        `Mails an diese Adresse leitet mein Domain-Anbieter Squarespace (Squarespace Ireland Limited) in mein Postfach weiter; laut DNS-Eintrag nimmt dafür ein Mailserver von Mailgun (USA) die Nachricht an. Nach eigener Angabe stützt sich Squarespace bei Übermittlungen in die USA auf das EU-US Data Privacy Framework und Standardvertragsklauseln (<a href="${SQ}" rel="noopener">Datenschutzerklärung von Squarespace</a>). Wie lange weitergeleitete Nachrichten dort gespeichert werden, nennt Squarespace dort nicht.`,
+      ] },
       { h: 'Deine Rechte', p: ['Du hast das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) und Widerspruch (Art. 21). Eine erteilte Einwilligung kannst du jederzeit mit Wirkung für die Zukunft widerrufen. Außerdem hast du das Recht auf Beschwerde bei einer Datenschutz-Aufsichtsbehörde. Schreib dazu einfach an ' + MAIL + '.'] },
     ],
   },
@@ -47,7 +51,10 @@ export const privacy: Record<Lang, PrivacyDoc> = {
         `<a href="${YT}" rel="noopener">YouTube (Google)</a>, <a href="${TW}" rel="noopener">Twitch</a>, <a href="${AZ}" rel="noopener">Amazon</a>.`,
       ] },
       { h: 'Browser tools', p: ['The tools (such as QR code, PDF and image converter) process your files only locally in your browser. Nothing is uploaded or sent to a server.'] },
-      { h: 'Contact by email', p: [`If you write to me (${MAIL}), I use your message and address only to reply. I delete them once the matter is closed and no retention duty applies.`] },
+      { h: 'Contact by email', p: [
+        `If you write to me (${MAIL}), I use your message and address only to reply. I delete them once the matter is closed and no retention duty applies.`,
+        `My domain provider Squarespace (Squarespace Ireland Limited) forwards mail to this address into my mailbox; according to the DNS record, a Mailgun (USA) mail server accepts the message for that. By its own statement, Squarespace relies on the EU-US Data Privacy Framework and standard contractual clauses for transfers to the USA (<a href="${SQ}" rel="noopener">Squarespace privacy policy</a>). Squarespace does not say there how long forwarded messages are kept.`,
+      ] },
       { h: 'Your rights', p: ['You have the right of access (Art. 15 GDPR), rectification (Art. 16), erasure (Art. 17), restriction (Art. 18), data portability (Art. 20) and objection (Art. 21). You can withdraw consent at any time with effect for the future. You can also lodge a complaint with a data protection supervisory authority. To exercise any of these, email ' + MAIL + '.'] },
     ],
   },
@@ -68,7 +75,10 @@ export const privacy: Record<Lang, PrivacyDoc> = {
         `<a href="${YT}" rel="noopener">YouTube (Google)</a>, <a href="${TW}" rel="noopener">Twitch</a>, <a href="${AZ}" rel="noopener">Amazon</a>.`,
       ] },
       { h: 'Инструменты в браузере', p: ['Инструменты (QR-код, PDF, конвертер изображений) обрабатывают ваши файлы только локально в браузере. Ничего не загружается и не отправляется на сервер.'] },
-      { h: 'Связь по почте', p: [`Если вы пишете мне (${MAIL}), я использую письмо и адрес только для ответа и удаляю их, когда вопрос решён и нет обязанности хранить.`] },
+      { h: 'Связь по почте', p: [
+        `Если вы пишете мне (${MAIL}), я использую письмо и адрес только для ответа и удаляю их, когда вопрос решён и нет обязанности хранить.`,
+        `Почту на этот адрес пересылает в мой ящик регистратор домена Squarespace (Squarespace Ireland Limited); по записи DNS письмо принимает почтовый сервер Mailgun (США). По собственному заявлению, при передаче в США Squarespace опирается на EU-US Data Privacy Framework и стандартные договорные положения (<a href="${SQ}" rel="noopener">политика конфиденциальности Squarespace</a>). Как долго пересланные письма хранятся, Squarespace там не указывает.`,
+      ] },
       { h: 'Ваши права', p: ['Вы вправе получить доступ к данным (ст. 15 GDPR), исправить (ст. 16), удалить (ст. 17), ограничить обработку (ст. 18), перенести данные (ст. 20) и возразить (ст. 21). Согласие можно отозвать в любой момент на будущее. Также можно подать жалобу в надзорный орган по защите данных. Для этого напишите на ' + MAIL + '.'] },
     ],
   },

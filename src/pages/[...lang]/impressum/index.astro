@@ -8,9 +8,9 @@ export function getStaticPaths() {
 }
 const lang = (Astro.params.lang ?? 'en') as Lang;
 const copy = {
-  en: { head: 'Legal notice', basis: 'Information pursuant to § 5 DDG', contact: 'Contact', email: 'Email', pending: 'Postal address: to be added before launch.', resp: 'Responsible for content pursuant to § 18 (2) MStV', note: 'This is a translation. The German version is legally binding.' },
-  de: { head: 'Impressum', basis: 'Angaben gemäß § 5 DDG', contact: 'Kontakt', email: 'E-Mail', pending: 'Anschrift: wird vor dem Start ergänzt.', resp: 'Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV', note: '' },
-  ru: { head: 'Выходные данные', basis: 'Сведения согласно § 5 DDG (Германия)', contact: 'Контакты', email: 'Эл. почта', pending: 'Почтовый адрес: будет добавлен до запуска.', resp: 'Ответственный за содержание согласно § 18 абз. 2 MStV', note: 'Это перевод. Юридическую силу имеет немецкая версия.' },
+  en: { head: 'Legal notice', basis: 'Information pursuant to § 5 DDG', contact: 'Contact', email: 'Email', pending: 'Postal address: being added shortly. Until then, please reach me by email.', resp: 'Responsible for content pursuant to § 18 (2) MStV', note: 'This is a translation. The German version is legally binding.' },
+  de: { head: 'Impressum', basis: 'Angaben gemäß § 5 DDG', contact: 'Kontakt', email: 'E-Mail', pending: 'Anschrift: wird in Kürze ergänzt. Bis dahin erreichst du mich per E-Mail.', resp: 'Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV', note: '' },
+  ru: { head: 'Выходные данные', basis: 'Сведения согласно § 5 DDG (Германия)', contact: 'Контакты', email: 'Эл. почта', pending: 'Почтовый адрес: будет добавлен в ближайшее время. А пока напишите мне по электронной почте.', resp: 'Ответственный за содержание согласно § 18 абз. 2 MStV', note: 'Это перевод. Юридическую силу имеет немецкая версия.' },
 }[lang];
 const address = hasAddress ? legal.address : [];
 ---
