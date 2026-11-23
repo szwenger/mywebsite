@@ -8,6 +8,8 @@ const walk = (d) => readdirSync(d).flatMap((f) => {
   const p = join(d, f);
   return statSync(p).isDirectory() ? walk(p) : [p];
 });
+// CSS is inlined into each page (build.inlineStylesheets: 'always'); the _astro .css files are only leftovers.
+const inlineCss = () => [...read('index.html').matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1]).join('\n');
 const PAGES = { en: 'index.html', de: 'de/index.html', ru: 'ru/index.html' };
 const pre = (lang) => (lang === 'en' ? '' : `/${lang}`);
 
@@ -107,7 +109,7 @@ test('no third-party load on any page', () => {
 });
 
 test('self-hosted font covers Cyrillic', () => {
-  const css = walk('dist').filter((p) => p.endsWith('.css')).map((f) => readFileSync(f, 'utf8')).join('\n');
+  const css = inlineCss();
   const faces = css.match(/@font-face\s*{[^}]*}/g) ?? [];
   assert.ok(faces.some((f) => /unicode-range:[^;}]*U\+0?400/i.test(f)), 'no @font-face with a Cyrillic unicode-range');
 });
@@ -556,7 +558,7 @@ test('simple tool pages do not pull in the PDF or QR code libraries', () => {
 });
 
 test('shared motion layer: press scale, shake, height animation and a reduced-motion switch-off ship in the global CSS', () => {
-  const css = walk(join('dist', '_astro')).filter((f) => f.endsWith('.css')).map((f) => readFileSync(f, 'utf8')).join('\n');
+  const css = inlineCss();
   assert.match(css, /button:not\(:disabled\):active[^{]*\{scale:\.97\}/, 'press scale');
   assert.match(css, /@keyframes shake/, 'shake keyframes');
   assert.match(css, /interpolate-size:allow-keywords/, 'interpolate-size');

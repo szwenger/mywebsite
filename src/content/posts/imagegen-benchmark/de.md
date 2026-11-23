@@ -1,7 +1,7 @@
 ---
 title: "Bildgenerierung ohne GPU: 12 Sekunden auf der CPU"
 date: 2026-11-22T19:10:00Z
-cover: /posts/imagegen-benchmark.jpg
+cover: /posts/imagegen-benchmark-cover.webp
 tags: [image-generation, benchmark, cpu, local-ai]
 ---
 Meine GPU ist mit dem Sprachmodell ausgelastet, deshalb wollte ich für Open WebUI eine Bildgenerierung, die allein auf der CPU läuft. Ich habe fünf Setups getestet. Das beste erzeugt auf einem i5-13600K ein 512×512-Bild in etwa 12 Sekunden: **SDXL-Turbo mit 2 Schritten über FastSD CPU mit OpenVINO**.

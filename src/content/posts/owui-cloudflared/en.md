@@ -1,7 +1,7 @@
 ---
 title: "Open WebUI on the internet without opening a port: Cloudflare Tunnel and an email gate"
 date: 2026-11-22T21:04:00Z
-cover: /posts/owui-cloudflared.png
+cover: /posts/owui-cloudflared-cover.webp
 tags: [open-webui, cloudflare, self-hosting, security]
 ---
 I run Open WebUI at home, on the same PC as my local models. It used to be reachable through Tailscale, which was fine for me and awkward for my wife, because it means installing and signing in to another app. I moved the public access to a Cloudflare Tunnel so she can open the chat in a normal browser. **The tunnel needs no inbound port on my router, and a Cloudflare Access email list means nobody else even sees the Open WebUI login page.** Tailscale stays for private access to the PC itself.

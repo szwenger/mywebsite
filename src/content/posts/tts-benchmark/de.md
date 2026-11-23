@@ -1,7 +1,7 @@
 ---
 title: "Sprachausgabe auf der CPU: Die Thread-Zahl war wichtiger als die Engine"
 date: 2026-11-22T20:25:00Z
-cover: /posts/tts-benchmark.jpg
+cover: /posts/tts-benchmark-cover.webp
 tags: [tts, benchmark, cpu, local-ai]
 ---
 Mein Open WebUI liest Antworten über zwei Engines hinter einem kleinen Router vor: Kokoro für Englisch und Piper für Deutsch und Russisch. Ich wollte wissen, ob eine einzige reine CPU-Engine beide ersetzen und alle drei Sprachen abdecken kann. Ich habe Kitten TTS 2 (Nano und Mini) und Supertonic 3 gegen das aktuelle Setup getestet. Alle sind um ein Vielfaches schneller als Echtzeit, die Geschwindigkeit entscheidet also nicht. **Die Thread-Zahl entscheidet aber, wie schnell jede Engine ist, und zwar um bis zu das Dreifache.**

@@ -1,7 +1,7 @@
 ---
 title: "Local LLMs on a 16 GB GPU: the settings mattered more than the models"
 date: 2026-11-20
-cover: /posts/llm-benchmark.png
+cover: /posts/llm-benchmark-cover.webp
 tags: [llm, benchmark, amd, local-ai]
 ---
 I spent several days benchmarking 13 local language models on one Radeon RX 6800 XT (16 GB). The result surprised me: the model you pick matters less than how you run it. Same GPU, same model files, and the long-prompt speed varied by up to 17×.

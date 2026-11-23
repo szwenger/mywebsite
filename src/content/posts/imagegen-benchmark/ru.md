@@ -1,7 +1,7 @@
 ---
 title: "Генерация изображений без GPU: 12 секунд на процессоре"
 date: 2026-11-22T19:10:00Z
-cover: /posts/imagegen-benchmark.jpg
+cover: /posts/imagegen-benchmark-cover.webp
 tags: [image-generation, benchmark, cpu, local-ai]
 ---
 Моя видеокарта занята языковой моделью, поэтому для Open WebUI мне нужна была генерация изображений, которая работает только на процессоре. Я протестировал пять вариантов. Лучший делает картинку 512×512 примерно за 12 секунд на i5-13600K: **SDXL-Turbo в 2 шага через FastSD CPU с OpenVINO**.

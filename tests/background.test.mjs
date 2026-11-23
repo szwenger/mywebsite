@@ -1,9 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readdirSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const css = () => readdirSync(join('dist', '_astro')).filter((n) => n.endsWith('.css')).map((n) => readFileSync(join('dist', '_astro', n), 'utf8')).join('\n');
+// CSS is inlined into the page (build.inlineStylesheets: 'always').
+const css = () => [...readFileSync(join('dist', 'index.html'), 'utf8').matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1]).join('\n');
 
 test('stage-beam background: fixed, behind the content, never catches clicks, animated by keyframes', () => {
   const c = css();

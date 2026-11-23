@@ -1,7 +1,7 @@
 ---
 title: "Text-to-speech on the CPU: the thread count mattered more than the engine"
 date: 2026-11-22T20:25:00Z
-cover: /posts/tts-benchmark.jpg
+cover: /posts/tts-benchmark-cover.webp
 tags: [tts, benchmark, cpu, local-ai]
 ---
 My Open WebUI reads answers aloud through two engines behind a small router: Kokoro for English and Piper for German and Russian. I wanted to know if a single CPU-only engine could replace both and cover all three languages. I tested Kitten TTS 2 (Nano and Mini) and Supertonic 3 against the current setup. Every one of them is many times faster than real time, so speed does not pick the winner. **The thread count does decide how fast each one is, by up to 3×.**
