@@ -4,7 +4,8 @@ import { renderPage, toBlob, bytesOf, openPdf, closePdf, type PdfDoc } from './r
 import { shown, type RGB, type TextRenderer } from './stamp';
 import { contentBox, invert, isBlank, toGray } from './pixels';
 import { zip } from '../zip';
-import { renderImages } from '../pdf2img/export';
+import { renderImages } from './export';
+import { imageFormat } from './images';
 import { pageText } from './textout';
 import type { Reencode } from './more';
 
@@ -91,13 +92,14 @@ export async function pagesToImagePdf(file: Uint8Array, dpi: number, password?: 
   } finally { closePdf(pdf); }
 }
 
-export async function exportImages(file: Uint8Array, o: { fmt: 'png' | 'jpeg' | 'webp'; dpi: number; quality: number; name: string; pages?: number[] }, onProgress?: (i: number, n: number) => void): Promise<Uint8Array> {
+export async function exportImages(file: Uint8Array, o: { fmt: 'png' | 'jpeg' | 'webp'; dpi: number; quality: number; name: string; pages?: number[] }, onProgress?: (i: number, n: number) => void): Promise<{ data: Uint8Array; name: string; type: string }> {
   const pdf = await openPdf(file);
   const files: { name: string; data: Uint8Array }[] = [];
   try {
     await renderImages(pdf, { ...o, pages: o.pages ?? [...Array(pdf.numPages).keys()] }, async (img) => { files.push({ name: img.name, data: await bytesOf(img.blob) }); }, onProgress);
   } finally { closePdf(pdf); }
-  return zip(files);
+  // one page: the bare image, not a ZIP of one
+  return files.length === 1 ? { ...files[0], type: imageFormat(o.fmt).type } : { data: zip(files), name: `${o.name}-images.zip`, type: 'application/zip' };
 }
 
 export async function extractText(file: Uint8Array): Promise<string[]> {

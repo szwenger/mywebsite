@@ -69,7 +69,7 @@ export const tools: Tool[] = [
     produces: ['pdf', 'png', 'jpg', 'webp', 'txt', 'docx', 'zip'],
     icon: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h4',
     name: { en: 'PDF tools', de: 'PDF-Werkzeuge', ru: 'PDF-инструменты' },
-    tags: 'pdf merge split compress sign signature redact protect password unlock watermark page numbers rotate reorder crop forms booklet n-up',
+    tags: 'pdf merge split compress sign signature redact protect password unlock watermark page numbers rotate reorder crop forms booklet n-up pdf to image png jpg webp convert pages screenshot render zip',
     blurb: {
       en: 'Merge, split, reorder, compress, sign, redact, protect, number and convert PDFs, with drag-and-drop pages. 16 tools, all in your browser.',
       de: 'PDFs zusammenfügen, teilen, umsortieren, komprimieren, unterschreiben, schwärzen, schützen, nummerieren und umwandeln, mit Drag-and-drop für Seiten. 16 Werkzeuge, alles im Browser.',
@@ -636,20 +636,6 @@ export const tools: Tool[] = [
       en: 'Cut a section out of an audio or video file, add fades, normalise the volume and save it as WAV.',
       de: 'Einen Abschnitt aus einer Audio- oder Videodatei schneiden, Fades setzen, Lautstärke angleichen und als WAV speichern.',
       ru: 'Вырезать фрагмент из аудио- или видеофайла, добавить плавное нарастание и затухание, выровнять громкость и сохранить в WAV.',
-    },
-  },
-  {
-    slug: 'pdf2img',
-    cat: 'pdf',
-    accepts: ['pdf'],
-    produces: ['png', 'jpg', 'webp', 'zip'],
-    tags: 'pdf to image jpg png convert pages screenshot render zip',
-    icon: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 17l2-3 2 2 2-3',
-    name: { en: 'PDF to images', de: 'PDF in Bilder', ru: 'PDF в изображения' },
-    blurb: {
-      en: 'Turn PDF pages into PNG, JPG or WebP images at the resolution you pick, and download them as a ZIP.',
-      de: 'PDF-Seiten in PNG-, JPG- oder WebP-Bilder in gewählter Auflösung umwandeln und als ZIP laden.',
-      ru: 'Страницы PDF в изображения PNG, JPG или WebP нужного разрешения, скачивание одним ZIP.',
     },
   },
 ];

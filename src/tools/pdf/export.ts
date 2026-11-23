@@ -1,6 +1,6 @@
-// The one loop that turns PDF pages into image files: the PDF to images page and the PDF suite's convert panel both use it.
-import { renderPage, toBlob, type PdfDoc } from '../pdf/raster';
-import { fitDpi, imageFormat, pageFile, type ImageFmt } from './logic';
+// The one loop that turns PDF pages into image files: the PDF suite's convert panel uses it.
+import { renderPage, toBlob, type PdfDoc } from './raster';
+import { fitDpi, imageFormat, pageFile, type ImageFmt } from './images';
 
 export interface PageImage { page: number; name: string; blob: Blob }
 export interface ExportOptions { fmt: ImageFmt; dpi: number; quality: number; name: string; pages: number[] }

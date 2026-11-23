@@ -1,7 +1,7 @@
 // Browser-only PDF reading and drawing with pdf.js. The worker ships with the site; nothing is loaded from a CDN.
 import * as pdfjs from 'pdfjs-dist';
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
-import { fitDpi, scaleFor } from '../pdf2img/logic';
+import { fitDpi, scaleFor } from './images';
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
 export type PdfDoc = pdfjs.PDFDocumentProxy;
