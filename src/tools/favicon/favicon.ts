@@ -1,5 +1,7 @@
 import { buildIco, buildZip, squareCrop } from './logic';
 import { copy, download, onFiles } from '../dom';
+import { isHeic } from '../image/logic';
+import { canvasBlob, decodeImage } from '../imageio';
 
 const SIZES: [string, number][] = [['favicon-16x16.png', 16], ['favicon-32x32.png', 32], ['favicon-48x48.png', 48], ['apple-touch-icon.png', 180], ['android-chrome-192x192.png', 192], ['android-chrome-512x512.png', 512]];
 
@@ -7,12 +9,12 @@ const root = document.querySelector<HTMLElement>('[data-favicon]');
 if (root) {
   const q = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
   const f = (n: string) => root.querySelector<HTMLSelectElement>(`[name="${n}"]`)!;
-  let img: HTMLImageElement | null = null;
+  let img: HTMLImageElement | ImageBitmap | null = null;
   let files: { name: string; data: Uint8Array }[] = [];
 
   async function render() {
     if (!img) return;
-    const w = img.naturalWidth || 512, h = img.naturalHeight || 512; // SVG without size attributes reports 0
+    const w = ('naturalWidth' in img ? img.naturalWidth : img.width) || 512, h = ('naturalHeight' in img ? img.naturalHeight : img.height) || 512; // SVG without size attributes reports 0
     const c = squareCrop(w, h, f('fit').value as 'cover' | 'contain');
     const out: typeof files = [];
     const previews = q('[data-previews]');
@@ -24,7 +26,7 @@ if (root) {
       g.imageSmoothingQuality = 'high';
       if (f('bg').value) { g.fillStyle = f('bg').value; g.fillRect(0, 0, size, size); }
       g.drawImage(img, c.sx, c.sy, c.sw, c.sh, c.dx * size, c.dy * size, c.dw * size, c.dh * size);
-      const blob = await new Promise<Blob | null>((r) => cv.toBlob(r, 'image/png'));
+      const blob = await canvasBlob(cv);
       if (!blob) continue;
       out.push({ name, data: new Uint8Array(await blob.arrayBuffer()) });
       if (size <= 192) {
@@ -43,11 +45,13 @@ if (root) {
   async function load(file: File) {
     q('[data-error]').hidden = true;
     q('[data-file]').textContent = file.name;
-    const url = URL.createObjectURL(file);
-    const im = new Image();
     try {
-      await new Promise((ok, no) => { im.onload = ok; im.onerror = no; im.src = url; });
-      img = im;
+      if (isHeic(file)) img = await decodeImage(file);
+      else {
+        const im = new Image();
+        await new Promise((ok, no) => { im.onload = ok; im.onerror = no; im.src = URL.createObjectURL(file); });
+        img = im;
+      }
       await render();
     } catch {
       img = null; q('[data-result]').hidden = true; q('[data-error]').hidden = false;

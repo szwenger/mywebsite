@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { targetSize, outName, accepts, isHeic } from '../src/tools/image/logic.ts';
+import { targetSize, outName, accepts, isHeic, isImage } from '../src/tools/image/logic.ts';
 
 test('targetSize keeps the aspect ratio and fits the width', () => {
   assert.deepEqual(targetSize(4000, 3000, 1000), { w: 1000, h: 750 });
@@ -52,4 +52,11 @@ test('isHeic accepts the HEIC types and, for an empty type, the extension', () =
   assert.ok(isHeic({ name: 'x.heif', type: '' }));
   assert.ok(!isHeic({ name: 'x.png', type: 'image/png' }));
   assert.ok(!isHeic({ name: 'heic.txt', type: '' }));
+});
+
+test('isImage takes any image type, and HEIC by extension when the browser leaves the type empty', () => {
+  for (const t of ['image/png', 'image/svg+xml', 'image/avif', 'image/heic']) assert.ok(isImage({ name: 'a', type: t }), t);
+  assert.ok(isImage({ name: 'IMG_1.HEIC', type: '' }));
+  assert.ok(!isImage({ name: 'a.pdf', type: 'application/pdf' }));
+  assert.ok(!isImage({ name: 'notes.txt', type: '' }));
 });

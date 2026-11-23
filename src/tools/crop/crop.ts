@@ -1,5 +1,6 @@
 import { download, onFiles } from '../dom';
-import { accepts, fitsCanvas, outName, type Format } from '../image/logic';
+import { accepts, fitsCanvas, isHeic, outName, type Format } from '../image/logic';
+import { canvasBlob, decodeImage } from '../imageio';
 import { cropRect, outSize, parseRatio, turned } from './logic';
 
 const root = document.querySelector<HTMLElement>('[data-crop]');
@@ -58,9 +59,9 @@ if (root) {
     const img = files[0];
     if (!img) return;
     show();
-    if (!accepts(img)) { show(s.badType); return; }
+    if (!accepts(img) && !isHeic(img)) { show(s.badType); return; }
     try {
-      bmp = await createImageBitmap(img);
+      bmp = await decodeImage(img);
     } catch { show(s.failed); return; }
     if (!fitsCanvas({ w: bmp.width, h: bmp.height })) { show(s.tooBig); bmp = null; return; }
     file = img.name; deg = 0; cx = cy = 0.5;
@@ -99,7 +100,7 @@ if (root) {
     if (fmt === 'jpeg') { g.fillStyle = '#fff'; g.fillRect(0, 0, o.w, o.h); }
     g.imageSmoothingQuality = 'high';
     g.drawImage(src, r.x, r.y, r.w, r.h, 0, 0, o.w, o.h);
-    const blob = await new Promise<Blob | null>((done) => c.toBlob(done, `image/${fmt}`, Number(f('quality').value) / 100));
+    const blob = await canvasBlob(c, `image/${fmt}`, Number(f('quality').value) / 100);
     if (!blob || blob.type !== `image/${fmt}`) { show(s.unsupported); return; }
     download(blob, outName(file.replace(/(\.[^.]+)?$/, '-crop$1'), fmt));
   });

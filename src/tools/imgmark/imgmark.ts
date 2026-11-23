@@ -1,5 +1,7 @@
 import { anchor, fontSize, logoSize, markedName, tiles, type Pos } from './logic';
 import { download, onFiles } from '../dom';
+import { fitsCanvas, isImage } from '../image/logic';
+import { canvasBlob, decodeImage } from '../imageio';
 import { zip } from '../zip';
 
 const root = document.querySelector<HTMLElement>('[data-mark]');
@@ -71,13 +73,13 @@ function init(root: HTMLElement) {
   const later = () => { clearTimeout(timer); timer = window.setTimeout(preview, 60); };
 
   async function setFiles(next: File[]) {
-    const ok = next.filter((x) => x.type.startsWith('image/'));
+    const ok = next.filter(isImage);
     if (next.length && !ok.length) { fail(s.badType); return; }
     fail('');
     files = ok;
     list.textContent = files.map((x) => x.name).join(', ');
     first?.close();
-    try { first = await createImageBitmap(files[0]); } catch { first = null; fail(s.failed); return; }
+    try { first = await decodeImage(files[0]); } catch { first = null; fail(s.failed); return; }
     work.hidden = false;
     preview();
   }
@@ -89,8 +91,8 @@ function init(root: HTMLElement) {
     for (const [i, file] of files.entries()) {
       status.textContent = `${i + 1} / ${files.length}`;
       try {
-        const bmp = await createImageBitmap(file);
-        if (bmp.width * bmp.height > 16_777_216) { fail(`${file.name}: ${s.tooBig}`); bmp.close(); continue; }
+        const bmp = await decodeImage(file);
+        if (!fitsCanvas({ w: bmp.width, h: bmp.height })) { fail(`${file.name}: ${s.tooBig}`); bmp.close(); continue; }
         const c = document.createElement('canvas');
         c.width = bmp.width; c.height = bmp.height;
         const g = c.getContext('2d')!;
@@ -98,7 +100,7 @@ function init(root: HTMLElement) {
         paint(g, c.width, c.height);
         bmp.close();
         const type = ['image/jpeg', 'image/webp'].includes(file.type) ? file.type : 'image/png';
-        const blob = await new Promise<Blob | null>((done) => c.toBlob(done, type, 0.92));
+        const blob = await canvasBlob(c, type, 0.92);
         if (!blob) { fail(`${file.name}: ${s.failed}`); continue; }
         out.push({ name: markedName(file.name, type === 'image/jpeg' ? 'jpg' : type.slice(6)), data: new Uint8Array(await blob.arrayBuffer()) });
       } catch { fail(`${file.name}: ${s.failed}`); }
@@ -113,7 +115,7 @@ function init(root: HTMLElement) {
   logoInput.addEventListener('change', async () => {
     const file = logoInput.files?.[0];
     if (!file) return;
-    try { logo?.close(); logo = await createImageBitmap(file); (root.querySelector('[name=kind][value=logo]') as HTMLInputElement).checked = true; sync(); preview(); } catch { fail(s.failed); }
+    try { logo?.close(); logo = await decodeImage(file); (root.querySelector('[name=kind][value=logo]') as HTMLInputElement).checked = true; sync(); preview(); } catch { fail(s.failed); }
   });
   const sync = () => { const logoMode = mode() === 'logo'; q('[data-text-opts]').hidden = logoMode; q('[data-logo-opts]').hidden = !logoMode; };
   root.addEventListener('input', () => { sync(); later(); });

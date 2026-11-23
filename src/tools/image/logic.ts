@@ -20,3 +20,6 @@ export const accepts = (file: { type: string }): boolean => INPUT.includes(file.
 
 /** HEIC/HEIF photos (iPhone, many Android phones). Chrome and Firefox often give them an empty type, so the extension counts too. */
 export const isHeic = (file: { name: string; type: string }): boolean => /^image\/hei[cf]$/.test(file.type) || /\.hei[cf]$/i.test(file.name);
+
+/** Anything a picture picker should take: an image type, or a HEIC file whose type the browser left empty. */
+export const isImage = (file: { name: string; type: string }): boolean => file.type.startsWith('image/') || isHeic(file);

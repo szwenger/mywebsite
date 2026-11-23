@@ -1,5 +1,7 @@
 import { exportPalette, extractPalette, sampleSize, type Swatch } from './logic';
 import { copy, onFiles } from '../dom';
+import { isImage } from '../image/logic';
+import { decodeImage } from '../imageio';
 
 const root = document.querySelector<HTMLElement>('[data-palette]');
 if (root) init(root);
@@ -17,10 +19,10 @@ function init(root: HTMLElement) {
   const fail = (m: string) => { err.textContent = m; err.hidden = !m; };
 
   async function load(files: File[]) {
-    const file = files.find((f) => f.type.startsWith('image/'));
+    const file = files.find(isImage);
     if (!file) { if (files.length) fail(s.badType); return; }
     try {
-      const bmp = await createImageBitmap(file);
+      const bmp = await decodeImage(file);
       const { w, h } = sampleSize(bmp.width, bmp.height);
       const c = document.createElement('canvas');
       c.width = w; c.height = h;

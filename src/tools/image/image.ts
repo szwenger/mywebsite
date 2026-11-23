@@ -1,5 +1,6 @@
 import { accepts, fitsCanvas, isHeic, outName, targetSize, type Format } from './logic';
 import { iconButton, iconSvg } from '../dom';
+import { canvasBlob, decodeImage } from '../imageio';
 
 const root = document.querySelector<HTMLElement>('[data-image]');
 if (root) init(root);
@@ -53,16 +54,10 @@ function init(root: HTMLElement) {
     return support.get(fmt)!;
   };
 
-  /** The browser's own decoder first (Safari reads HEIC); otherwise HEIC goes through libheif, loaded only when needed. */
-  async function decode(file: File): Promise<ImageBitmap> {
-    try { return await createImageBitmap(file); } catch (e) { if (!isHeic(file)) throw e; }
-    return (await import('./heic')).decodeHeic(file);
-  }
-
   /** Draws the file into a canvas at the target size and encodes it, or says why it cannot. */
   async function convert(file: File, fmt: Format, quality: number, maxW?: number, maxH?: number): Promise<Blob | 'unsupported' | 'too-big'> {
     if (!(await canExport(fmt))) return 'unsupported';
-    const bmp = await decode(file);
+    const bmp = await decodeImage(file);
     try {
       const size = targetSize(bmp.width, bmp.height, maxW, maxH);
       if (!fitsCanvas(size)) return 'too-big';
@@ -74,7 +69,7 @@ function init(root: HTMLElement) {
       if (!ctx) return 'too-big'; // the browser refused a canvas this size
       if (fmt === 'jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h); } // JPEG has no transparency
       ctx.drawImage(bmp, 0, 0, w, h);
-      const blob = await new Promise<Blob | null>((done) => canvas.toBlob(done, `image/${fmt}`, quality));
+      const blob = await canvasBlob(canvas, `image/${fmt}`, quality);
       return blob ?? 'too-big'; // the format works (probed above), so a null blob means the canvas was too large
     } finally { bmp.close(); }
   }
