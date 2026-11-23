@@ -529,6 +529,19 @@ export const tools: Tool[] = [
     },
   },
   {
+    slug: 'placeholder',
+    cat: 'images',
+    produces: ['png', 'svg'],
+    tags: 'placeholder dummy image generator mockup size svg png lorem picsum fake',
+    icon: 'M4 5h16v14H4zM4 15l4-4 3 3 4-5 5 6M8.5 9.5v.01',
+    name: { en: 'Placeholder image generator', de: 'Platzhalterbild-Generator', ru: 'Генератор изображений-заглушек' },
+    blurb: {
+      en: 'Make a dummy image of any size and colour, with the size or your own text on it, as an SVG, PNG or ready-to-paste data URI.',
+      de: 'Ein Platzhalterbild in beliebiger Größe und Farbe mit der Größe oder eigenem Text erzeugen, als SVG, PNG oder fertige Data-URI.',
+      ru: 'Изображение-заглушка любого размера и цвета с размером или вашим текстом, в виде SVG, PNG или готового data URI.',
+    },
+  },
+  {
     slug: 'crop',
     cat: 'images',
     accepts: ['png', 'jpg', 'webp', 'gif', 'bmp', 'heic'],

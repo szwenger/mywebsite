@@ -1,0 +1,43 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { langOf, toolPaths } from '../../../../i18n/tool-page';
+import { s as strings } from '../../../../i18n/tools/placeholder';
+
+export const getStaticPaths = toolPaths;
+const lang = langOf(Astro.params);
+const s = strings[lang];
+---
+<ToolLayout lang={lang} slug="placeholder">
+  <div class="tl two" data-placeholder data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <div class="row">
+        <label>{s.width}<input name="w" type="number" min="1" max="8192" value="600" inputmode="numeric" /></label>
+        <label>{s.height}<input name="h" type="number" min="1" max="8192" value="400" inputmode="numeric" /></label>
+      </div>
+      <div class="row">
+        <label>{s.bg}<input name="bg" type="color" value="#cccccc" /></label>
+        <label>{s.fg}<input name="fg" type="color" value="#000000" /></label>
+      </div>
+      <label class="check"><input type="checkbox" name="auto" checked /> {s.auto}</label>
+      <label>{s.text}<input name="text" placeholder={s.textPh} autocomplete="off" /></label>
+      <p class="note" data-error role="alert" hidden>{s.tooBig}</p>
+      <p class="meta">{s.note}</p>
+    </div>
+    <div class="card pane">
+      <img class="pic" alt="" data-img />
+      <div class="actions">
+        <button type="button" class="btn" data-png>{s.png}</button>
+        <button type="button" class="btn alt" data-svg>{s.svg}</button>
+        <button type="button" class="btn alt" data-uri>{s.copyUri}</button>
+        <button type="button" class="btn alt" data-tag>{s.copyTag}</button>
+      </div>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/placeholder/placeholder.ts';
+</script>
+<style>
+  input[type='color'] { width: 64px; height: 40px; padding: 2px; }
+  .pic { display: block; max-width: 100%; max-height: 360px; margin: 0 auto; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+</style>
