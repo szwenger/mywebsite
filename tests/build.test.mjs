@@ -343,7 +343,7 @@ test('impressum names the owner and the contact address', () => {
   }
 });
 
-// legal.ts throws on import under CI while the address is the placeholder; that counts as "no address".
+// legal.ts only warns while the address is the placeholder; the import is guarded so a future throw counts as "no address".
 let legalData = { hasAddress: false, legal: { address: [] } };
 try { legalData = await import('../src/data/legal.ts'); } catch { /* placeholder under CI */ }
 

@@ -6,6 +6,8 @@ node_modules/
 dist/
 .astro/
 .superpowers/
+# local agent permissions can hold pasted keys
+.claude/settings.local.json
 # planning notes, handoff and local test data stay local (public repo)
 docs/
 HANDOFF.md
