@@ -8,8 +8,8 @@ import { SCHEMES, KINDS } from '../../../../tools/color/logic';
 export const getStaticPaths = toolPaths;
 const lang = langOf(Astro.params);
 const s = strings[lang] as Record<string, string>;
-const tabs = ['contrast', 'palette', 'gradient', 'blind'] as const;
-const tabName = { contrast: s.tabContrast, palette: s.tabPalette, gradient: s.tabGradient, blind: s.tabBlind };
+const tabs = ['contrast', 'palette', 'gradient', 'blind', 'photo'] as const;
+const tabName = { contrast: s.tabContrast, palette: s.tabPalette, gradient: s.tabGradient, blind: s.tabBlind, photo: s.tabPhoto };
 ---
 <ToolLayout lang={lang} slug="color">
   <div class="stackv" data-color data-s={JSON.stringify(s)}>
@@ -92,6 +92,31 @@ const tabName = { contrast: s.tabContrast, palette: s.tabPalette, gradient: s.ta
         </div>
       </div>
     </div>
+    <div class="tl" data-when="photo" hidden>
+      <div class="drop card" data-drop>
+        <p class="big">{s.pDrop}</p>
+        <p class="meta">{s.pOr}</p>
+        <label class="btn pickbtn">{s.pBrowse}<input type="file" accept="image/*" class="sr-only" data-file /></label>
+        <p class="meta">{s.pHint}</p>
+      </div>
+      <p class="note bad" role="alert" data-error hidden></p>
+      <div class="work" data-work hidden>
+        <div class="card pane">
+          <img class="pic" data-img alt={s.pAlt} />
+          <label><span>{s.pCount} <output data-count></output></span><input type="range" aria-label={s.pCount} name="pcount" min="2" max="12" value="6" /></label>
+          <div class="sws" data-swatches></div>
+          <p class="meta">{s.pSw}</p>
+        </div>
+        <div class="card pane">
+          <div class="row">
+            <label>{s.pExp}<select name="pkind"><option value="css">{s.pCssVars}</option><option value="json">{s.pJson}</option><option value="list">{s.pPlain}</option></select></label>
+            <IconButton icon="copy" label={s.copy} alt={false} data-copy />
+            <button type="button" class="btn alt" data-other>{s.pOther}</button>
+          </div>
+          <textarea name="pexport" class="mono" rows="8" readonly spellcheck="false"></textarea>
+        </div>
+      </div>
+    </div>
   </div>
 </ToolLayout>
 <script>
@@ -117,5 +142,17 @@ const tabName = { contrast: s.tabContrast, palette: s.tabPalette, gradient: s.ta
   .blind { display: grid; gap: 8px; }
   :global(.blind .brow) { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
   :global(.blind .sw) { min-height: 48px; padding: 4px; border: 1px solid var(--line); border-radius: var(--radius-sm); font: .7rem/1.2 var(--mono, ui-monospace, monospace); cursor: copy; display: flex; align-items: end; }
+  .drop { display: grid; justify-items: center; gap: 8px; padding: clamp(24px, 4vw, 40px); text-align: center; border-style: dashed; }
+  .drop.over { border-color: var(--accent); }
+  .big { margin: 0; font-size: 1.15rem; }
+  .pickbtn { cursor: pointer; }
+  .work { display: grid; gap: 20px; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: start; }
+  @media (max-width: 800px) { .work { grid-template-columns: minmax(0, 1fr); } }
+  .pic { display: block; max-width: 100%; max-height: 340px; justify-self: center; border-radius: 6px; }
+  :global(.sws) { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
+  :global(.sws .sw) { display: grid; gap: 2px; align-content: end; min-height: 84px; padding: 10px 12px; border: 1px solid #8884; border-radius: 8px; text-align: left; font: inherit; cursor: pointer; }
+  :global(.sws .sw b) { font: 600 .95rem ui-monospace, 'Cascadia Mono', Consolas, monospace; }
+  :global(.sws .sw span) { font-size: .8rem; opacity: .85; }
+  :global(.sws .sw:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
   .legend { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; font-size: .74rem; }
 </style>

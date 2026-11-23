@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { extractPalette, exportPalette, sampleSize } from '../src/tools/palette/logic.ts';
+import { extractPalette, exportPalette, sampleSize } from '../src/tools/color/fromimage.ts';
 
 const fill = (parts) => Uint8ClampedArray.from(parts.flatMap(([n, r, g, b, a = 255]) => Array.from({ length: n }, () => [r, g, b, a]).flat()));
 

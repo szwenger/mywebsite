@@ -1,4 +1,4 @@
-import { contrast, toHex, type Rgb } from '../color/logic.ts';
+import { contrast, toHex, type Rgb } from './logic.ts';
 
 export interface Swatch { rgb: Rgb; hex: string; share: number; text: '#000000' | '#ffffff' }
 

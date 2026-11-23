@@ -1,17 +1,14 @@
-import { exportPalette, extractPalette, sampleSize, type Swatch } from './logic';
+// The "from image" panel of the colour tool: the main colours of a picture.
+import { exportPalette, extractPalette, sampleSize, type Swatch } from './fromimage';
 import { copy, onFiles } from '../dom';
 import { isImage } from '../image/logic';
 import { decodeImage } from '../imageio';
 
-const root = document.querySelector<HTMLElement>('[data-palette]');
-if (root) init(root);
-
-function init(root: HTMLElement) {
-  const s = JSON.parse(root.dataset.s!) as Record<string, string>;
-  const q = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
+export function initPhoto(root: HTMLElement, s: Record<string, string>) {
+  const q = <T extends HTMLElement>(sel: string) => root.querySelector<T>(`[data-when="photo"] ${sel}`)!;
   const drop = q('[data-drop]'), input = q<HTMLInputElement>('[data-file]'), work = q('[data-work]'), err = q('[data-error]');
-  const img = q<HTMLImageElement>('[data-img]'), grid = q('[data-swatches]'), count = q<HTMLInputElement>('[name=count]'), countOut = q('[data-count]');
-  const kind = q<HTMLSelectElement>('[name=kind]'), text = q<HTMLTextAreaElement>('[name=export]');
+  const img = q<HTMLImageElement>('[data-img]'), grid = q('[data-swatches]'), count = q<HTMLInputElement>('[name=pcount]'), countOut = q('[data-count]');
+  const kind = q<HTMLSelectElement>('[name=pkind]'), text = q<HTMLTextAreaElement>('[name=pexport]');
   let pixels: Uint8ClampedArray | null = null;
   let swatches: Swatch[] = [];
   let url = '';
@@ -20,7 +17,7 @@ function init(root: HTMLElement) {
 
   async function load(files: File[]) {
     const file = files.find(isImage);
-    if (!file) { if (files.length) fail(s.badType); return; }
+    if (!file) { if (files.length) fail(s.pBadType); return; }
     try {
       const bmp = await decodeImage(file);
       const { w, h } = sampleSize(bmp.width, bmp.height);
@@ -36,7 +33,7 @@ function init(root: HTMLElement) {
       fail('');
       work.hidden = false;
       render();
-    } catch { fail(s.failed); }
+    } catch { fail(s.pFailed); }
   }
 
   function render() {
@@ -51,7 +48,7 @@ function init(root: HTMLElement) {
       b.innerHTML = '<b></b><span></span>';
       b.querySelector('b')!.textContent = sw.hex.toUpperCase();
       b.querySelector('span')!.textContent = `${Math.round(sw.share * 100)}%`;
-      b.addEventListener('click', () => void copy(sw.hex, b.querySelector<HTMLElement>('b')!, s.copied));
+      b.addEventListener('click', () => void copy(sw.hex, b.querySelector<HTMLElement>('b')!, '✓'));
       return b;
     }));
     text.value = exportPalette(swatches, kind.value as 'css');
@@ -60,6 +57,6 @@ function init(root: HTMLElement) {
   onFiles(drop, input, (f) => void load(f), { paste: true });
   count.addEventListener('input', render);
   kind.addEventListener('change', render);
-  q('[data-copy]').addEventListener('click', (e) => void copy(text.value, e.currentTarget as HTMLElement, s.copied));
+  q('[data-copy]').addEventListener('click', (e) => void copy(text.value, e.currentTarget as HTMLElement, '✓'));
   q('[data-other]').addEventListener('click', () => input.click());
 }

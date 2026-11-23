@@ -1,6 +1,7 @@
 import { contrast, formats, grades, parseColor, toHex } from './logic';
 import { copy } from '../dom';
 import { initExtras } from './extras';
+import { initPhoto } from './photo';
 
 const root = document.querySelector<HTMLElement>('[data-color]');
 if (root) {
@@ -36,6 +37,7 @@ if (root) {
   }
 
   const extras = initExtras(root);
+  initPhoto(root, s);
   const tab = () => root.querySelector<HTMLInputElement>('[name="tab"]:checked')!.value;
   function showTab() {
     root!.querySelectorAll<HTMLElement>('[data-when]').forEach((el) => { el.hidden = el.dataset.when !== tab(); });
@@ -49,4 +51,6 @@ if (root) {
   root.addEventListener('change', (e) => { if ((e.target as HTMLInputElement).name === 'tab') showTab(); });
   q('[data-swap]').addEventListener('click', () => { const a = f('fg').value; f('fg').value = f('bg').value; f('bg').value = a; render(); });
   render();
+  const wanted = root.querySelector<HTMLInputElement>(`[name="tab"][value="${location.hash.slice(1)}"]`); // /tools/color/#photo
+  if (wanted) { wanted.checked = true; showTab(); }
 }

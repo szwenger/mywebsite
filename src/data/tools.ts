@@ -284,13 +284,15 @@ export const tools: Tool[] = [
   {
     slug: 'color',
     cat: 'dev',
-    tags: 'color colour hex rgb hsl oklch contrast wcag accessibility converter picker palette harmony shades tints gradient css colorblind colourblind daltonism protanopia deuteranopia simulator',
+    accepts: ['png', 'jpg', 'webp', 'gif', 'bmp', 'heic'],
+    produces: ['json', 'css'],
+    tags: 'color colour hex rgb hsl oklch contrast wcag accessibility converter picker palette harmony shades tints gradient css colorblind colourblind daltonism protanopia deuteranopia simulator extract dominant image swatch theme from photo',
     icon: 'M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11zM9.5 14.5a2.5 2.5 0 0 0 2.5 2.5',
     name: { en: 'Colour tools: converter, contrast, palette and gradient', de: 'Farbwerkzeuge: Umrechner, Kontrast, Palette und Verlauf', ru: 'Цвет: конвертер, контраст, палитра и градиент' },
     blurb: {
-      en: 'Convert between HEX, RGB, HSL and OKLCH, check WCAG contrast, build harmonies, shade scales and gradients, and preview colours as colour-blind readers see them.',
-      de: 'Zwischen HEX, RGB, HSL und OKLCH umrechnen, WCAG-Kontrast prüfen, Harmonien, Abstufungen und Verläufe bauen und Farben so ansehen, wie Farbfehlsichtige sie sehen.',
-      ru: 'Перевод между HEX, RGB, HSL и OKLCH, проверка контраста по WCAG, гармонии, шкалы оттенков и градиенты, а также просмотр цветов глазами дальтоников.',
+      en: 'Convert between HEX, RGB, HSL and OKLCH, check WCAG contrast, build harmonies, shade scales and gradients, pull the main colours out of a picture, and preview colours as colour-blind readers see them.',
+      de: 'Zwischen HEX, RGB, HSL und OKLCH umrechnen, WCAG-Kontrast prüfen, Harmonien, Abstufungen und Verläufe bauen, die Hauptfarben eines Bildes finden und Farben so ansehen, wie Farbfehlsichtige sie sehen.',
+      ru: 'Перевод между HEX, RGB, HSL и OKLCH, проверка контраста по WCAG, гармонии, шкалы оттенков и градиенты, основные цвета картинки, а также просмотр цветов глазами дальтоников.',
     },
   },
   {
@@ -580,20 +582,6 @@ export const tools: Tool[] = [
       en: 'Length, weight, volume, temperature, speed, data sizes, fuel economy, px to rem and points with your PPI, and number bases up to 36, with every unit shown at once.',
       de: 'Länge, Gewicht, Volumen, Temperatur, Geschwindigkeit, Datengrößen, Verbrauch, px zu rem und Punkt mit deiner PPI sowie Zahlensysteme bis 36, mit allen Einheiten auf einen Blick.',
       ru: 'Длина, вес, объём, температура, скорость, размеры данных, расход топлива, px в rem и пункты с вашим PPI, системы счисления до 36, сразу во всех единицах.',
-    },
-  },
-  {
-    slug: 'palette',
-    cat: 'images',
-    accepts: ['png', 'jpg', 'webp', 'gif', 'bmp', 'heic'],
-    produces: ['json', 'css'],
-    tags: 'color palette colour extract dominant image swatch hex css theme',
-    icon: 'M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.8 1.8-1.7 0-1-.8-1.4-.8-2.3 0-.9.7-1.5 1.7-1.5H17a4 4 0 0 0 4-4c0-4.4-4-8.5-9-8.5zM7.5 11v.01M9.5 7.5v.01M14 7v.01',
-    name: { en: 'Colour palette from an image', de: 'Farbpalette aus einem Bild', ru: 'Палитра цветов из изображения' },
-    blurb: {
-      en: 'Pull the main colours out of any picture, copy the hex codes and export them as CSS variables or JSON.',
-      de: 'Die Hauptfarben eines Bildes finden, Hex-Codes kopieren und als CSS-Variablen oder JSON exportieren.',
-      ru: 'Основные цвета любой картинки: копирование hex-кодов и экспорт в переменные CSS или JSON.',
     },
   },
   {
