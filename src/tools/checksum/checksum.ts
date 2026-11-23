@@ -1,4 +1,4 @@
-import { Sha256, parseExpected } from './logic';
+import { ALGOS, LABEL, hashAll, parseHash, type Algo } from './logic';
 import { copy, onFiles } from '../dom';
 
 const root = document.querySelector<HTMLElement>('[data-checksum]');
@@ -6,32 +6,55 @@ if (root) {
   const q = <T extends HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
   const s = JSON.parse(root.dataset.s!) as Record<string, string>;
   const expected = q<HTMLInputElement>('[name="expected"]');
+  const text = q<HTMLTextAreaElement>('[name="text"]');
   const bar = q<HTMLProgressElement>('[data-bar]');
   const status = q('[data-status]');
   const cancelBtn = q('[data-cancel]');
   const result = q('[data-result]');
-  const hashEl = q('[data-hash]');
   const verdict = q('[data-verdict]');
-  let hash = '';
+  const mode = () => q<HTMLInputElement>('[name="mode"]:checked').value;
+  const picked = () => ALGOS.filter((a) => q<HTMLInputElement>(`[name="algo"][value="${a}"]`).checked);
+  let hashes: Partial<Record<Algo, string>> = {};
+  let file: File | undefined;
   let run = 0;
 
-  function judge() {
-    const text = expected.value.trim();
-    verdict.hidden = !hash || !text;
-    if (verdict.hidden) return;
-    const want = parseExpected(text);
-    verdict.className = `note ${!want ? '' : want === hash ? 'good' : 'bad'}`;
-    verdict.textContent = !want ? s.noHash : want === hash ? s.match : s.mismatch;
+  function show(h: Partial<Record<Algo, string>>) {
+    hashes = h;
+    for (const a of ALGOS) {
+      q(`[data-row="${a}"]`).hidden = !h[a];
+      q(`[data-hash="${a}"]`).textContent = h[a] ?? '';
+    }
+    result.hidden = !Object.keys(h).length;
+    judge();
   }
 
-  async function hashFile(file: File) {
+  function judge() {
+    const t = expected.value.trim();
+    verdict.hidden = !Object.keys(hashes).length || !t;
+    if (verdict.hidden) return;
+    const want = parseHash(t);
+    const have = want && hashes[want.algo];
+    verdict.className = `note ${!want || !have ? '' : have === want.hash ? 'good' : 'bad'}`;
+    verdict.textContent = !want ? s.noHash : !have ? s.unticked.replace('{algo}', LABEL[want.algo]) : (have === want.hash ? s.match : s.mismatch).replace('{algo}', LABEL[want.algo]);
+  }
+
+  /** A pasted hash tells which algorithm to run, so a big file is not read through all four. */
+  function followExpected() {
+    const want = parseHash(expected.value);
+    if (!want) return;
+    const box = q<HTMLInputElement>(`[name="algo"][value="${want.algo}"]`);
+    if (!box.checked) { box.checked = true; refresh(); }
+  }
+
+  async function hashFile(f: File) {
     const id = ++run;
-    hash = '';
-    result.hidden = true;
-    q('[data-file]').textContent = `${file.name} (${(file.size / 2 ** 20).toFixed(1)} MB)`;
+    const algos = picked();
+    show({});
+    q('[data-file]').textContent = `${f.name} (${(f.size / 2 ** 20).toFixed(1)} MB)`;
+    if (!algos.length) return;
     bar.hidden = cancelBtn.hidden = false;
-    const h = new Sha256();
-    const reader = file.stream().getReader();
+    const h = hashAll(algos);
+    const reader = f.stream().getReader();
     let done = 0;
     try {
       for (;;) {
@@ -40,14 +63,11 @@ if (root) {
         if (end) break;
         h.update(value);
         done += value.length;
-        bar.value = file.size ? done / file.size : 1;
+        bar.value = f.size ? done / f.size : 1;
         status.textContent = `${s.reading} ${Math.round(bar.value * 100)}%`;
       }
-      hash = h.digest();
-      hashEl.textContent = hash;
-      result.hidden = false;
       status.textContent = '';
-      judge();
+      show(h.digest());
     } catch {
       status.textContent = s.failed;
     } finally {
@@ -55,8 +75,25 @@ if (root) {
     }
   }
 
-  onFiles(q('[data-drop]'), q<HTMLInputElement>('[data-input]'), (files) => { if (files[0]) void hashFile(files[0]); });
+  function refresh() {
+    const m = mode();
+    root!.querySelectorAll<HTMLElement>('[data-when]').forEach((el) => { el.hidden = el.dataset.when !== m; });
+    run++; // drops a file read still in flight
+    bar.hidden = cancelBtn.hidden = true;
+    status.textContent = '';
+    if (m === 'text') show(text.value && picked().length ? hashAll(picked()).update(new TextEncoder().encode(text.value)).digest() : {});
+    else if (file) void hashFile(file);
+    else show({});
+  }
+
+  onFiles(q('[data-drop]'), q<HTMLInputElement>('[data-input]'), (files) => { if (files[0]) { file = files[0]; refresh(); } });
+  root.addEventListener('change', (e) => { if ((e.target as HTMLInputElement).name !== 'expected') refresh(); });
+  text.addEventListener('input', refresh);
+  expected.addEventListener('input', () => { followExpected(); judge(); });
   cancelBtn.addEventListener('click', () => { run++; bar.hidden = cancelBtn.hidden = true; status.textContent = s.cancelled; });
-  q('[data-copy]').addEventListener('click', (e) => copy(hash, e.currentTarget as HTMLElement, '✓'));
-  expected.addEventListener('input', judge);
+  result.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-copy]');
+    if (b) void copy(hashes[b.dataset.copy as Algo] ?? '', b, '✓');
+  });
+  refresh();
 }

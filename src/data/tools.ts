@@ -121,12 +121,13 @@ export const tools: Tool[] = [
     slug: 'checksum',
     cat: 'files',
     topics: ['security'],
+    tags: 'hash md5 sha1 sha-1 sha256 sha-256 sha512 sha-512 digest checksum verify integrity',
     icon: 'M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6zM9 12l2 2 4-4',
-    name: { en: 'Checksum verifier', de: 'Prüfsummen-Prüfer', ru: 'Проверка контрольной суммы' },
+    name: { en: 'Hash generator and checksum verifier', de: 'Hash-Generator und Prüfsummen-Prüfer', ru: 'Генератор хешей и проверка контрольной суммы' },
     blurb: {
-      en: 'Compute the SHA-256 of a file of any size and compare it with the published hash. Nothing is uploaded.',
-      de: 'SHA-256 einer beliebig großen Datei berechnen und mit dem veröffentlichten Hash vergleichen. Es wird nichts hochgeladen.',
-      ru: 'Вычисление SHA-256 файла любого размера и сравнение с опубликованным хешем. Ничего не загружается.',
+      en: 'MD5, SHA-1, SHA-256 and SHA-512 of a text or of a file of any size, and a check against the published hash. Nothing is uploaded.',
+      de: 'MD5, SHA-1, SHA-256 und SHA-512 für Text oder eine beliebig große Datei, dazu der Abgleich mit dem veröffentlichten Hash. Es wird nichts hochgeladen.',
+      ru: 'MD5, SHA-1, SHA-256 и SHA-512 для текста или файла любого размера и сверка с опубликованным хешем. Ничего не загружается.',
     },
   },
   {

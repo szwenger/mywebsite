@@ -1,0 +1,15 @@
+/** Strings of /tools/checksum/, shared by the page and (via data-s) its client script. tests/toolstrings.test.mjs keeps the three languages in step. */
+export const s = {
+  en: { text: 'Text', file: 'File', input: 'Text to hash', inputHint: 'Hashed as UTF-8, as you type', drop: 'Drop a file here or click to choose', algos: 'Algorithms', expected: 'Published hash (optional)', placeholder: 'Paste a hash or a line from a .sha256 file',
+    results: 'Hashes', copy: 'Copy', cancel: 'Cancel', reading: 'Reading', match: 'Match ({algo}): identical to the published hash.', mismatch: 'No match ({algo}): this differs from the published hash. Download the file again.',
+    noHash: 'No hash found in what you pasted (32, 40, 64 or 128 hex digits expected).', unticked: 'The pasted hash is {algo}: tick it to compare.', failed: 'Could not read the file.', cancelled: 'Cancelled.',
+    note: 'MD5 and SHA-1 still catch a damaged download but are broken against deliberate tampering: prefer SHA-256 or SHA-512 where you can. Everything is computed in your browser; nothing is uploaded.' },
+  de: { text: 'Text', file: 'Datei', input: 'Text zum Hashen', inputHint: 'Wird beim Tippen als UTF-8 gehasht', drop: 'Datei hierher ziehen oder klicken zum Auswählen', algos: 'Algorithmen', expected: 'Veröffentlichter Hash (optional)', placeholder: 'Hash oder eine Zeile aus einer .sha256-Datei einfügen',
+    results: 'Hashes', copy: 'Kopieren', cancel: 'Abbrechen', reading: 'Lese', match: 'Treffer ({algo}): identisch mit dem veröffentlichten Hash.', mismatch: 'Kein Treffer ({algo}): weicht vom veröffentlichten Hash ab. Lade die Datei erneut herunter.',
+    noHash: 'Kein Hash im eingefügten Text gefunden (erwartet: 32, 40, 64 oder 128 Hex-Ziffern).', unticked: 'Der eingefügte Hash ist {algo}: Hake ihn an, um zu vergleichen.', failed: 'Die Datei konnte nicht gelesen werden.', cancelled: 'Abgebrochen.',
+    note: 'MD5 und SHA-1 erkennen eine beschädigte Datei noch, sind gegen gezielte Manipulation aber gebrochen: nimm nach Möglichkeit SHA-256 oder SHA-512. Alles wird im Browser berechnet, nichts wird hochgeladen.' },
+  ru: { text: 'Текст', file: 'Файл', input: 'Текст для хеширования', inputHint: 'Хешируется как UTF-8 по мере ввода', drop: 'Перетащите файл сюда или нажмите для выбора', algos: 'Алгоритмы', expected: 'Опубликованный хеш (необязательно)', placeholder: 'Вставьте хеш или строку из файла .sha256',
+    results: 'Хеши', copy: 'Копировать', cancel: 'Отмена', reading: 'Чтение', match: 'Совпадает ({algo}): идентичен опубликованному хешу.', mismatch: 'Не совпадает ({algo}): отличается от опубликованного хеша. Скачайте файл заново.',
+    noHash: 'В вставленном тексте нет хеша (нужно 32, 40, 64 или 128 шестнадцатеричных цифр).', unticked: 'Вставленный хеш — {algo}: отметьте его для сравнения.', failed: 'Не удалось прочитать файл.', cancelled: 'Отменено.',
+    note: 'MD5 и SHA-1 ещё выявляют повреждённую загрузку, но взломаны для намеренной подделки: по возможности берите SHA-256 или SHA-512. Всё считается в браузере, ничего не загружается.' },
+};

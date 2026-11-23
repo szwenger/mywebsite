@@ -1,45 +1,46 @@
 ---
 import ToolLayout from '../../../../components/ToolLayout.astro';
 import IconButton from '../../../../components/IconButton.astro';
-import { LANGS, type Lang } from '../../../../i18n/ui';
+import { langOf, toolPaths } from '../../../../i18n/tool-page';
+import { s as strings } from '../../../../i18n/tools/checksum';
+import { ALGOS, LABEL } from '../../../../tools/checksum/logic';
 
-export function getStaticPaths() {
-  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
-}
-const lang = (Astro.params.lang ?? 'en') as Lang;
-const s = {
-  en: {
-    drop: 'Drop a file here or click to choose', expected: 'Published SHA-256 (optional)', placeholder: 'Paste the hash or a line from a .sha256 file', result: 'SHA-256 of your file', copy: 'Copy', cancel: 'Cancel',
-    reading: 'Reading', match: 'Match: the file is identical to the published one.', mismatch: 'No match: the file differs from the published one. Download it again.', noHash: 'No SHA-256 found in what you pasted (64 hex digits expected).', failed: 'Could not read the file.', cancelled: 'Cancelled.',
-  },
-  de: {
-    drop: 'Datei hierher ziehen oder klicken zum Auswählen', expected: 'Veröffentlichter SHA-256 (optional)', placeholder: 'Hash oder eine Zeile aus einer .sha256-Datei einfügen', result: 'SHA-256 deiner Datei', copy: 'Kopieren', cancel: 'Abbrechen',
-    reading: 'Lese', match: 'Treffer: Die Datei ist identisch mit der veröffentlichten.', mismatch: 'Kein Treffer: Die Datei weicht von der veröffentlichten ab. Lade sie erneut herunter.', noHash: 'Kein SHA-256 im eingefügten Text gefunden (erwartet: 64 Hex-Ziffern).', failed: 'Die Datei konnte nicht gelesen werden.', cancelled: 'Abgebrochen.',
-  },
-  ru: {
-    drop: 'Перетащите файл сюда или нажмите для выбора', expected: 'Опубликованный SHA-256 (необязательно)', placeholder: 'Вставьте хеш или строку из файла .sha256', result: 'SHA-256 вашего файла', copy: 'Копировать', cancel: 'Отмена',
-    reading: 'Чтение', match: 'Совпадает: файл идентичен опубликованному.', mismatch: 'Не совпадает: файл отличается от опубликованного. Скачайте его заново.', noHash: 'В вставленном тексте нет SHA-256 (нужно 64 шестнадцатеричные цифры).', failed: 'Не удалось прочитать файл.', cancelled: 'Отменено.',
-  },
-}[lang];
+export const getStaticPaths = toolPaths;
+const lang = langOf(Astro.params);
+const s = strings[lang];
 ---
 <ToolLayout lang={lang} slug="checksum">
   <div class="tl" data-checksum data-s={JSON.stringify(s)}>
     <div class="card pane">
-      <label class="drop" data-drop>
+      <div class="row tabs" role="group">
+        <label class="check"><input type="radio" name="mode" value="text" checked /> {s.text}</label>
+        <label class="check"><input type="radio" name="mode" value="file" /> {s.file}</label>
+      </div>
+      <label data-when="text">{s.input}<textarea name="text" rows="5" spellcheck="false"></textarea><span class="meta">{s.inputHint}</span></label>
+      <label class="drop" data-when="file" data-drop hidden>
         <span>{s.drop}</span>
         <span class="meta" data-file></span>
         <input type="file" data-input />
       </label>
+      <div class="row" role="group" aria-label={s.algos}>
+        {ALGOS.map((a) => <label class="check"><input type="checkbox" name="algo" value={a} checked /> {LABEL[a]}</label>)}
+      </div>
       <label>{s.expected}<input name="expected" class="mono" autocomplete="off" spellcheck="false" placeholder={s.placeholder} /></label>
       <progress max="1" value="0" data-bar hidden></progress>
       <p class="meta" data-status role="status"></p>
       <div class="actions"><button type="button" class="btn alt" data-cancel hidden>{s.cancel}</button></div>
     </div>
-    <div class="card pane" data-result hidden>
-      <label>{s.result}<pre data-hash></pre></label>
-      <div class="actions"><IconButton icon="copy" label={s.copy} data-copy /></div>
+    <div class="card pane" data-result hidden aria-label={s.results}>
+      {ALGOS.map((a) => (
+        <div class="hrow" data-row={a} hidden>
+          <span class="meta">{LABEL[a]}</span>
+          <pre data-hash={a}></pre>
+          <IconButton icon="copy" label={`${s.copy} ${LABEL[a]}`} data-copy={a} />
+        </div>
+      ))}
       <p class="note" data-verdict hidden role="status"></p>
     </div>
+    <p class="meta">{s.note}</p>
   </div>
 </ToolLayout>
 <script>
@@ -47,4 +48,8 @@ const s = {
 </script>
 <style>
   progress { width: 100%; height: 8px; accent-color: var(--accent-strong); }
+  [hidden] { display: none !important; }
+  .hrow { display: grid; grid-template-columns: 4.5rem 1fr auto; gap: 10px; align-items: center; }
+  .hrow pre { margin: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+  @media (max-width: 520px) { .hrow { grid-template-columns: 1fr auto; } .hrow .meta { grid-column: 1 / -1; } }
 </style>
