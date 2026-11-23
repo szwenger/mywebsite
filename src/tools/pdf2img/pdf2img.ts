@@ -1,8 +1,9 @@
 import { download, onFiles } from '../dom';
 import { parseRanges } from '../pdf/ranges';
-import { bytesOf, isPasswordError, openPdf, renderPage, toBlob, type PdfDoc } from '../pdf/raster';
+import { isPasswordError, openPdf, type PdfDoc } from '../pdf/raster';
 import { zip } from '../zip';
-import { fitDpi, pageFile } from './logic';
+import { renderImages } from './export';
+import type { ImageFmt } from './logic';
 
 const root = document.querySelector<HTMLElement>('[data-p2i]');
 if (root) {
@@ -45,10 +46,7 @@ if (root) {
     show();
     const r = f('range').value.trim() ? parseRanges(f('range').value, pdf.numPages) : { pages: [...Array(pdf.numPages).keys()] };
     if ('error' in r) { show(s[r.error]); return; }
-    const type = `image/${f('fmt').value}`;
-    const ext = f('fmt').value === 'jpeg' ? 'jpg' : f('fmt').value;
     const dpi = Number(f('dpi').value);
-    const quality = Number(f('quality').value) / 100;
     const mine = ++run;
     const go = q<HTMLButtonElement>('[data-go]');
     go.disabled = true;
@@ -57,30 +55,21 @@ if (root) {
     const list = q('[data-list]');
     list.replaceChildren();
     q('[data-results]').hidden = false;
-    let capped = 0;
     try {
-      for (const [k, i] of r.pages.entries()) {
-        if (mine !== run) return;
-        status.textContent = s.working.replace('{n}', String(k + 1)).replace('{t}', String(r.pages.length));
-        const page = await pdf.getPage(i + 1);
-        const v = page.getViewport({ scale: 1 });
-        if (fitDpi(v.width, v.height, dpi) < dpi) capped = fitDpi(v.width, v.height, dpi);
-        const canvas = await renderPage(page, dpi);
-        const blob = await toBlob(canvas, type, quality);
-        if (blob.type !== type) { show(s.unsupported); return; }
-        const fileName = pageFile(name, i + 1, pdf.numPages, ext);
-        made.push({ name: fileName, data: await bytesOf(blob) });
-        const url = URL.createObjectURL(blob);
+      const capped = await renderImages(pdf, { fmt: f('fmt').value as ImageFmt, dpi, quality: Number(f('quality').value) / 100, name, pages: r.pages }, async (img) => {
+        if (mine !== run) return false;
+        made.push({ name: img.name, data: new Uint8Array(await img.blob.arrayBuffer()) });
+        const url = URL.createObjectURL(img.blob);
         urls.push(url);
         const li = document.createElement('li');
-        const img = Object.assign(new Image(), { src: url, alt: fileName });
-        const nm = Object.assign(document.createElement('span'), { className: 'nm', textContent: fileName });
-        const a = Object.assign(document.createElement('a'), { className: 'btn alt', href: url, download: fileName, textContent: s.save });
-        li.append(img, nm, a);
+        const pic = Object.assign(new Image(), { src: url, alt: img.name });
+        const nm = Object.assign(document.createElement('span'), { className: 'nm', textContent: img.name });
+        const a = Object.assign(document.createElement('a'), { className: 'btn alt', href: url, download: img.name, textContent: s.save });
+        li.append(pic, nm, a);
         list.append(li);
-      }
-      status.textContent = s.done.replace('{n}', String(made.length)) + (capped ? ` ${s.capped.replace('{d}', String(capped))}` : '');
-    } catch { show(s.invalid); } finally { go.disabled = false; }
+      }, (k, n) => { status.textContent = s.working.replace('{n}', String(k)).replace('{t}', String(n)); });
+      if (mine === run) status.textContent = s.done.replace('{n}', String(made.length)) + (capped ? ` ${s.capped.replace('{d}', String(capped))}` : '');
+    } catch (e) { show((e as Error).message === 'unsupported' ? s.unsupported : s.invalid); } finally { go.disabled = false; }
   }
 
   onFiles(q('[data-drop]'), q<HTMLInputElement>('[data-file]'), (files) => { const p = files.find((x) => /pdf$/i.test(x.name) || x.type === 'application/pdf'); if (p) open(p); });

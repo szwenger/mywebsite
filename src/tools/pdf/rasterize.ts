@@ -4,7 +4,7 @@ import { renderPage, toBlob, bytesOf, openPdf, closePdf, type PdfDoc } from './r
 import { shown, type RGB, type TextRenderer } from './stamp';
 import { contentBox, invert, isBlank, toGray } from './pixels';
 import { zip } from '../zip';
-import { pageFile } from '../pdf2img/logic';
+import { renderImages } from '../pdf2img/export';
 import { pageText } from './textout';
 import type { Reencode } from './more';
 
@@ -95,12 +95,7 @@ export async function exportImages(file: Uint8Array, o: { fmt: 'png' | 'jpeg' | 
   const pdf = await openPdf(file);
   const files: { name: string; data: Uint8Array }[] = [];
   try {
-    const list = o.pages ?? [...Array(pdf.numPages).keys()];
-    for (const [k, i] of list.entries()) {
-      onProgress?.(k + 1, list.length);
-      const c = await renderPage(await pdf.getPage(i + 1), o.dpi);
-      files.push({ name: pageFile(o.name, i + 1, pdf.numPages, o.fmt === 'jpeg' ? 'jpg' : o.fmt), data: await bytesOf(await toBlob(c, `image/${o.fmt}`, o.quality)) });
-    }
+    await renderImages(pdf, { ...o, pages: o.pages ?? [...Array(pdf.numPages).keys()] }, async (img) => { files.push({ name: img.name, data: await bytesOf(img.blob) }); }, onProgress);
   } finally { closePdf(pdf); }
   return zip(files);
 }

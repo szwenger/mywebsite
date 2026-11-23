@@ -119,6 +119,8 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
         <div class="row">
           <label>{s.fmt}<select name="fmt"><option value="png">PNG</option><option value="jpeg">JPEG</option><option value="webp">WebP</option></select></label>
           <label>{s.dpiLabel}<input type="number" name="dpi" min="36" max="400" value="150" /></label>
+          <label>{s.qualityLabel}<input type="range" name="quality" min="40" max="100" value="90" /></label>
+          <label>{s.pagesField}<input name="pages" placeholder={s.rangePlaceholder} autocomplete="off" /></label>
           <button type="button" class="btn" data-do="images">{s.imagesBtn}</button>
         </div>
         <div class="actions">

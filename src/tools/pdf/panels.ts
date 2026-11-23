@@ -129,8 +129,12 @@ export function initPanels(c: Ctx) {
   // ---- convert ----
   wire('convert', {
     images: async (p, f) => {
-      const zipBytes = await exportImages(c.doc(), { fmt: f.str('fmt') as 'png', dpi: f.num('dpi', 150), quality: 0.9, name: c.baseName() }, c.progress);
-      c.save(zipBytes, `${c.baseName()}-images.zip`, 'application/zip');
+      const pages = pagesOf(f.str('pages'));
+      if (!pages) return;
+      try {
+        const zipBytes = await exportImages(c.doc(), { fmt: f.str('fmt') as 'png', dpi: f.num('dpi', 150), quality: f.num('quality', 90) / 100, name: c.baseName(), pages }, c.progress);
+        c.save(zipBytes, `${c.baseName()}-images.zip`, 'application/zip');
+      } catch (e) { if ((e as Error).message !== 'unsupported') throw e; c.error(s.unsupportedFmt); }
     },
     text: async () => {
       const pages = await extractText(c.doc());

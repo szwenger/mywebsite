@@ -57,7 +57,7 @@ const en: Record<string, string> = {
   lvl_strong: 'Strong', lvl_strong_d: 'Smaller pictures, visible loss on photos.', lvl_max: 'Maximum', lvl_max_d: 'Turns every page into a picture. Text is no longer selectable.',
   compressBtn: 'Compress', imagesDone: 'Recompressed {a} of {b} pictures.', noGain: 'This level would not make the file smaller, so it was left as it is.',
   // convert
-  toImages: 'PDF to images (ZIP)', fmt: 'Format', dpiLabel: 'Resolution (dpi)', imagesBtn: 'Export images',
+  toImages: 'PDF to images (ZIP)', fmt: 'Format', dpiLabel: 'Resolution (dpi)', imagesBtn: 'Export images', qualityLabel: 'Quality (JPEG, WebP)', unsupportedFmt: 'This browser cannot export that format. Choose another.',
   toText: 'Extract text (.txt)', toDocx: 'Text to Word (.docx)', extImg: 'Extract embedded pictures', noImages: 'This document has no embedded pictures.',
   toGray: 'Make grayscale', toInvert: 'Invert colors', toFlat: 'Flatten to pictures', convertNote: 'The Word file contains the text only, without the layout.',
   // number
@@ -151,7 +151,7 @@ const de: Record<string, string> = {
   lvl_light: 'Leicht', lvl_light_d: 'Räumt die Struktur auf, Qualität bleibt.', lvl_balanced: 'Ausgewogen', lvl_balanced_d: 'Bilder neu komprimieren, Text bleibt scharf.',
   lvl_strong: 'Stark', lvl_strong_d: 'Kleinere Bilder, bei Fotos sichtbarer Verlust.', lvl_max: 'Maximal', lvl_max_d: 'Macht jede Seite zum Bild. Text ist nicht mehr markierbar.',
   compressBtn: 'Komprimieren', imagesDone: '{a} von {b} Bildern neu komprimiert.', noGain: 'Diese Stufe würde die Datei nicht verkleinern, daher blieb sie unverändert.',
-  toImages: 'PDF in Bilder (ZIP)', fmt: 'Format', dpiLabel: 'Auflösung (dpi)', imagesBtn: 'Bilder exportieren',
+  toImages: 'PDF in Bilder (ZIP)', fmt: 'Format', dpiLabel: 'Auflösung (dpi)', imagesBtn: 'Bilder exportieren', qualityLabel: 'Qualität (JPEG, WebP)', unsupportedFmt: 'Dieser Browser kann das Format nicht exportieren. Wähle ein anderes.',
   toText: 'Text extrahieren (.txt)', toDocx: 'Text nach Word (.docx)', extImg: 'Eingebettete Bilder extrahieren', noImages: 'Dieses Dokument enthält keine eingebetteten Bilder.',
   toGray: 'In Graustufen umwandeln', toInvert: 'Farben invertieren', toFlat: 'Zu Bildern verflachen', convertNote: 'Die Word-Datei enthält nur den Text, ohne das Layout.',
   posLabel: 'Position', pos_tl: 'Oben links', pos_tc: 'Oben mittig', pos_tr: 'Oben rechts', pos_bl: 'Unten links', pos_bc: 'Unten mittig', pos_br: 'Unten rechts',
@@ -236,7 +236,7 @@ const ru: Record<string, string> = {
   lvl_light: 'Лёгкое', lvl_light_d: 'Наводит порядок в структуре, качество сохраняется.', lvl_balanced: 'Баланс', lvl_balanced_d: 'Пережимает картинки, текст остаётся чётким.',
   lvl_strong: 'Сильное', lvl_strong_d: 'Картинки меньше, на фото заметны потери.', lvl_max: 'Максимум', lvl_max_d: 'Каждая страница становится картинкой. Текст больше не выделяется.',
   compressBtn: 'Сжать', imagesDone: 'Пережато картинок: {a} из {b}.', noGain: 'Этот уровень не уменьшил бы файл, поэтому он остался как был.',
-  toImages: 'PDF в картинки (ZIP)', fmt: 'Формат', dpiLabel: 'Разрешение (dpi)', imagesBtn: 'Экспортировать картинки',
+  toImages: 'PDF в картинки (ZIP)', fmt: 'Формат', dpiLabel: 'Разрешение (dpi)', imagesBtn: 'Экспортировать картинки', qualityLabel: 'Качество (JPEG, WebP)', unsupportedFmt: 'Этот браузер не умеет сохранять в этот формат. Выберите другой.',
   toText: 'Извлечь текст (.txt)', toDocx: 'Текст в Word (.docx)', extImg: 'Извлечь встроенные картинки', noImages: 'В документе нет встроенных картинок.',
   toGray: 'Сделать серым', toInvert: 'Инвертировать цвета', toFlat: 'Свести в картинки', convertNote: 'Файл Word содержит только текст, без вёрстки.',
   posLabel: 'Положение', pos_tl: 'Сверху слева', pos_tc: 'Сверху по центру', pos_tr: 'Сверху справа', pos_bl: 'Снизу слева', pos_bc: 'Снизу по центру', pos_br: 'Снизу справа',

@@ -14,3 +14,7 @@ export function fitDpi(wPt: number, hPt: number, dpi: number): number {
 export function pageFile(base: string, n: number, total: number, ext: string): string {
   return `${base.replace(/\.pdf$/i, '')}-${String(n).padStart(String(total).length, '0')}.${ext}`;
 }
+
+export type ImageFmt = 'png' | 'jpeg' | 'webp';
+/** The MIME type and file extension of an export format (jpeg is saved as .jpg). */
+export const imageFormat = (fmt: ImageFmt): { type: string; ext: string } => ({ type: `image/${fmt}`, ext: fmt === 'jpeg' ? 'jpg' : fmt });
