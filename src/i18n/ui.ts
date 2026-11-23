@@ -32,7 +32,7 @@ export const ui = {
     navBlog: 'Blog', navVideos: 'Videos', navTools: 'Tools', navSetup: 'Setup', navHangout: 'Hangout',
     navLabel: 'Main', langLabel: 'Language', themeToggle: 'Toggle light/dark theme',
     footerLine: 'Games, code and a few tools that run in your browser.',
-    footerWork: 'Work & projects', impressum: 'Legal notice', privacy: 'Privacy',
+    footerWork: 'Work & projects', impressum: 'Legal notice', privacy: 'Privacy', licenses: 'Licences',
     nfTitle: 'This page does not exist.', nfHome: 'Back home',
   },
   de: {
@@ -64,7 +64,7 @@ export const ui = {
     navBlog: 'Blog', navVideos: 'Videos', navTools: 'Tools', navSetup: 'Setup', navHangout: 'Hangout',
     navLabel: 'Hauptmenü', langLabel: 'Sprache', themeToggle: 'Hell/Dunkel umschalten',
     footerLine: 'Games, Code und ein paar Tools, die im Browser laufen.',
-    footerWork: 'Arbeit & Projekte', impressum: 'Impressum', privacy: 'Datenschutz',
+    footerWork: 'Arbeit & Projekte', impressum: 'Impressum', privacy: 'Datenschutz', licenses: 'Lizenzen',
     nfTitle: 'Diese Seite gibt es nicht.', nfHome: 'Zur Startseite',
   },
   ru: {
@@ -96,7 +96,7 @@ export const ui = {
     navBlog: 'Блог', navVideos: 'Видео', navTools: 'Инструменты', navSetup: 'Сетап', navHangout: 'Тусовка',
     navLabel: 'Главное меню', langLabel: 'Язык', themeToggle: 'Светлая/тёмная тема',
     footerLine: 'Игры, код и пара инструментов, работающих прямо в браузере.',
-    footerWork: 'Работа и проекты', impressum: 'Выходные данные', privacy: 'Конфиденциальность',
+    footerWork: 'Работа и проекты', impressum: 'Выходные данные', privacy: 'Конфиденциальность', licenses: 'Лицензии',
     nfTitle: 'Такой страницы нет.', nfHome: 'На главную',
   },
 } as const satisfies Record<Lang, Record<string, string>>;

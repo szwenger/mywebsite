@@ -1,0 +1,89 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { LANGS, path, t, type Lang } from '../../../i18n/ui';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const repo = 'https://github.com/szwenger/mywebsite';
+const libs: [string, string, string][] = [
+  ['libheif-js (libheif)', 'LGPL-3.0', 'https://github.com/catdad-experiments/libheif-js'],
+  ['pdf.js', 'Apache-2.0', 'https://github.com/mozilla/pdf.js'],
+  ['pdf-lib', 'MIT', 'https://github.com/Hopding/pdf-lib'],
+  ['qrcode', 'MIT', 'https://github.com/soldair/node-qrcode'],
+  ['KaTeX', 'MIT', 'https://github.com/KaTeX/KaTeX'],
+  ['marked', 'MIT', 'https://github.com/markedjs/marked'],
+  ['highlight.js', 'BSD-3-Clause', 'https://github.com/highlightjs/highlight.js'],
+  ['Astro', 'MIT', 'https://github.com/withastro/astro'],
+  ['Onest, Unbounded (fonts)', 'OFL-1.1', 'https://fontsource.org'],
+];
+const copy = {
+  en: {
+    title: 'Open-source licences',
+    intro: 'This site is built with free software. These libraries run in your browser or built the pages you are reading.',
+    heic: 'HEIC images',
+    heicP: 'The image converter reads HEIC and HEIF photos with libheif-js, which bundles libheif and is licensed under the GNU Lesser General Public License, version 3 (LGPL-3.0). It is used unmodified and only loaded when you open a HEIC file. The full licence text is here: ',
+    heicLink: 'LGPL-3.0 (text)',
+    heicP2: 'The LGPL also incorporates the GNU General Public License, version 3: ',
+    gpl: 'GPL-3.0 (gnu.org)',
+    heicP3: 'The complete source code of this site is public. You can rebuild it with another version of libheif-js:',
+    list: 'Libraries',
+    lib: 'Library', licence: 'Licence', source: 'Source',
+    back: 'Other licences are listed in each package of the source code.',
+  },
+  de: {
+    title: 'Open-Source-Lizenzen',
+    intro: 'Diese Seite ist mit freier Software gebaut. Diese Bibliotheken laufen in deinem Browser oder haben die Seiten erzeugt, die du liest.',
+    heic: 'HEIC-Bilder',
+    heicP: 'Der Bildkonverter liest HEIC- und HEIF-Fotos mit libheif-js. Es enthält libheif und steht unter der GNU Lesser General Public License, Version 3 (LGPL-3.0). Es wird unverändert verwendet und nur geladen, wenn du eine HEIC-Datei öffnest. Den vollständigen Lizenztext gibt es hier: ',
+    heicLink: 'LGPL-3.0 (Text)',
+    heicP2: 'Die LGPL schließt außerdem die GNU General Public License, Version 3, ein: ',
+    gpl: 'GPL-3.0 (gnu.org)',
+    heicP3: 'Der vollständige Quellcode dieser Seite ist öffentlich. Du kannst sie mit einer anderen Version von libheif-js neu bauen:',
+    list: 'Bibliotheken',
+    lib: 'Bibliothek', licence: 'Lizenz', source: 'Quelle',
+    back: 'Weitere Lizenzen stehen in den einzelnen Paketen des Quellcodes.',
+  },
+  ru: {
+    title: 'Лицензии открытого ПО',
+    intro: 'Сайт собран на свободном ПО. Эти библиотеки работают в вашем браузере или создали страницы, которые вы читаете.',
+    heic: 'Изображения HEIC',
+    heicP: 'Конвертер изображений читает фото HEIC и HEIF с помощью libheif-js. В неё входит libheif, лицензия: GNU Lesser General Public License версии 3 (LGPL-3.0). Библиотека используется без изменений и загружается, только когда вы открываете файл HEIC. Полный текст лицензии: ',
+    heicLink: 'LGPL-3.0 (текст)',
+    heicP2: 'LGPL также включает GNU General Public License версии 3: ',
+    gpl: 'GPL-3.0 (gnu.org)',
+    heicP3: 'Полный исходный код сайта открыт. Его можно пересобрать с другой версией libheif-js:',
+    list: 'Библиотеки',
+    lib: 'Библиотека', licence: 'Лицензия', source: 'Источник',
+    back: 'Остальные лицензии указаны в пакетах исходного кода.',
+  },
+}[lang];
+---
+<Base lang={lang} title={`${copy.title} · Galuin`}>
+  <section class="wrap page doc">
+    <h1 class="section-title">{copy.title}</h1>
+    <p>{copy.intro}</p>
+    <h2>{copy.heic}</h2>
+    <p>{copy.heicP}<a href="/licenses/LGPL-3.0.txt">{copy.heicLink}</a></p>
+    <p>{copy.heicP2}<a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="noopener">{copy.gpl}</a></p>
+    <p>{copy.heicP3} <a href={repo} rel="noopener">{repo.replace('https://', '')}</a></p>
+    <h2>{copy.list}</h2>
+    <table>
+      <thead><tr><th>{copy.lib}</th><th>{copy.licence}</th><th>{copy.source}</th></tr></thead>
+      <tbody>
+        {libs.map(([name, lic, url]) => <tr><td>{name}</td><td>{lic}</td><td><a href={url} rel="noopener">{url.replace('https://', '')}</a></td></tr>)}
+      </tbody>
+    </table>
+    <p class="meta">{copy.back}</p>
+    <p><a href={path(lang, '/impressum/')}>{t(lang, 'impressum')}</a> · <a href={path(lang, '/privacy/')}>{t(lang, 'privacy')}</a></p>
+  </section>
+</Base>
+<style>
+  .page { padding-block: clamp(32px, 6vw, 64px) 0; max-width: 46rem; }
+  .doc h2 { margin: 28px 0 8px; font-size: 1.05rem; }
+  .doc p { margin: 0 0 10px; line-height: 1.65; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+  th { color: var(--muted); font-weight: 500; }
+</style>
