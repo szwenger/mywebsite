@@ -122,3 +122,13 @@ test('number bases: sign, separators and zero are handled; wrong digits give no 
   for (const bad of ['', '-', '0x', 'g', '1.5']) assert.equal(convertBase(bad, 16, 10), '', JSON.stringify(bad));
   assert.equal(convertBase('2', 2, 10), '');
 });
+
+test('silly units: every category has a plain base unit, and the yardsticks convert both ways', () => {
+  for (const id of ['sillylength', 'sillyarea', 'sillymass']) assert.ok(CATEGORIES.find((c) => c.id === id), id);
+  close(convert('sillylength', 'm', '🍌', 1.8), 10);
+  close(convert('sillylength', '🗼', '⚽', 105), 330);
+  close(convert('sillyarea', '🐉', 'm²', 1), 20779e6);
+  close(convert('sillyarea', '⚽', '🏊', 1250), 7140);
+  close(convert('sillymass', '🐘', 'kg', 1), 5000);
+  for (const c of CATEGORIES.filter((c) => c.id.startsWith('silly'))) assert.equal(new Set(c.units.map((x) => x.id)).size, c.units.length, `${c.id} ids are unique`);
+});

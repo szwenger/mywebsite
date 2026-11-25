@@ -15,3 +15,6 @@ tests/*.local.txt
 # fetched at build time (Actions cache keeps the last good copy)
 src/data/videos.json
 public/thumbs/
+
+# Impeccable design-tool state
+.impeccable/

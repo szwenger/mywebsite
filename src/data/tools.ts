@@ -182,6 +182,18 @@ export const tools: Tool[] = [
     },
   },
   {
+    slug: 'metatags',
+    cat: 'dev',
+    tags: 'meta tags seo open graph og twitter card title description canonical robots noindex social share preview head html',
+    icon: 'M4 6h16M4 12h10M4 18h7M17 14l3 3-3 3',
+    name: { en: 'Meta tag generator', de: 'Meta-Tag-Generator', ru: 'Генератор мета-тегов' },
+    blurb: {
+      en: 'Write the title, description, canonical, Open Graph and Twitter tags for a page, and see how it looks in search and when shared.',
+      de: 'Titel, Beschreibung, Canonical, Open-Graph- und Twitter-Tags für eine Seite schreiben und sehen, wie sie in der Suche und beim Teilen aussieht.',
+      ru: 'Заголовок, описание, canonical, теги Open Graph и Twitter для страницы, с превью в поиске и при отправке в соцсетях.',
+    },
+  },
+  {
     slug: 'favicon',
     cat: 'images',
     accepts: ['png', 'jpg', 'webp', 'gif', 'bmp', 'heic', 'svg'],
@@ -287,7 +299,7 @@ export const tools: Tool[] = [
     cat: 'dev',
     accepts: ['png', 'jpg', 'webp', 'gif', 'bmp', 'heic'],
     produces: ['json', 'css'],
-    tags: 'color colour hex rgb hsl oklch contrast wcag accessibility converter picker palette harmony shades tints gradient css colorblind colourblind daltonism protanopia deuteranopia simulator extract dominant image swatch theme from photo',
+    tags: 'color colour hex rgb hsl oklch contrast wcag accessibility converter picker palette harmony shades tints gradient css colorblind colourblind daltonism pixel eyedropper loupe protanopia deuteranopia simulator extract dominant image swatch theme from photo',
     icon: 'M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11zM9.5 14.5a2.5 2.5 0 0 0 2.5 2.5',
     name: { en: 'Colour tools: converter, contrast, palette and gradient', de: 'Farbwerkzeuge: Umrechner, Kontrast, Palette und Verlauf', ru: 'Цвет: конвертер, контраст, палитра и градиент' },
     blurb: {
@@ -560,16 +572,40 @@ export const tools: Tool[] = [
     },
   },
   {
+    slug: 'lineheight',
+    cat: 'dev',
+    tags: 'line height leading typography font size css rem baseline grid measure line length characters per line readability',
+    icon: 'M4 5h16M4 19h16M9 9h6M8 13h8M12 5v14',
+    name: { en: 'Line-height calculator', de: 'Zeilenhöhen-Rechner', ru: 'Калькулятор высоты строки' },
+    blurb: {
+      en: 'Find a comfortable line height for a font size and line length, in pixels, rem and unitless CSS, with a live preview.',
+      de: 'Eine angenehme Zeilenhöhe für Schriftgröße und Zeilenlänge finden, in Pixel, rem und einheitenlosem CSS, mit Live-Vorschau.',
+      ru: 'Подберите комфортную высоту строки для размера шрифта и длины строки: в пикселях, rem и CSS без единиц, с живым превью.',
+    },
+  },
+  {
+    slug: 'paper',
+    cat: 'text',
+    tags: 'paper sizes a4 a3 a5 letter legal tabloid iso 216 din mm inches points pixels dpi ppi print dimensions b5 envelope c5',
+    icon: 'M6 3h9l4 4v14H6zM15 3v4h4M9 12h7M9 16h5',
+    name: { en: 'Paper sizes', de: 'Papierformate', ru: 'Форматы бумаги' },
+    blurb: {
+      en: 'A, B and C series and US paper sizes in millimetres, inches, points and pixels at the resolution you pick.',
+      de: 'A-, B- und C-Reihe sowie US-Papierformate in Millimetern, Zoll, Punkt und Pixeln bei der gewählten Auflösung.',
+      ru: 'Серии A, B, C и американские форматы бумаги в миллиметрах, дюймах, пунктах и пикселях при выбранном разрешении.',
+    },
+  },
+  {
     slug: 'units',
     cat: 'text',
     topics: ['math'],
-    tags: 'unit converter length mass weight temperature celsius fahrenheit kelvin miles km pounds kg gallons litres speed area data mpg fuel px rem em pt pica pixel css ppi dpi screen density base binary hex hexadecimal octal decimal bin oct dec number base radix',
+    tags: 'unit converter length mass weight temperature celsius fahrenheit kelvin miles km pounds kg gallons litres speed area data mpg fuel px rem em pt pica pixel css ppi dpi screen density base binary hex hexadecimal octal decimal bin oct dec number base radix banana bananas wales football pitch silly fun giraffe elephant blue whale eiffel',
     icon: 'M4 17h16M4 17V9M8 17v-4M12 17V9M16 17v-4M20 17V9M4 9h16',
     name: { en: 'Unit converter', de: 'Einheiten-Umrechner', ru: 'Конвертер единиц' },
     blurb: {
-      en: 'Length, weight, volume, temperature, speed, data sizes, fuel economy, px to rem and points with your PPI, and number bases up to 36, with every unit shown at once.',
-      de: 'Länge, Gewicht, Volumen, Temperatur, Geschwindigkeit, Datengrößen, Verbrauch, px zu rem und Punkt mit deiner PPI sowie Zahlensysteme bis 36, mit allen Einheiten auf einen Blick.',
-      ru: 'Длина, вес, объём, температура, скорость, размеры данных, расход топлива, px в rem и пункты с вашим PPI, системы счисления до 36, сразу во всех единицах.',
+      en: 'Length, weight, volume, temperature, speed, data sizes, fuel economy, px to rem and points with your PPI, number bases up to 36 and a few silly ones (bananas, football pitches, Wales), with every unit shown at once.',
+      de: 'Länge, Gewicht, Volumen, Temperatur, Geschwindigkeit, Datengrößen, Verbrauch, px zu rem und Punkt mit deiner PPI sowie Zahlensysteme bis 36 und ein paar alberne Maße (Bananen, Fußballfelder, Wales), mit allen Einheiten auf einen Blick.',
+      ru: 'Длина, вес, объём, температура, скорость, размеры данных, расход топлива, px в rem и пункты с вашим PPI, системы счисления до 36 и пара шуточных мерок (бананы, футбольные поля, Уэльс), сразу во всех единицах.',
     },
   },
   {

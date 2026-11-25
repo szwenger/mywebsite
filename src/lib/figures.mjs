@@ -5,6 +5,7 @@
 // the one for the current theme (so the theme-switch ink wave reveals the other one).
 
 import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 
 const blank = (n) => n.type === 'text' && !n.value.trim();
 const isEl = (n, tag) => n?.type === 'element' && n.tagName === tag;
@@ -17,6 +18,14 @@ const onDisk = (src) => existsSync(new URL(`.${src}`, `${PUBLIC.href}/`));
 const variants = (src) => {
   const m = typeof src === 'string' && /^(\/[^?#]*)\.([a-z0-9]+)$/i.exec(src);
   return m ? { light: `${m[1]}.light.${m[2]}`, dark: `${m[1]}.dark.${m[2]}` } : null;
+};
+
+/** The light and dark files for an image when both exist in public/ (a post cover, for instance), else null. */
+// Components are bundled, so import.meta.url no longer points into src/: look from the project root (where astro runs) instead.
+const inProject = (src) => existsSync(join(process.cwd(), 'public', src));
+export const themedFiles = (src, exists = inProject) => {
+  const v = variants(src);
+  return v && exists(v.light) && exists(v.dark) ? v : null;
 };
 
 /** `exists(path)` says whether a site-rooted file such as /posts/a.dark.png exists; tests pass their own. */

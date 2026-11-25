@@ -1,0 +1,35 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { langOf, toolPaths } from '../../../../i18n/tool-page';
+import { s as strings } from '../../../../i18n/tools/paper';
+
+export const getStaticPaths = toolPaths;
+const lang = langOf(Astro.params);
+const s = strings[lang];
+---
+<ToolLayout lang={lang} slug="paper">
+  <div class="tl paper" data-paper data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <div class="row">
+        <label>{s.ppi}<select name="ppi"><option value="72">72</option><option value="96">96</option><option value="150">150</option><option value="300" selected>300</option><option value="600">600</option></select></label>
+        <label>{s.orientation}<select name="orient"><option value="p">{s.portrait}</option><option value="l">{s.landscape}</option></select></label>
+      </div>
+      <div class="scroll"><table class="ptable" data-table></table></div>
+      <p class="meta">{s.hint}</p>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/paper/paper.ts';
+</script>
+<style>
+  .scroll { overflow-x: auto; }
+  :global(.ptable) { width: 100%; border-collapse: collapse; font-size: .9rem; font-variant-numeric: tabular-nums; }
+  :global(.ptable th), :global(.ptable td) { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+  :global(.ptable th:first-child), :global(.ptable td:first-child) { text-align: left; }
+  :global(.ptable th) { color: var(--muted); font-weight: 500; }
+  :global(.ptable tr.grp th) { padding-top: 18px; color: var(--fg); font-weight: 600; text-align: left; }
+  :global(.ptable tbody tr[data-name]) { cursor: pointer; }
+  :global(.ptable tbody tr[data-name]:hover) { background: var(--surface-2); }
+  :global(.ptable td:first-child) { font-weight: 600; }
+</style>

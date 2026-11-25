@@ -525,7 +525,9 @@ test('deploy workflow: triggers, build and test steps, video cache, permissions,
 test('post images become figures that link to the full image, and a lightbox dialog is on every page', () => {
   for (const [lang, pre_] of [['en', ''], ['de', '/de'], ['ru', '/ru']]) {
     const h = read(`${pre_ ? pre_.slice(1) + '/' : ''}blog/llm-benchmark/index.html`);
-    assert.match(h, /<figure class="fig"><a href="\/posts\/llm-benchmark\.png" class="zoom"><img /, `figure in ${lang} post`);
+    // the chart has a light and a dark file, so the figure holds both and the lightbox opens the one for the theme
+    assert.match(h, /<figure class="fig"><a href="\/posts\/llm-benchmark\.dark\.png" data-light-href="\/posts\/llm-benchmark\.light\.png" class="zoom themed"><img /, `figure in ${lang} post`);
+    assert.match(read(`${pre_ ? pre_.slice(1) + '/' : ''}blog/tts-benchmark/index.html`), /data-light-href="\/posts\/tts-benchmark\.light\.jpg" class="zoom themed"/, `tts chart in ${lang} post`);
     assert.match(h, /<dialog[^>]*class="lightbox"[^>]*>[\s\S]*<button[^>]*aria-label="[^"]+"/, `lightbox dialog in ${lang} post`);
   }
   const shipped = walk('dist').filter((p) => /\.(js|html)$/.test(p)).map((f) => readFileSync(f, 'utf8')).join('\n');

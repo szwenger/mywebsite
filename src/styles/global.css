@@ -145,7 +145,10 @@ h1.section-title::before { content: ''; width: .62em; height: .62em; border-radi
    display: a display:none lazy image never loads, so the incoming theme would be blank in the ink-wave snapshot. */
 .fig .themed { display: grid; }
 .fig .themed img { grid-area: 1 / 1; }
-html[data-theme='light'] .fig .tv-dark, html[data-theme='dark'] .fig .tv-light { visibility: hidden; }
+html[data-theme='light'] .tv-dark, html[data-theme='dark'] .tv-light { visibility: hidden; }
+/* Post covers with .light/.dark files: same stack, in a card or the lead story. */
+.tv-stack { display: grid; width: 100%; height: 100%; }
+.tv-stack > img { grid-area: 1 / 1; }
 .fig figcaption { margin-top: 8px; color: var(--muted); font-size: .88rem; line-height: 1.45; max-width: 65ch; }
 
 .lightbox {
@@ -163,3 +166,18 @@ html[data-theme='light'] .fig .tv-dark, html[data-theme='dark'] .fig .tv-light {
 }
 .lightbox .lb-close:hover { background: #000d; }
 body:has(dialog.lightbox[open]) { overflow: hidden; }
+
+.shortcuts { width: min(440px, calc(100% - 32px)); padding: 20px 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--fg); }
+.shortcuts::backdrop { background: rgb(5 6 10 / .6); }
+.shortcuts .sc-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
+.shortcuts h2 { margin: 0; font: 600 1.05rem/1.3 var(--display); }
+.shortcuts .sc-close { width: 36px; height: 36px; border: 0; border-radius: 99px; display: grid; place-items: center; background: transparent; color: var(--muted); cursor: pointer; }
+.shortcuts .sc-close:hover { background: var(--surface-2); color: var(--fg); }
+.shortcuts dl { margin: 0; display: grid; }
+.shortcuts dl > div { display: grid; grid-template-columns: minmax(0, 9em) 1fr; gap: 16px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.shortcuts dl > div:last-child { border-bottom: 0; }
+.shortcuts dt { white-space: nowrap; }
+.shortcuts dd { margin: 0; color: var(--muted); font-size: .92rem; }
+.shortcuts .or { margin: 0 6px; color: var(--muted); }
+kbd { display: inline-block; min-width: 1.6em; padding: 2px 7px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; background: var(--surface-2); font: 600 .82rem/1.4 var(--mono, ui-monospace, monospace); text-align: center; }
+body:has(dialog.shortcuts[open]) { overflow: hidden; }

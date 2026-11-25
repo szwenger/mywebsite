@@ -1,0 +1,59 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import IconButton from '../../../../components/IconButton.astro';
+import { langOf, toolPaths } from '../../../../i18n/tool-page';
+import { s as strings } from '../../../../i18n/tools/metatags';
+
+export const getStaticPaths = toolPaths;
+const lang = langOf(Astro.params);
+const s = strings[lang];
+---
+<ToolLayout lang={lang} slug="metatags">
+  <div class="tl two" data-metatags data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <label>{s.title}<input name="title" placeholder={s.titlePh} autocomplete="off" /><span class="count" data-count="title"></span></label>
+      <label>{s.description}<textarea name="description" rows="3" placeholder={s.descriptionPh}></textarea><span class="count" data-count="description"></span></label>
+      <label>{s.url}<input name="url" type="url" placeholder={s.urlPh} autocomplete="off" spellcheck="false" /></label>
+      <label>{s.image}<input name="image" type="url" placeholder={s.imagePh} autocomplete="off" spellcheck="false" /></label>
+      <p class="meta">{s.imageNote}</p>
+      <div class="row">
+        <label>{s.siteName}<input name="siteName" autocomplete="off" /></label>
+        <label>{s.locale}<input name="locale" placeholder={s.localePh} autocomplete="off" spellcheck="false" /></label>
+      </div>
+      <div class="row">
+        <label>{s.type}<select name="type"><option value="website">{s.website}</option><option value="article">{s.article}</option></select></label>
+        <label>{s.card}<select name="card"><option value="summary_large_image">{s.cardLarge}</option><option value="summary">{s.cardSmall}</option></select></label>
+        <label>{s.color}<input name="themeColor" placeholder="#0b0c12" autocomplete="off" spellcheck="false" /></label>
+      </div>
+      <label class="check"><input type="checkbox" name="noindex" /> {s.noindex}</label>
+    </div>
+    <div class="card pane">
+      <h2 class="sub">{s.search}</h2>
+      <div class="serp" data-serp><span class="su" data-su></span><b class="st" data-st></b><span class="sd" data-sd></span></div>
+      <h2 class="sub">{s.share}</h2>
+      <div class="share" data-share><div class="si" data-si></div><div class="sb"><span class="sh" data-sh></span><b data-sti></b><span class="sd" data-ssd></span></div></div>
+      <label>{s.result}<pre data-out></pre></label>
+      <div class="actions"><IconButton icon="copy" label={s.copy} data-copy /></div>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/metatags/metatags.ts';
+</script>
+<style>
+  .sub { margin: 0; font-family: var(--font); font-size: .95rem; font-weight: 600; letter-spacing: 0; }
+  textarea { resize: vertical; font-family: inherit; }
+  .count { display: block; margin-top: 4px; font-size: .78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  :global(.count.long) { color: var(--bad, #c0392b); }
+  .serp { display: grid; gap: 2px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); }
+  .su { font-size: .78rem; color: var(--muted); overflow-wrap: anywhere; }
+  .st { font-size: 1.05rem; font-weight: 500; color: var(--accent-strong); overflow-wrap: anywhere; }
+  .sd { font-size: .85rem; color: var(--muted); overflow-wrap: anywhere; }
+  .share { border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; background: var(--surface-2); }
+  .si { aspect-ratio: 1200 / 630; background: var(--line) center / cover no-repeat; }
+  .share[data-card='summary'] { display: grid; grid-template-columns: 96px 1fr; }
+  .share[data-card='summary'] .si { aspect-ratio: 1; height: 100%; }
+  .share .si[hidden] { display: none; }
+  .sb { display: grid; gap: 2px; padding: 10px 14px; }
+  .sh { font-size: .75rem; color: var(--muted); text-transform: none; }
+</style>

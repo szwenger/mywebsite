@@ -1,5 +1,6 @@
 ---
 import Icon from './Icon.astro';
+import { themedFiles } from '../lib/figures.mjs';
 import NoteItem from './NoteItem.astro';
 import PostCard from './PostCard.astro';
 import VideoCard from './VideoCard.astro';
@@ -20,6 +21,7 @@ const postRow = latestLong(items.map(({ post }) => post), lead, 3);
 const leadVideoId = lead?.type === 'video' ? lead.video.id : undefined;
 const row = videos.filter((v) => !v.isShort && v.id !== leadVideoId).slice(0, 4);
 
+const themed = lead?.type === 'post' && lead.post.cover ? themedFiles(lead.post.cover) : null;
 const card = lead?.type === 'post'
   ? { href: path(lang, `/blog/${lead.post.slug}/`), img: lead.post.cover, title: lead.post.title, kicker: t(lang, 'leadPost'),
       date: dateLabel(lead.post.date, lang), iso: lead.post.date.toISOString().slice(0, 10), tags: lead.post.tags ?? [],
@@ -35,7 +37,9 @@ const card = lead?.type === 'post'
     {card && (
       <a class="card lead" data-section="lead" href={card.href} rel={lead?.type === 'video' ? 'noopener' : undefined}>
         <div class="media">
-          {card.img && <img src={card.img} alt="" width="1280" height="720" fetchpriority="high" decoding="async" />}
+          {themed
+            ? <span class="tv-stack"><img class="tv-light" src={themed.light} alt="" width="1280" height="720" fetchpriority="high" decoding="async" /><img class="tv-dark" src={themed.dark} alt="" width="1280" height="720" fetchpriority="high" decoding="async" /></span>
+            : card.img && <img src={card.img} alt="" width="1280" height="720" fetchpriority="high" decoding="async" />}
           {lead?.type === 'video' && <span class="play" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" /></svg></span>}
         </div>
         <div class="body">

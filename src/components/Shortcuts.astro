@@ -1,0 +1,38 @@
+---
+import { t, type Lang } from '../i18n/ui';
+import Icon from './Icon.astro';
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const rows = [
+  { keys: ['/', 'Ctrl K'], text: t(lang, 'kSearch') },
+  { keys: ['?'], text: t(lang, 'kSheet') },
+  { keys: ['Esc'], text: t(lang, 'kEsc') },
+  { keys: ['Ctrl Enter'], text: t(lang, 'kRun') },
+];
+---
+<dialog class="shortcuts" aria-labelledby="sc-title">
+  <div class="sc-head">
+    <h2 id="sc-title">{t(lang, 'shortcuts')}</h2>
+    <button type="button" class="sc-close" aria-label={t(lang, 'shortcutsClose')}><Icon name="close" size={18} /></button>
+  </div>
+  <dl>
+    {rows.map((r) => <div><dt>{r.keys.map((k, i) => <>{i > 0 && <span class="or">/</span>}<kbd>{k}</kbd></>)}</dt><dd>{r.text}</dd></div>)}
+  </dl>
+</dialog>
+<script>
+  // "?" opens the list of shortcuts, Ctrl or Cmd + Enter clicks the page's main action (an element marked data-run).
+  // The "/" and Ctrl K search shortcut lives in scripts/xsearch.ts. Esc closes the dialog natively.
+  const box = document.querySelector<HTMLDialogElement>('dialog.shortcuts')!;
+  box.querySelector('.sc-close')!.addEventListener('click', () => box.close());
+  box.addEventListener('click', (e) => { if (e.target === box) box.close(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && !e.altKey) {
+      const run = document.querySelector<HTMLElement>('[data-run]:not(:disabled):not([hidden])');
+      if (run) { e.preventDefault(); run.click(); }
+      return;
+    }
+    if (e.key !== '?' || e.ctrlKey || e.metaKey || e.altKey || (e.target as HTMLElement).closest('input, textarea, select, [contenteditable]') || document.querySelector('dialog[open]:not(.shortcuts)')) return;
+    e.preventDefault();
+    if (box.open) box.close(); else box.showModal();
+  });
+</script>

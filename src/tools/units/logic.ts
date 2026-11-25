@@ -45,6 +45,10 @@ export const CATEGORIES: Category[] = [
     { id: 'mpg UK', name: 'miles per imperial gallon', to: (x) => 282.480936 / x, from: (b) => 282.480936 / b },
     { id: 'km/L', name: 'kilometres per litre', to: (x) => 100 / x, from: (b) => 100 / b },
   ] },
+  // Everyday yardsticks, rough on purpose (a banana is "about 18 cm"). The ids are emoji so they read the same in every language; the names come from the page strings.
+  { id: 'sillylength', units: [u('m', 'metre', 1, 'meter'), u('🍌', 'Banana', 0.18), u('🦒', 'Giraffe', 5.5), u('🚌', 'Double-decker bus', 11.2), u('🐋', 'Blue whale', 25), u('⚽', 'Football pitch (length)', 105), u('🗼', 'Eiffel Tower', 330)] },
+  { id: 'sillyarea', units: [u('m²', 'square metre', 1), u('🎾', 'Tennis court', 260.9), u('🏊', 'Olympic pool', 1250), u('⚽', 'Football pitch', 7140), u('⛪', 'Vatican City', 490000), u('🏙', 'Manhattan', 59.13e6), u('🐉', 'Wales', 20779e6), u('🍟', 'Belgium', 30689e6)] },
+  { id: 'sillymass', units: [u('kg', 'kilogram', 1), u('🍌', 'Banana', 0.12), u('🐈', 'House cat', 4.5), u('🧍', 'Adult person', 70), u('🐘', 'Elephant', 5000), u('🐋', 'Blue whale', 150000)] },
 ];
 
 export const category = (id: string): Category => CATEGORIES.find((c) => c.id === id) ?? CATEGORIES[0];

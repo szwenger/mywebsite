@@ -19,6 +19,31 @@ const t = (en: string, de: string, ru: string): T => ({ en, de, ru });
 /** Newest first. */
 export const releases: Release[] = [
   {
+    minor: 20, tool: 'paper',
+    blurb: t('Paper sizes in every unit.', 'Papierformate in jeder Einheit.', 'Форматы бумаги во всех единицах.'),
+    changes: [
+      c(0, 'new', '2026-11-25', 'A, B and C series and US paper sizes in millimetres, inches, points and pixels at the resolution you pick, portrait or landscape.', 'A-, B- und C-Reihe und US-Papierformate in Millimetern, Zoll, Punkt und Pixeln bei der gewählten Auflösung, hoch oder quer.', 'Серии A, B, C и американские форматы бумаги в миллиметрах, дюймах, пунктах и пикселях при выбранном разрешении, книжная или альбомная.', 'paper'),
+      c(1, 'changed', '2026-11-25', 'The colour tools have a Pixel picker tab: point at a picture, read the exact colour in a loupe and keep the ones you want.', 'Die Farbwerkzeuge haben einen Tab „Pixel-Pipette“: auf ein Bild zeigen, die genaue Farbe in einer Lupe lesen und die gewünschten behalten.', 'В цветовых инструментах появилась вкладка «Пипетка»: наведите на картинку, смотрите точный цвет в лупе и сохраняйте нужные.', 'color'),
+      c(2, 'changed', '2026-11-25', 'The unit converter has silly yardsticks: bananas, giraffes, football pitches, Wales and more.', 'Der Einheiten-Umrechner kennt alberne Maße: Bananen, Giraffen, Fußballfelder, Wales und mehr.', 'В конвертере единиц появились шуточные мерки: бананы, жирафы, футбольные поля, Уэльс и другие.', 'units'),
+      c(3, 'changed', '2026-11-25', 'Press ? anywhere for a list of keyboard shortcuts, and Ctrl+Enter runs the main action where a tool has one.', 'Mit ? gibt es überall eine Liste der Tastenkürzel, und Strg+Enter führt die Hauptaktion aus, wo ein Werkzeug eine hat.', 'Клавиша ? показывает список горячих клавиш на любой странице, а Ctrl+Enter запускает главное действие, если оно есть.'),
+      c(4, 'changed', '2026-11-25', 'The benchmark charts in the LLM and speech posts, and their covers on the blog page, now follow the light or dark theme.', 'Die Diagramme in den Beiträgen zu LLM und Sprachausgabe und ihre Titelbilder auf der Blogseite folgen jetzt dem hellen oder dunklen Design.', 'Графики в статьях про LLM и синтез речи и их обложки на странице блога теперь следуют светлой или тёмной теме.'),
+    ],
+  },
+  {
+    minor: 19, tool: 'lineheight',
+    blurb: t('A comfortable line height for any text.', 'Eine angenehme Zeilenhöhe für jeden Text.', 'Комфортная высота строки для любого текста.'),
+    changes: [
+      c(0, 'new', '2026-11-25', 'Find a line height for a font size and line length, in pixels, rem and unitless CSS, with a live preview.', 'Eine Zeilenhöhe für Schriftgröße und Zeilenlänge finden, in Pixel, rem und einheitenlosem CSS, mit Live-Vorschau.', 'Подберите высоту строки для размера шрифта и длины строки: в пикселях, rem и CSS без единиц, с живым превью.', 'lineheight'),
+    ],
+  },
+  {
+    minor: 18, tool: 'metatags',
+    blurb: t('Meta tags for search and sharing.', 'Meta-Tags für Suche und Teilen.', 'Мета-теги для поиска и репостов.'),
+    changes: [
+      c(0, 'new', '2026-11-25', 'Write the title, description, canonical, Open Graph and Twitter tags for a page, with a preview of the search result and the share card.', 'Titel, Beschreibung, Canonical, Open-Graph- und Twitter-Tags für eine Seite schreiben, mit Vorschau von Suchergebnis und Vorschaukarte.', 'Заголовок, описание, canonical, теги Open Graph и Twitter для страницы, с превью результата поиска и карточки при отправке.', 'metatags'),
+    ],
+  },
+  {
     minor: 17, tool: 'dither',
     blurb: t('Turn a photo into a few shades or two colours.', 'Aus einem Foto wenige Farbtöne oder zwei Farben machen.', 'Превратите фото в несколько оттенков или два цвета.'),
     changes: [

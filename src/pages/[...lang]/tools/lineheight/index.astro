@@ -1,0 +1,51 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import IconButton from '../../../../components/IconButton.astro';
+import { langOf, toolPaths } from '../../../../i18n/tool-page';
+import { s as strings } from '../../../../i18n/tools/lineheight';
+
+export const getStaticPaths = toolPaths;
+const lang = langOf(Astro.params);
+const s = strings[lang];
+---
+<ToolLayout lang={lang} slug="lineheight">
+  <div class="tl two" data-lh data-s={JSON.stringify(s)}>
+    <div class="card pane">
+      <div class="row">
+        <label>{s.size}<input name="size" type="number" min="1" step="any" value="16" inputmode="decimal" /></label>
+        <label>{s.ratio}<input name="ratio" type="number" min="0.5" step="0.05" value="1.5" inputmode="decimal" /></label>
+      </div>
+      <div class="row">
+        <label>{s.measure}<input name="measure" type="number" min="10" step="1" value="66" inputmode="numeric" /></label>
+        <label>{s.root}<input name="root" type="number" min="1" step="any" value="16" inputmode="decimal" /></label>
+        <label>{s.grid}<input name="grid" type="number" min="0" step="1" value="4" inputmode="numeric" /></label>
+      </div>
+      <div class="actions"><button type="button" class="btn alt" data-use></button></div>
+      <p class="meta">{s.note}</p>
+      <dl class="vals" data-vals>
+        <div><dt>{s.px}</dt><dd data-px></dd></div>
+        <div><dt>{s.rem}</dt><dd data-rem></dd></div>
+        <div><dt>{s.unitless}</dt><dd data-unitless></dd></div>
+        <div><dt>{s.snapped}</dt><dd data-snapped></dd></div>
+        <div><dt>{s.width}</dt><dd data-width></dd></div>
+      </dl>
+      <label>{s.css}<pre data-css></pre></label>
+      <div class="actions"><IconButton icon="copy" label={s.copy} data-copy /></div>
+    </div>
+    <div class="card pane">
+      <h2 class="sub">{s.preview}</h2>
+      <p class="sample" data-sample>{s.sample}</p>
+    </div>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/lineheight/lineheight.ts';
+</script>
+<style>
+  .sub { margin: 0; font-family: var(--font); font-size: .95rem; font-weight: 600; letter-spacing: 0; }
+  .vals { display: grid; gap: 0; margin: 0; }
+  .vals div { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .vals dt { color: var(--muted); }
+  .vals dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+  .sample { margin: 0; max-width: 100%; overflow-wrap: break-word; }
+</style>

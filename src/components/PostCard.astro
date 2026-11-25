@@ -2,11 +2,15 @@
 import { path, t, type Lang } from '../i18n/ui';
 import { dateLabel } from '../lib/load-posts';
 import type { PostView } from '../lib/posts';
+import { themedFiles } from '../lib/figures.mjs';
 interface Props { lang: Lang; post: PostView }
 const { lang, post } = Astro.props;
+const themed = post.cover ? themedFiles(post.cover) : null;
 ---
 <a class="card post" data-post={post.slug} lang={post.shownIn} href={path(lang, `/blog/${post.slug}/`)}>
-  {post.cover && <img src={post.cover} alt="" loading="lazy" />}
+  {themed
+    ? <span class="tv-stack"><img class="tv-light" src={themed.light} alt="" loading="lazy" /><img class="tv-dark" src={themed.dark} alt="" loading="lazy" /></span>
+    : post.cover && <img src={post.cover} alt="" loading="lazy" />}
   <div class="body">
     <div class="head">
       <time class="meta" datetime={post.date.toISOString().slice(0, 10)}>{dateLabel(post.date, lang)}</time>

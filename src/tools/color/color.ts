@@ -2,6 +2,7 @@ import { contrast, formats, grades, parseColor, toHex } from './logic';
 import { copy } from '../dom';
 import { initExtras } from './extras';
 import { initPhoto } from './photo';
+import { initPixel } from './pixel';
 
 const root = document.querySelector<HTMLElement>('[data-color]');
 if (root) {
@@ -38,6 +39,7 @@ if (root) {
 
   const extras = initExtras(root);
   initPhoto(root, s);
+  initPixel(root, s);
   const tab = () => root.querySelector<HTMLInputElement>('[name="tab"]:checked')!.value;
   function showTab() {
     root!.querySelectorAll<HTMLElement>('[data-when]').forEach((el) => { el.hidden = el.dataset.when !== tab(); });

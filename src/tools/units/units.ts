@@ -38,7 +38,7 @@ function init(root: HTMLElement) {
     from.value = keep && units.some((x) => x.id === a) ? a : units[0].id;
     to.value = keep && units.some((x) => x.id === b) ? b : units[Math.min(1, units.length - 1)].id;
     ctxRow.hidden = !category(id).ctx;
-    for (const h of root.querySelectorAll<HTMLElement>('[data-hint]')) h.hidden = h.dataset.hint !== id;
+    for (const h of root.querySelectorAll<HTMLElement>('[data-hint]')) h.hidden = !h.dataset.hint!.split(' ').includes(id);
     const base = !!category(id).base;
     val.inputMode = base ? 'text' : 'decimal';
     if (base) { from.value = '10'; to.value = '16'; } // a number typed in another category is read as decimal

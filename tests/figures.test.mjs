@@ -71,3 +71,12 @@ test('figures: a caption still works on a themed figure, and remote images are n
   assert.match(t('![A](/posts/a.png)\n\n*Cap*'), /<figcaption>Cap<\/figcaption>/);
   assert.ok(!t('![A](https://x.test/a.png)').includes('themed'));
 });
+
+test('themedFiles gives the light and dark file only when both exist', async () => {
+  const { themedFiles } = await import('../src/lib/figures.mjs');
+  const both = new Set(['/posts/a-cover.light.webp', '/posts/a-cover.dark.webp']);
+  assert.deepEqual(themedFiles('/posts/a-cover.webp', (p) => both.has(p)), { light: '/posts/a-cover.light.webp', dark: '/posts/a-cover.dark.webp' });
+  assert.equal(themedFiles('/posts/a-cover.webp', (p) => p.includes('light')), null);
+  assert.equal(themedFiles('https://x.test/a.webp', () => true), null);
+  assert.equal(themedFiles(undefined, () => true), null);
+});
