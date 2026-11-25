@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { postKind, postsFor } from '../src/lib/posts.ts';
+import { readdirSync, readFileSync } from 'node:fs';
+import { allTags, postKind, postsFor, withTag } from '../src/lib/posts.ts';
 
 const e = (slug, lang, date, extra = {}) => ({ slug, lang, title: `${slug}-${lang}`, date: new Date(date), body: '', ...extra });
 
@@ -60,4 +61,37 @@ test('same-date posts keep a stable order (slug ascending)', () => {
 test('same day: the later time comes first, whatever the slug', () => {
   const all = [e('imagegen', 'en', '2024-01-01T20:10:00Z'), e('tts', 'en', '2024-01-01T21:25:00Z')];
   assert.deepEqual(postsFor('en', all).map((p) => p.slug), ['tts', 'imagegen']);
+});
+
+test('allTags: unique, most used first, ties alphabetical', () => {
+  const views = postsFor('en', [
+    e('a', 'en', '2024-01-01', { tags: ['llm', 'amd'] }),
+    e('b', 'en', '2024-01-02', { tags: ['llm', 'tts'] }),
+    e('c', 'en', '2024-01-03'),
+  ]);
+  assert.deepEqual(allTags(views), [{ tag: 'llm', count: 2 }, { tag: 'amd', count: 1 }, { tag: 'tts', count: 1 }]);
+});
+
+test('withTag keeps only posts carrying the tag, order unchanged', () => {
+  const views = postsFor('en', [
+    e('a', 'en', '2024-01-01', { tags: ['llm'] }),
+    e('b', 'en', '2024-01-02', { tags: ['tts'] }),
+    e('c', 'en', '2024-01-03', { tags: ['llm', 'tts'] }),
+  ]);
+  assert.deepEqual(withTag(views, 'llm').map((p) => p.slug), ['c', 'a']);
+  assert.deepEqual(withTag(views, 'nope'), []);
+});
+
+test('content: tags are lowercase slugs and identical across the languages of a post', () => {
+  const root = new URL('../src/content/posts/', import.meta.url);
+  for (const dir of readdirSync(root)) {
+    const sets = readdirSync(new URL(`${dir}/`, root)).map((f) => {
+      const fm = /^---\r?\n([\s\S]*?)\r?\n---/.exec(readFileSync(new URL(`${dir}/${f}`, root), 'utf8'))?.[1] ?? '';
+      const m = /^tags:\s*\[(.*)\]\s*$/m.exec(fm);
+      const tags = m ? m[1].split(',').map((s) => s.trim().replace(/^["']|["']$/g, '')).filter(Boolean) : [];
+      for (const t of tags) assert.match(t, /^[a-z0-9-]+$/, `${dir}/${f}: bad tag "${t}"`);
+      return tags.slice().sort().join(',');
+    });
+    assert.equal(new Set(sets).size, 1, `${dir}: tags differ between languages`);
+  }
 });

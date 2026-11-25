@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { markdownToHtml } from 'satteri';
-import { figuresPlugin } from '../src/lib/figures.mjs';
+import { figuresPlugin, makeFiguresPlugin } from '../src/lib/figures.mjs';
 
 const md = (src) => markdownToHtml(src, { hastPlugins: [figuresPlugin] }).html.trim();
 
@@ -43,4 +43,31 @@ test('figures: two images in a row make two figures', () => {
   assert.equal((html.match(/<figure/g) ?? []).length, 2);
   assert.equal((html.match(/<figcaption>/g) ?? []).length, 1);
   assert.ok(html.indexOf('/b.png') < html.indexOf('<figcaption>'));
+});
+
+// Theme variants: name.light.ext + name.dark.ext next to name.ext make a figure that shows the one matching the theme.
+const themed = (have) => (src) => markdownToHtml(src, { hastPlugins: [makeFiguresPlugin((p) => have.includes(p))] }).html.trim();
+
+test('figures: when both .light and .dark files exist the figure holds both images', () => {
+  const html = themed(['/posts/a.light.png', '/posts/a.dark.png'])('![A chart](/posts/a.png)');
+  assert.match(html, /<a [^>]*class="zoom themed"[^>]*>/);
+  assert.match(html, /<img [^>]*class="tv-light"[^>]*src="\/posts\/a\.light\.png"|<img [^>]*src="\/posts\/a\.light\.png"[^>]*class="tv-light"/);
+  assert.match(html, /<img [^>]*class="tv-dark"[^>]*src="\/posts\/a\.dark\.png"|<img [^>]*src="\/posts\/a\.dark\.png"[^>]*class="tv-dark"/);
+  assert.equal((html.match(/alt="A chart"/g) ?? []).length, 2, 'both keep the alt text');
+  assert.equal((html.match(/loading="lazy"/g) ?? []).length, 2);
+  assert.match(html, /href="\/posts\/a\.dark\.png"/, 'no-JS link goes to the default (dark) image');
+  assert.match(html, /data-light-href="\/posts\/a\.light\.png"/);
+});
+
+test('figures: only one of the two variants existing leaves the figure as it was', () => {
+  for (const have of [['/posts/a.light.png'], ['/posts/a.dark.png'], []]) {
+    const html = themed(have)('![A](/posts/a.png)');
+    assert.match(html, /^<figure class="fig"><a [^>]*class="zoom"[^>]*><img [^>]*src="\/posts\/a\.png"[^>]*><\/a><\/figure>$/);
+  }
+});
+
+test('figures: a caption still works on a themed figure, and remote images are never themed', () => {
+  const t = themed(['/posts/a.light.png', '/posts/a.dark.png', 'https://x.test/a.light.png', 'https://x.test/a.dark.png']);
+  assert.match(t('![A](/posts/a.png)\n\n*Cap*'), /<figcaption>Cap<\/figcaption>/);
+  assert.ok(!t('![A](https://x.test/a.png)').includes('themed'));
 });

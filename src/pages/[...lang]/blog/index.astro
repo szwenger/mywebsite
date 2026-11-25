@@ -12,8 +12,8 @@ export function getStaticPaths() {
 }
 const lang = (Astro.params.lang ?? 'en') as Lang;
 const items = await loadPosts(lang);
-// What the search looks through: title, tags and the start of the text.
-const haystack = (p: (typeof items)[number]['post']) => normalize([p.title, ...(p.tags ?? []), plainText(p.body, 3000)].join(' '));
+// What the search looks through: title and the start of the text.
+const haystack = (p: (typeof items)[number]['post']) => normalize([p.title, plainText(p.body, 3000)].join(' '));
 ---
 <Base lang={lang} title={`${t(lang, 'navBlog')} · Galuin`} description={t(lang, 'blogIntro')} current="blog">
   <section class="wrap page">

@@ -28,3 +28,14 @@ export function postsFor(lang: Lang, all: PostEntry[]): PostView[] {
   });
   return out.sort((a, b) => +b.date - +a.date || a.slug.localeCompare(b.slug));
 }
+
+/** Every tag with its post count, most used first, ties alphabetical. */
+export function allTags(posts: PostEntry[]): { tag: string; count: number }[] {
+  const counts = new Map<string, number>();
+  for (const p of posts) for (const tag of p.tags ?? []) counts.set(tag, (counts.get(tag) ?? 0) + 1);
+  return [...counts].map(([tag, count]) => ({ tag, count })).sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+}
+
+export function withTag<T extends PostEntry>(posts: T[], tag: string): T[] {
+  return posts.filter((p) => p.tags?.includes(tag));
+}

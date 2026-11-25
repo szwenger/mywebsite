@@ -117,7 +117,7 @@ export async function extractImages(file: Uint8Array, name: string): Promise<Uin
   const files: { name: string; data: Uint8Array }[] = [];
   const seen = new Set<string>();
   try {
-    const { OPS } = await import('pdfjs-dist');
+    const { OPS } = await import('pdfjs-dist/legacy/build/pdf.mjs');
     for (let p = 1; p <= pdf.numPages; p++) {
       const page = await pdf.getPage(p);
       const ops = await page.getOperatorList();

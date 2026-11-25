@@ -1,0 +1,30 @@
+{
+  "type": "schema",
+  "title": "Open WebUI behind a Cloudflare\nTunnel",
+  "subtitle": "No inbound port, and an email list in front of the login page",
+  "label": "Request path: browser, Cloudflare Access, Cloudflare Tunnel, then cloudflared and Open WebUI on my PC. The tunnel is opened from the PC outwards.",
+  "viewBox": [760, 250],
+  "zones": [
+    { "label": "Internet", "x": 4, "y": 24, "w": 156, "h": 206 },
+    { "label": "Cloudflare", "x": 180, "y": 24, "w": 212, "h": 206 },
+    { "label": "My PC (Docker)", "x": 436, "y": 24, "w": 320, "h": 206 }
+  ],
+  "nodes": [
+    { "title": "Browser", "sub": "phone or laptop", "x": 24, "y": 100, "w": 116, "h": 58 },
+    { "title": "Access", "sub": "email list + one-time code", "x": 192, "y": 62, "w": 188, "h": 56 },
+    { "title": "Tunnel", "sub": "chat.example.com", "x": 192, "y": 146, "w": 188, "h": 56 },
+    { "title": "cloudflared", "sub": "container", "x": 452, "y": 146, "w": 122, "h": 56 },
+    { "title": "Open WebUI", "sub": "open-webui:8080", "x": 616, "y": 146, "w": 124, "h": 56 }
+  ],
+  "links": [
+    { "d": "M140 118 H166 V90 H190" },
+    { "d": "M286 118 V144" },
+    { "d": "M382 174 H450", "special": true, "both": true },
+    { "d": "M576 174 H614" }
+  ],
+  "badges": [{ "n": 1, "x": 166, "y": 76 }, { "n": 2, "x": 302, "y": 131 }, { "n": 3, "x": 416, "y": 156 }, { "n": 4, "x": 595, "y": 160 }],
+  "notes": [
+    { "text": "tunnel needs no inbound port", "x": 450, "y": 134 },
+    { "text": "cloudflared dials out: 4× QUIC to Frankfurt", "x": 448, "y": 222 }
+  ]
+}

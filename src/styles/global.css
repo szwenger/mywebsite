@@ -141,6 +141,11 @@ h1.section-title::before { content: ''; width: .62em; height: .62em; border-radi
 .fig { margin: 1.6em 0; max-width: 100%; }
 .fig .zoom { display: block; cursor: zoom-in; border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; background: var(--surface); }
 .fig .zoom img { width: 100%; }
+/* Figures with .light/.dark files (src/lib/figures.mjs): both images stack in one box, the other theme's is hidden. visibility, not
+   display: a display:none lazy image never loads, so the incoming theme would be blank in the ink-wave snapshot. */
+.fig .themed { display: grid; }
+.fig .themed img { grid-area: 1 / 1; }
+html[data-theme='light'] .fig .tv-dark, html[data-theme='dark'] .fig .tv-light { visibility: hidden; }
 .fig figcaption { margin-top: 8px; color: var(--muted); font-size: .88rem; line-height: 1.45; max-width: 65ch; }
 
 .lightbox {

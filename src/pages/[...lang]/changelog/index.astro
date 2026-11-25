@@ -1,0 +1,139 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Version from '../../../components/Version.astro';
+import { LANGS, path, type Lang } from '../../../i18n/ui';
+import { releases, earlier, latest, type Kind } from '../../../data/changelog';
+import { s as all } from '../../../i18n/tools/changelog';
+import { tools } from '../../../data/tools';
+
+export function getStaticPaths() {
+  return LANGS.map((l) => ({ params: { lang: l === 'en' ? undefined : l } }));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const s = all[lang];
+const loc = { en: 'en-GB', de: 'de-DE', ru: 'ru-RU' }[lang];
+const fmt = (iso: string, o: Intl.DateTimeFormatOptions) => new Date(iso).toLocaleDateString(loc, { ...o, timeZone: 'UTC' });
+const short = (iso: string) => fmt(iso, { day: 'numeric', month: 'short' });
+const range = (from: string, to: string) => (from === to ? short(from) : `${short(from)} – ${short(to)}`);
+const name = (slug: string) => tools.find((x) => x.slug === slug)!.name[lang];
+const kindLabel: Record<Kind, string> = { new: s.kindNew, changed: s.kindChanged, fixed: s.kindFixed, internal: s.kindInternal };
+const fill = (tpl: string, vars: Record<string, string | number>) => tpl.replace(/\{(\w+)\}/g, (_, k) => String(vars[k]));
+const now = latest();
+const tool = (slug: string) => path(lang, `/tools/${slug}/`);
+---
+<Base lang={lang} title={`${s.title} · Galuin`} description={s.description} current="tools">
+  <section class="wrap page">
+    <h1 class="section-title">{s.title}</h1>
+    <p class="now">{s.current.split('{v}')[0]}<Version v={now.version} />{fill(s.current.split('{v}')[1], { date: fmt(now.date, { day: 'numeric', month: 'long', year: 'numeric' }) })}</p>
+    <div class="cl">
+      <nav class="rail" aria-label={s.versions}>
+        {releases.map((r, i) => <a href={`#v0.${r.minor}`} data-v={`v0.${r.minor}`} aria-current={i === 0 ? 'true' : undefined}><Version v={`0.${r.minor}`} /><small>{short(r.changes[r.changes.length - 1].date)}</small></a>)}
+        <hr />
+        <a href="#earlier" data-v="earlier">{s.earlierRail}<small>{earlier[earlier.length - 1].v} – {earlier[0].v}</small></a>
+      </nav>
+      <div>
+        {releases.map((r) => {
+          const shown = r.changes.filter((c) => c.kind !== 'internal');
+          const internal = r.changes.filter((c) => c.kind === 'internal');
+          const row = (c: (typeof r.changes)[number]) => (
+            <li>
+              <span class="p">.{c.patch}</span>
+              <span class={`k ${c.kind}`}>{kindLabel[c.kind]}</span>
+              <span class="t">{c.tool && <a href={tool(c.tool)}>{name(c.tool)}</a>}{c.tool ? ': ' : ''}{c.text[lang]}</span>
+            </li>
+          );
+          return (
+            <article class="rel" id={`v0.${r.minor}`}>
+              <header>
+                <h2><Version v={`0.${r.minor}`} /></h2>
+                <span class="when">{range(r.changes[0].date, r.changes[r.changes.length - 1].date)}</span>
+              </header>
+              <p class="lede">{s.newTool}: <a href={tool(r.tool)}>{name(r.tool)}</a> <span>· {r.blurb[lang]}</span></p>
+              <ul class="ledger">{shown.map(row)}</ul>
+              {internal.length > 0 && (
+                <details class="int">
+                  <summary><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>{fill(s.internalN, { n: internal.length })}</summary>
+                  <ul class="ledger">{internal.map(row)}</ul>
+                </details>
+              )}
+            </article>
+          );
+        })}
+        <details class="earlier" id="earlier">
+          <summary><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>{fill(s.earlierTitle, { from: earlier[earlier.length - 1].v, to: earlier[0].v })}</summary>
+          <dl>
+            {earlier.map((e) => <><dt><Version v={e.v} /></dt><dd class="d">{short(e.date)}</dd><dd>{e.text[lang]}</dd></>)}
+          </dl>
+        </details>
+      </div>
+    </div>
+  </section>
+</Base>
+<script>
+  import { latest } from '../../../data/changelog';
+  // Opening this page counts as having seen the latest version (the link on /tools/ stops standing out).
+  try { localStorage.setItem('changelogSeen', latest().version); } catch { /* storage blocked: the link stands out again next visit */ }
+
+  // The version list highlights the release in view.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.rail a')];
+  const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+    if (e.isIntersecting) links.forEach((l) => { if (l.dataset.v === e.target.id) l.setAttribute('aria-current', 'true'); else l.removeAttribute('aria-current'); });
+  }), { rootMargin: '-20% 0px -70% 0px' });
+  document.querySelectorAll('.rel, .earlier').forEach((el) => io.observe(el));
+</script>
+<style>
+  .page { padding-block: clamp(32px, 6vw, 64px) 0; }
+  .section-title { margin-bottom: 8px; }
+  .now { margin: 0; color: var(--muted); }
+  .cl { display: grid; grid-template-columns: 184px minmax(0, 1fr); gap: 56px; align-items: start; margin-top: 40px; }
+  .rail { position: sticky; top: 88px; display: grid; gap: 2px; max-height: calc(100svh - 112px); overflow: auto; scrollbar-width: none; }
+  .rail a { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 36px; padding: 0 12px; border-radius: var(--radius-sm); color: var(--muted); font-size: .92rem; text-decoration: none; }
+  .rail small { font-size: .78rem; }
+  .rail a:hover { color: var(--fg); background: var(--surface); }
+  .rail a[aria-current='true'] { color: var(--fg); background: var(--surface-2); }
+  .rail hr { width: 100%; margin: 8px 0; border: 0; border-top: 1px solid var(--line); }
+  .rel { padding-block: 40px; border-top: 1px solid var(--line); scroll-margin-top: 80px; }
+  .rel:first-child { padding-top: 0; border-top: 0; }
+  .rel header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 20px; }
+  .rel h2 { margin: 0; font-size: clamp(2rem, 4.5vw, 3rem); line-height: 1; letter-spacing: -.03em; }
+  .when { color: var(--muted); font-size: .9rem; }
+  .lede { margin: 16px 0 20px; font-size: 1.05rem; }
+  .lede a { font-weight: 600; }
+  .lede span { color: var(--muted); }
+  .ledger { display: grid; margin: 0; padding: 0; list-style: none; }
+  .ledger li { display: grid; grid-template-columns: 3rem 5.5rem minmax(0, 1fr); gap: 0 16px; padding: 12px 0; border-top: 1px solid var(--line); }
+  .ledger li:first-child { border-top: 0; }
+  .p, .k { padding-top: .1em; color: var(--muted); font-size: .88rem; }
+  .p { font-variant-numeric: tabular-nums; }
+  .k.new { color: var(--accent-ink); }
+  .t { max-width: 62ch; font-size: .95rem; }
+  .t a { font-weight: 600; }
+  .int { margin-top: 4px; border-top: 1px solid var(--line); }
+  summary { display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary svg { flex: none; transition: rotate .2s var(--ease); }
+  details[open] > summary svg { rotate: 90deg; }
+  .int summary { min-height: 44px; color: var(--muted); font-size: .88rem; }
+  .int summary:hover { color: var(--fg); }
+  .earlier { margin-top: 8px; border-top: 1px solid var(--line); }
+  .earlier summary { min-height: 56px; font: 500 1.05rem/1.2 var(--font); }
+  .earlier summary svg { color: var(--muted); }
+  dl { display: grid; grid-template-columns: 3.5rem 5rem minmax(0, 1fr); gap: 0 16px; margin: 0 0 16px; }
+  dt, dd { margin: 0; padding: 10px 0; border-top: 1px solid var(--line); font-size: .92rem; }
+  dd.d { color: var(--muted); font-size: .85rem; }
+  @media (max-width: 900px) {
+    .cl { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .rail { position: static; display: flex; gap: 8px; overflow-x: auto; margin-inline: calc(-1 * var(--gutter)); padding: 2px var(--gutter); max-height: none; }
+    .rail a { flex: none; height: 40px; padding: 0 14px; border: 1px solid var(--line); border-radius: 99px; }
+    .rail small, .rail hr { display: none; }
+    .rail a[aria-current='true'] { border-color: var(--accent); }
+  }
+  @media (max-width: 560px) {
+    .ledger li { grid-template-columns: 2.75rem minmax(0, 1fr); gap: 0 12px; }
+    .k { grid-column: 2; grid-row: 1; padding: 0; }
+    .t { grid-column: 2; grid-row: 2; }
+    dl { grid-template-columns: 3rem minmax(0, 1fr); }
+    dd.d { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { summary svg { transition: none; } }
+</style>

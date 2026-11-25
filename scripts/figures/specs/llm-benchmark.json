@@ -1,0 +1,24 @@
+{
+  "type": "chart",
+  "kind": "dumbbell",
+  "scale": "log",
+  "title": "Same GPU, same model files:\nup to 17× faster at reading long prompts",
+  "subtitle": "Prompt processing at 16,384 tokens, Radeon RX 6800 XT 16 GB.",
+  "axisTitle": "prompt tokens per second (log scale, higher is faster)",
+  "series": [
+    { "id": "vulkan", "name": "Vulkan, flash attention on (LM Studio's default)", "color": "amber" },
+    { "id": "rocm", "name": "ROCm, flash attention on", "color": "indigo" }
+  ],
+  "valueLabels": true,
+  "result": { "title": "Speed-up", "from": "vulkan", "to": "rocm" },
+  "rows": [
+    { "label": "Qwen3-Coder 30B-A3B", "values": { "vulkan": 68, "rocm": 1151 } },
+    { "label": "DeepSeek-R1 8B", "values": { "vulkan": 88, "rocm": 1058 } },
+    { "label": "Qwen3.5 35B-A3B", "values": { "vulkan": 391, "rocm": 1879 } },
+    { "label": "Devstral Small 2 24B", "values": { "vulkan": 70, "rocm": 228 } },
+    { "label": "Qwen3.5 9B", "values": { "vulkan": 430, "rocm": 1315 } },
+    { "label": "gpt-oss 20B", "values": { "vulkan": 1037, "rocm": 2262 } },
+    { "label": "LFM2.5 24B-A2B", "values": { "vulkan": 1537, "rocm": 1129 } }
+  ],
+  "source": "Source: llama-bench b12360 (Vulkan), lemonade b1374 (ROCm gfx103X), 2 runs each, full GPU offload, quantised GGUF files as downloaded."
+}

@@ -1,6 +1,8 @@
 // Browser-only PDF reading and drawing with pdf.js. The worker ships with the site; nothing is loaded from a CDN.
-import * as pdfjs from 'pdfjs-dist';
-import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+// The legacy build carries polyfills for newer JS APIs (Map.getOrInsertComputed, Math.sumPrecise) that mobile Safari and older browsers lack;
+// the modern build fails there without a visible error. Every pdf.js import in src must use this same build.
+import * as pdfjs from 'pdfjs-dist/legacy/build/pdf.mjs';
+import workerUrl from 'pdfjs-dist/legacy/build/pdf.worker.min.mjs?url';
 import { fitDpi, scaleFor } from './images';
 
 pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;

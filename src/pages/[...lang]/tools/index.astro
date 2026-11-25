@@ -1,6 +1,9 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import ExpandSearch from '../../../components/ExpandSearch.astro';
+import Version from '../../../components/Version.astro';
+import { latest } from '../../../data/changelog';
+import { s as cl } from '../../../i18n/tools/changelog';
 import { LANGS, path, t, type Lang } from '../../../i18n/ui';
 import { tools, categories, categoryIcons, topics, topicIcons, type Category, type Topic } from '../../../data/tools';
 
@@ -10,6 +13,7 @@ export function getStaticPaths() {
 const lang = (Astro.params.lang ?? 'en') as Lang;
 const cats = Object.keys(categories) as Category[];
 const topicIds = Object.keys(topics) as Topic[];
+const now = latest();
 ---
 <Base lang={lang} title={`${t(lang, 'navTools')} · Galuin`} description={t(lang, 'toolsIntro')} current="tools">
   <section class="wrap page">
@@ -17,7 +21,10 @@ const topicIds = Object.keys(topics) as Topic[];
       <h1 class="section-title">{t(lang, 'navTools')}</h1>
       <ExpandSearch label={t(lang, 'toolsSearch')} clear={t(lang, 'searchClear')} />
     </div>
-    <p class="meta intro">{t(lang, 'toolsLocal')}</p>
+    <div class="intro-row">
+      <p class="meta intro">{t(lang, 'toolsLocal')}</p>
+      <a class="verlink" href={path(lang, '/changelog/')} data-version={now.version} data-date={now.date}>{cl[lang].version} <span class="num"><Version v={now.version} /></span> · {cl[lang].notes}<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+    </div>
     <nav class="chips" aria-label={t(lang, 'toolsCategories')}>
       <a class="chip" href="#" data-chip="" aria-current="true">
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" /></svg>
@@ -57,12 +64,26 @@ const topicIds = Object.keys(topics) as Topic[];
 </Base>
 <script>
   import '../../../scripts/toolsearch.ts';
+  import { isNew } from '../../../data/changelog';
+  // The version number stands out until the changelog has been opened (or, on a first visit, while the version is under two weeks old).
+  const link = document.querySelector<HTMLElement>('.verlink');
+  let seen: string | null = null;
+  try { seen = localStorage.getItem('changelogSeen'); } catch { /* storage blocked */ }
+  if (link && isNew(link.dataset.version!, seen, link.dataset.date!, new Date().toISOString().slice(0, 10))) link.classList.add('unseen');
 </script>
 <style>
   .page { padding-block: clamp(32px, 6vw, 64px) 0; }
   .head { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; margin-bottom: 16px; }
   .head .section-title { margin: 0; }
-  .intro { margin: -6px 0 24px; font-size: .95rem; }
+  .intro-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: -6px 0 24px; }
+  .intro { margin: 0; font-size: .95rem; }
+  .verlink { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; color: var(--muted); font-size: .92rem; text-decoration: none; }
+  .verlink:hover { color: var(--fg); }
+  .verlink .num { font-weight: 600; color: var(--fg); }
+  .verlink.unseen .num { color: var(--accent-ink); }
+  .verlink svg { margin-left: 2px; transition: translate .2s var(--ease); }
+  .verlink:hover svg { translate: 3px 0; }
+  @media (prefers-reduced-motion: reduce) { .verlink svg { transition: none; } }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
   .chip { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px 0 12px; border: 1px solid var(--line); border-radius: 99px; color: var(--muted); font-size: .92rem; font-weight: 500; text-decoration: none; white-space: nowrap; transition: color .15s, background-color .15s, border-color .15s, opacity .15s; }
   .chip svg { flex: none; }

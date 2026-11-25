@@ -20,7 +20,7 @@ const { lang } = Astro.props;
     if (!a || e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
     const small = a.querySelector('img')!;
-    img.src = a.href;
+    img.src = (document.documentElement.dataset.theme === 'light' && a.dataset.lightHref) || a.href;
     img.alt = small.alt;
     const text = a.closest('figure')?.querySelector('figcaption')?.textContent?.trim() ?? '';
     cap.textContent = text;

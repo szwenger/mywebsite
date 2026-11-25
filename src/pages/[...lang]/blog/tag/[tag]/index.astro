@@ -1,0 +1,38 @@
+---
+import Base from '../../../../../layouts/Base.astro';
+import NoteItem from '../../../../../components/NoteItem.astro';
+import PostCard from '../../../../../components/PostCard.astro';
+import Icon from '../../../../../components/Icon.astro';
+import { LANGS, path, t, type Lang } from '../../../../../i18n/ui';
+import { loadPosts } from '../../../../../lib/load-posts';
+import { withTag } from '../../../../../lib/posts';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const tags = [...new Set((await getCollection('posts')).flatMap((e) => e.data.tags ?? []))];
+  return LANGS.flatMap((l) => tags.map((tag) => ({ params: { lang: l === 'en' ? undefined : l, tag } })));
+}
+const lang = (Astro.params.lang ?? 'en') as Lang;
+const { tag } = Astro.params;
+const items = (await loadPosts(lang)).filter((i) => withTag([i.post], tag!).length > 0);
+---
+<Base lang={lang} title={`${t(lang, 'tagTitle')} #${tag} · Galuin`} description={`${t(lang, 'tagTitle')} #${tag}`} current="blog">
+  <section class="wrap page">
+    <div class="column">
+      <p class="meta back"><a href={path(lang, '/blog/')}><Icon name="prev" size={14} /> {t(lang, 'backToBlog')}</a></p>
+      <h1 class="section-title">{t(lang, 'tagTitle')} #{tag}</h1>
+      <div class="list">
+        {items.map(({ post, Content }) => post.kind === 'note'
+          ? <NoteItem lang={lang} post={post}><Content /></NoteItem>
+          : <PostCard lang={lang} post={post} />)}
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .page { padding-block: clamp(32px, 6vw, 64px) 0; }
+  .column { max-width: 760px; margin-inline: auto; }
+  .back a { display: inline-flex; align-items: center; gap: 4px; padding-block: 8px; margin-block: -8px; text-decoration: none; }
+  .back a:hover { color: var(--fg); text-decoration: underline; }
+  .list { display: grid; gap: 20px; margin-top: 16px; }
+</style>

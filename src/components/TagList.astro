@@ -1,0 +1,15 @@
+---
+import { path, type Lang } from '../i18n/ui';
+interface Props { lang: Lang; tags?: string[]; label?: string }
+const { lang, tags = [], label } = Astro.props;
+---
+{tags.length > 0 && (
+  <ul class="tags" aria-label={label}>
+    {tags.map((tag) => <li><a class="chip" href={path(lang, `/blog/tag/${tag}/`)}>#{tag}</a></li>)}
+  </ul>
+)}
+<style>
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  a.chip { text-decoration: none; transition: color .2s var(--ease), border-color .2s var(--ease); }
+  a.chip:hover { color: var(--fg); border-color: var(--muted); }
+</style>

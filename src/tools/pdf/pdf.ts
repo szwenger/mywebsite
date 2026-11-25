@@ -164,7 +164,7 @@ function init(root: HTMLElement) {
         b.addEventListener('click', () => view(`${s.page} ${i + 1}`, async () => { const pg = await viewer!.getPage(i + 1); return [await renderPage(pg, (72 * 1600) / pg.getViewport({ scale: 1 }).width)]; }));
         b.append(canvas, Object.assign(document.createElement('span'), { className: 'pn', textContent: String(i + 1) }));
         row.append(b);
-      } catch { return; }
+      } catch (e) { console.error('pdf strip', e); showError(s.noPreview); return; }
     }
   }
   q('[data-stripprev]').addEventListener('click', () => { stripPage--; void strip(); });
@@ -199,7 +199,7 @@ function init(root: HTMLElement) {
           slot?.replaceChildren(canvas);
           canvas.setAttribute('role', 'img');
           canvas.setAttribute('aria-label', `${s.page} ${i + 1}`);
-        } catch { /* leave this thumbnail blank; the page is still usable */ }
+        } catch (e) { console.error('pdf thumbnail', e); showError(s.noPreview); /* leave this thumbnail blank; the page is still usable */ }
       }
       busy = false;
     };

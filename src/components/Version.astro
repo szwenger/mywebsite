@@ -1,0 +1,10 @@
+---
+/** A version number, 0.MINOR.PATCH, with the leading 0 muted: it carries no information until the site counts as finished. */
+interface Props { v: string }
+const [major, ...rest] = Astro.props.v.split('.');
+---
+<span class="v"><span class="maj">{major}.</span>{rest.join('.')}</span>
+<style>
+  .v { font-variant-numeric: tabular-nums; }
+  .maj { color: var(--muted); }
+</style>

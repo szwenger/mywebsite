@@ -1,0 +1,15 @@
+{
+  "type": "grid",
+  "margin": 30,
+  "_note": "margin 30 = cover or title picture, margin 10 = inline strip (use one prompt row, height 490). Images are the raw 512 px outputs in imagegen-cpu/results.",
+  "columns": [
+    { "title": "SD-Turbo, OpenVINO", "sub": "4 steps, 10.8 s" },
+    { "title": "SD-Turbo, sd.cpp", "sub": "4 steps, 22.2 s" },
+    { "title": "SDXS-512, OpenVINO", "sub": "1 step, 5.3 s" },
+    { "title": "SDXL-Turbo, OpenVINO", "sub": "2 steps, 11.8 s" }
+  ],
+  "images": [
+    ["../../../../imagegen-cpu/results/A-sdturbo-ov/portrait_512.png", "../../../../imagegen-cpu/results/C-sdturbo-q8/portrait_512.png", "../../../../imagegen-cpu/results/A-sdxs-ov/portrait_512.png", "../../../../imagegen-cpu/results/A-sdxlturbo-ov-int8/portrait_512.png"],
+    ["../../../../imagegen-cpu/results/A-sdturbo-ov/scene_512.png", "../../../../imagegen-cpu/results/C-sdturbo-q8/scene_512.png", "../../../../imagegen-cpu/results/A-sdxs-ov/scene_512.png", "../../../../imagegen-cpu/results/A-sdxlturbo-ov-int8/scene_512.png"]
+  ]
+}

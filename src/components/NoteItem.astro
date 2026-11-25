@@ -2,6 +2,7 @@
 import { path, t, type Lang } from '../i18n/ui';
 import { dateLabel } from '../lib/load-posts';
 import type { PostView } from '../lib/posts';
+import TagList from './TagList.astro';
 interface Props { lang: Lang; post: PostView }
 const { lang, post } = Astro.props;
 ---
@@ -12,10 +13,13 @@ const { lang, post } = Astro.props;
   </div>
   <h2><a href={path(lang, `/blog/${post.slug}/`)}>{post.title}</a></h2>
   <div class="prose"><slot /></div>
+  <div class="foot"><TagList lang={lang} tags={post.tags} label={t(lang, 'tagsLabel')} /></div>
 </article>
 <style>
   .note { padding: 24px; }
   .head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .foot { margin-top: 16px; }
+  .foot:empty { display: none; }
   h2 { margin: 8px 0 12px; font-size: 1.15rem; }
   h2 a { text-decoration: none; }
   h2 a:hover { color: var(--accent-ink); }

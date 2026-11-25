@@ -2,6 +2,7 @@
 import Base from '../../../layouts/Base.astro';
 import PostCard from '../../../components/PostCard.astro';
 import Icon from '../../../components/Icon.astro';
+import TagList from '../../../components/TagList.astro';
 import { LANGS, path, t, type Lang } from '../../../i18n/ui';
 import { dateLabel, loadPosts } from '../../../lib/load-posts';
 import { getCollection } from 'astro:content';
@@ -34,6 +35,7 @@ const iso = (d: Date) => d.toISOString().slice(0, 10);
       {post.updated && <span class="updated">{t(lang, 'updatedOn')} <time datetime={iso(post.updated)}>{dateLabel(post.updated, lang)}</time></span>}
       {post.fallback && <span class="chip">{t(lang, 'fallbackNote')} {t(post.shownIn, 'langName')}</span>}
     </p>
+    <TagList lang={lang} tags={post.tags} label={t(lang, 'tagsLabel')} />
     {toc.length >= 3 && (
       <aside class="toc" aria-label={t(lang, 'onThisPage')}>
         <nav>

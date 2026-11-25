@@ -1,0 +1,24 @@
+{
+  "type": "chart",
+  "kind": "dots",
+  "scale": "linear",
+  "title": "Every CPU voice beats real time.\nThe thread count decides how much.",
+  "subtitle": "Median real-time factor over four sentences per language, i5-13600K, CPU only.",
+  "axisTitle": "real-time factor (synthesis time / audio length, 1.0 would be exactly real time, lower is faster)",
+  "series": [
+    { "id": "en", "name": "English", "color": "en" },
+    { "id": "de", "name": "German", "color": "de" },
+    { "id": "ru", "name": "Russian", "color": "ru" }
+  ],
+  "_note": "Values read off the published chart (tts-benchmark.jpg), good to about 0.003. Recompute from tts-bench/results/*_summary.json before reusing for new claims.",
+  "rows": [
+    { "label": "Kitten Nano, 8 threads", "values": { "en": 0.047, "de": 0.047, "ru": 0.046 }, "note": "0.05" },
+    { "label": "Supertonic 3, 4 steps, 2 threads", "values": { "en": 0.087, "de": 0.085, "ru": 0.083 }, "note": "0.09" },
+    { "label": "Supertonic 3, 8 steps, 2 threads", "values": { "en": 0.152, "de": 0.150, "ru": 0.148 }, "note": "0.15" },
+    { "label": "Kitten Mini int8, default threads", "values": { "en": 0.165, "de": 0.167, "ru": 0.1655 }, "note": "0.17" },
+    { "label": "Baseline: Kokoro (en) + Piper (de, ru)", "values": { "en": 0.193, "de": 0.068, "ru": 0.026 }, "note": "0.03 to 0.19" },
+    { "label": "Supertonic 3, 4 steps, all 20 threads", "values": { "en": 0.222, "de": 0.206, "ru": 0.212 }, "note": "0.21" },
+    { "label": "Supertonic 3, 8 steps, all 20 threads", "values": { "en": 0.309, "de": 0.304, "ru": 0.294 }, "note": "0.30" }
+  ],
+  "source": "Candidates ran in-process, the baseline over HTTP through the router. Baseline German and Russian use Piper, so they sit far left of English."
+}
