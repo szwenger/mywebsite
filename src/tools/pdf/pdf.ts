@@ -15,6 +15,7 @@ const ICONS = {
   del: icon('M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13'),
   earlier: icon('M15 5l-7 7 7 7'),
   later: icon('M9 5l7 7-7 7'),
+  zoom: icon('M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5M11 8v6M8 11h6'),
   grip: icon('M9 5v.01M15 5v.01M9 12v.01M15 12v.01M9 19v.01M15 19v.01'),
 };
 
@@ -217,8 +218,9 @@ function init(root: HTMLElement) {
     li.className = 'pg';
     li.dataset.i = String(i);
     const label = `${s.page} ${i + 1}`;
-    li.innerHTML = `<div class="thumb"></div><span class="grip" title="${s.drag}" aria-hidden="true">${ICONS.grip}</span><span class="tick" aria-hidden="true">✓</span><div class="num">${label}</div><div class="tools"></div>`;
+    li.innerHTML = `<div class="thumb"></div><span class="grip" title="${s.drag}" aria-hidden="true">${ICONS.grip}</span><span class="tick" aria-hidden="true">✓</span><button type="button" class="zoom" title="${s.zoomPage}: ${label}" aria-label="${s.zoomPage}: ${label}">${ICONS.zoom}</button><div class="num">${label}</div><div class="tools"></div>`;
     li.querySelector('.thumb')!.append(thumbs[i] ?? Object.assign(document.createElement('canvas'), { width: 3, height: 4 }));
+    li.querySelector('.zoom')!.addEventListener('click', () => view(label, async () => { const pg = await viewer!.getPage(i + 1); return [await renderPage(pg, (72 * 1600) / pg.getViewport({ scale: 1 }).width)]; }));
     const tools = li.querySelector('.tools')!;
     const acts: [string, string, boolean, () => Promise<void>][] = [
       ['earlier', ICONS.earlier, i === 0, async () => { const o = move(i, i - 1); await apply(await extract(doc!, o), o); }],

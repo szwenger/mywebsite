@@ -31,6 +31,7 @@ export const releases: Release[] = [
       c(6, 'changed', '2026-11-24', 'Hangout moved into the footer, with the real brand icons.', 'Hangout ist in den Footer gezogen, mit den echten Markensymbolen.', 'Hangout переехал в подвал сайта, с настоящими логотипами.'),
       c(7, 'fixed', '2026-11-24', 'The ink reveal when switching theme is back on touch devices.', 'Der Tinten-Effekt beim Themenwechsel läuft auf Touch-Geräten wieder.', 'Эффект чернил при смене темы снова работает на сенсорных устройствах.'),
       c(8, 'changed', '2026-11-25', 'Release notes have their own page with version numbers. Blog posts link to a page per tag, PDF previews work on phones, and blog charts follow the light or dark theme.', 'Die Änderungsliste hat jetzt eine eigene Seite mit Versionsnummern. Blogbeiträge verlinken auf eine Seite pro Tag, PDF-Vorschauen funktionieren auf Smartphones, und Diagramme im Blog folgen dem hellen oder dunklen Thema.', 'У истории изменений теперь своя страница с номерами версий. Записи блога ведут на страницу каждого тега, предпросмотр PDF работает на телефонах, а диаграммы в блоге следуют светлой или тёмной теме.'),
+      c(9, 'changed', '2026-11-25', 'Every page in PDF Organize has a magnifier button to view it large, with pinch zoom on phones.', 'Jede Seite in PDF Organisieren hat eine Lupe, um sie groß anzusehen, auf dem Smartphone mit Zoom per Pinch.', 'У каждой страницы в «Организации PDF» есть лупа для просмотра в большом размере, на телефоне с масштабом щипком.', 'pdf'),
     ],
   },
   {

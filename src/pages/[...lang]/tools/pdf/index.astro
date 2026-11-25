@@ -474,6 +474,8 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
   .pdf .pg { position: relative; display: grid; gap: 6px; padding: 8px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); user-select: none; -webkit-user-select: none; cursor: pointer; touch-action: pan-y; }
   .pdf .pg .thumb { height: 190px; display: grid; place-items: center; overflow: hidden; border-radius: 4px; background: repeating-conic-gradient(var(--line) 0 25%, transparent 0 50%) 50% / 14px 14px; }
   .pdf .pg .thumb canvas { max-width: 100%; max-height: 100%; width: auto; height: auto; background: #fff; border-radius: 2px; box-shadow: 0 1px 4px rgb(0 0 0 / .25); pointer-events: none; }
+  .pdf .pg .zoom { position: absolute; top: 160px; right: 14px; width: 36px; height: 36px; display: grid; place-items: center; border: 0; border-radius: 50%; background: rgb(0 0 0 / .6); color: #fff; cursor: zoom-in; }
+  .pdf .pg .zoom:hover, .pdf .pg .zoom:focus-visible { background: var(--accent-strong); }
   .pdf .pg .num { font-size: .8rem; color: var(--muted); text-align: center; }
   .pdf .pg .tools { display: flex; justify-content: center; gap: 4px; }
   .pdf .pg .tools button { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--fg); cursor: pointer; }
