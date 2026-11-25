@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { pdfStrings, TABS } from '../src/tools/pdf/strings.ts';
 
 const dir = new URL('../src/tools/pdf/', import.meta.url);
-const files = ['pdf.ts', 'panels.ts', 'editor.ts', 'preview.ts'].map((f) => readFileSync(new URL(f, dir), 'utf8'));
+const files = ['pdf.ts', 'panels.ts', 'editor.ts', 'preview.ts', 'scanner.ts'].map((f) => readFileSync(new URL(f, dir), 'utf8'));
 const page = readFileSync(new URL('../src/pages/[...lang]/tools/pdf/index.astro', import.meta.url), 'utf8');
 
 test('every language has the same keys, none empty', () => {
@@ -34,6 +34,7 @@ test('every string used by the code and the page exists', () => {
   for (const k of ['all', 'none', 'odd', 'even', 'invert', 'rotr', 'rotl', 'del', 'keep', 'dup', 'first', 'last', 'save']) used.add(`sel_${k}`);
   for (const k of ['light', 'balanced', 'strong', 'max']) { used.add(`lvl_${k}`); used.add(`lvl_${k}_d`); }
   for (const p of ['tl', 'tc', 'tr', 'bl', 'bc', 'br']) used.add(`pos_${p}`);
+  for (const f of ['scan', 'color', 'gray', 'bw']) { used.add(`f_${f}`); used.add(`fl_${f}`); }
   for (const t of ['select', 'text', 'image', 'sign', 'draw', 'highlight', 'whiteout', 'redact']) used.add(`tool_${t}`);
   const missing = [...used].filter((k) => !(k in pdfStrings.en));
   assert.deepEqual(missing, []);
@@ -41,7 +42,7 @@ test('every string used by the code and the page exists', () => {
 
 test('no string is left unused', () => {
   const text = [...files, page].join('\n');
-  const dynamic = /^(t_|d_|sel_|lvl_|pos_|tool_|hint_)/;
+  const dynamic = /^(t_|d_|sel_|lvl_|pos_|tool_|hint_|f_|fl_)/;
   const unused = Object.keys(pdfStrings.en).filter((k) => !dynamic.test(k) && !text.includes(`s.${k}`) && !text.includes(`s['${k}']`) && !text.includes(`s[${k}]`) && !['rotate', 'del', 'earlier', 'later', 'busy', 'invalid', 'encrypted', 'syntax', 'empty', 'out-of-range'].includes(k));
   assert.deepEqual(unused, []);
 });

@@ -8,6 +8,7 @@ import { unlock } from './crypt';
 import { initPanels } from './panels';
 import { initEditor } from './editor';
 import { initViewer } from './viewer';
+import { initScanner } from './scanner';
 
 const icon = (d: string) => `<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="${d}" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const ICONS = {
@@ -345,7 +346,9 @@ function init(root: HTMLElement) {
   });
 
   fileInput.addEventListener('change', () => { void addFiles([...fileInput.files!]); fileInput.value = ''; });
-  q<HTMLInputElement>('[data-camera]').addEventListener('change', (e) => { const t = e.target as HTMLInputElement; void addFiles([...t.files!]); t.value = ''; });
+  const camera = q<HTMLInputElement>('[data-camera]');
+  const scan = initScanner(root, s, (file) => void addFiles([file]), () => camera.click(), (file) => void addFiles([file]));
+  camera.addEventListener('change', () => { const f = camera.files?.[0]; camera.value = ''; if (f) void scan(f); });
   dropEl.addEventListener('dragover', (e) => { e.preventDefault(); dropEl.classList.add('over'); });
   dropEl.addEventListener('dragleave', () => dropEl.classList.remove('over'));
   dropEl.addEventListener('drop', (e) => { e.preventDefault(); dropEl.classList.remove('over'); void addFiles([...(e.dataTransfer?.files ?? [])]); });

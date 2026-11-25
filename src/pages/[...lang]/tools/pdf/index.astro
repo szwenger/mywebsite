@@ -24,8 +24,8 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
     <div class="dropzone card" data-drop>
       <p class="big">{s.drop}</p>
       <div class="picks">
-        <label class="btn pick">{s.browse}<input type="file" accept="application/pdf,image/*,.pdf" multiple data-file class="sr-only" /></label>
-        <label class="btn alt pick camera">{s.camera}<input type="file" accept="image/*" capture="environment" data-camera class="sr-only" /></label>
+        <label class="btn pick" title={s.browse}><span class="ico" aria-hidden="true"><Icon name="files" size={26} /></span><span class="lbl">{s.browse}</span><input type="file" accept="application/pdf,image/*,.pdf" multiple data-file class="sr-only" /></label>
+        <label class="btn alt pick camera" title={s.camera}><span class="ico" aria-hidden="true"><Icon name="camera" size={26} /></span><span class="lbl">{s.camera}</span><input type="file" accept="image/*" capture="environment" data-camera class="sr-only" /></label>
       </div>
       <p class="meta hint">{s.hint}</p>
     </div>
@@ -358,6 +358,44 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
       </div>
     </div>
 
+    <dialog class="scan" data-scan aria-label={s.scanTitle}>
+      <div class="scan-bar">
+        <strong>{s.scanTitle}</strong>
+        <button type="button" class="btn sm alt" data-scanclose>{s.closeView}</button>
+      </div>
+      <div class="scan-stage">
+        <div class="scan-pane" data-scanpane>
+          <p class="pv-wait" data-scanwait>{s.scanWait}</p>
+          <canvas data-scanout hidden></canvas>
+        </div>
+        <button type="button" class="btn alt sm ib scan-zoom" data-scanzoom title={s.scanFit} aria-label={s.scanFit}>
+          <span data-zoomout><Icon name="minus" size={20} /></span><span data-zoomin hidden><Icon name="plus" size={20} /></span>
+        </button>
+        <button type="button" class="btn alt sm ib scan-adjbtn" data-scanadjust title={s.scanAdjust} aria-label={s.scanAdjust}><Icon name="fadjust" size={22} /></button>
+        <div class="scan-adj" data-adj hidden>
+          <canvas aria-hidden="true"></canvas>
+          <svg aria-label={s.scanAdjust}><polygon /><g data-h><circle class="hit" /><circle class="dot" /></g><g data-h><circle class="hit" /><circle class="dot" /></g><g data-h><circle class="hit" /><circle class="dot" /></g><g data-h><circle class="hit" /><circle class="dot" /></g></svg>
+        </div>
+      </div>
+      <div class="scan-ctl">
+        <div class="scan-filters" role="radiogroup" aria-label={s.scanFilter}>
+          {['scan', 'color', 'gray', 'bw'].map((f, i) => <label class="opt" title={s[`f_${f}`]}><input type="radio" name="scanfilter" value={f} checked={i === 0} class="sr-only" aria-label={s[`f_${f}`]} /><canvas data-thumb={f} aria-hidden="true"></canvas><span>{s[`fl_${f}`]}</span></label>)}
+        </div>
+        <label class="chk"><input type="checkbox" data-scanauto checked />{s.scanAuto}</label>
+        <button type="button" class="btn alt sm ib" data-scanturn title={s.scanTurn} aria-label={s.scanTurn}><Icon name="rotr" size={18} /></button>
+      </div>
+      <div class="scan-act" data-adjact hidden>
+        <p class="adj-help">{s.adjHint}</p>
+        <button type="button" class="btn alt" data-adjauto>{s.adjAuto}</button>
+        <button type="button" class="btn" data-adjdone>{s.adjDone}</button>
+      </div>
+      <div class="scan-act">
+        <button type="button" class="btn alt" data-scanretake>{s.scanRetake}</button>
+        <button type="button" class="btn alt" data-scanadd>{s.scanAdd}</button>
+        <button type="button" class="btn" data-scannext>{s.scanNext}</button>
+      </div>
+    </dialog>
+
     <dialog class="pview" data-pview>
       <div class="pv-bar">
         <strong data-pvtitle></strong>
@@ -390,9 +428,19 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
   .pdf .picks { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
   /* capture=environment only opens the camera on phones and tablets, so the button is for touch devices */
   .pdf .camera { display: none; }
-  @media (pointer: coarse) { .pdf .camera { display: inline-flex; } }
+  @media (pointer: coarse) { .pdf .camera { display: inline-flex; order: -1; } }
   .pdf .hint { max-width: 60ch; margin: 0; }
   .pdf .pick { cursor: pointer; }
+  .pdf .pick .ico { display: none; }
+  /* On touch devices the two buttons are icons; the text stays for screen readers */
+  @media (pointer: coarse) {
+    .pdf .pick { position: relative; width: 56px; height: 56px; padding: 0; justify-content: center; }
+    .pdf .pick .ico { display: grid; place-items: center; }
+    /* the camera is the main action on a phone: filled; the file picker is the outline one */
+    .pdf .btn.pick.camera { background: var(--accent-strong); border: 0; color: #fff; box-shadow: 3px 3px 0 var(--hard); }
+    .pdf .pick:not(.camera) { background: transparent; border: 1px solid var(--line); color: var(--fg); box-shadow: none; }
+    .pdf .pick .lbl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  }
   .pdf .pick:focus-within { outline: 2px solid var(--accent-ink); outline-offset: 3px; }
   .pdf .warn { margin: 0; padding: 9px 12px; border-radius: var(--radius-sm); border: 1px solid #d65a5a; background: var(--surface-2); font-size: .9rem; }
   .pdf .unlock { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; padding: 14px 18px; }
@@ -448,6 +496,9 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
   .pdf .pview { width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 0; border: 0; background: rgb(5 6 10 / .96); color: #eceef5; }
   .pdf .pview[open] { display: grid; grid-template-rows: auto 1fr; }
   .pdf .pview::backdrop { background: transparent; }
+  /* The overlays are dark in both themes, so outline buttons need light text there (the light theme made them dark on dark). */
+  .pdf .pview .btn.alt, .pdf .scan .btn.alt { color: #eceef5; border-color: #ffffff40; }
+  .pdf .pview .btn.alt:hover, .pdf .scan .btn.alt:hover { border-color: var(--accent); }
   .pdf .pv-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid #ffffff26; }
   .pdf .pv-bar strong { margin-right: auto; }
   .pdf .pv-hint { color: #aab0c4; font-size: .82rem; }
@@ -458,6 +509,38 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
   .pdf .pv-pan canvas { flex: none; background: #fff; box-shadow: 0 4px 24px rgb(0 0 0 / .6); pointer-events: none; }
   .pdf .pv-wait { margin: 40px; color: #aab0c4; }
   body:has(dialog.pview[open]) { overflow: hidden; }
+  .pdf .scan { width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 0; border: 0; background: #05060a; color: #eceef5; }
+  .pdf .scan[open] { display: grid; grid-template-rows: auto 1fr auto auto; }
+  .pdf .scan::backdrop { background: transparent; }
+  .pdf .scan-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; border-bottom: 1px solid #ffffff26; }
+  .pdf .scan-stage { position: relative; min-height: 0; }
+  /* The pane scrolls; the zoom button sits outside it so it stays in the corner. Fit width is the default, "whole page" fits both sides. */
+  .pdf .scan-pane { position: absolute; inset: 0; display: grid; padding: 12px; overflow: auto; }
+  .pdf .scan-pane canvas { width: 100%; height: auto; margin: auto; box-shadow: 0 4px 24px rgb(0 0 0 / .6); }
+  .pdf .scan-pane.whole { grid-template: 100% / 100%; }
+  .pdf .scan-pane.whole canvas { height: 100%; object-fit: contain; box-shadow: none; }
+  .pdf .scan .scan-zoom { position: absolute; top: 10px; left: 10px; width: 44px; height: 44px; padding: 0; display: grid; place-items: center; background: #0b0c12; border: 2px solid #fff; color: #fff; box-shadow: 0 2px 10px rgb(0 0 0 / .7); }
+  .pdf .scan-ctl { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 16px; padding: 10px 14px; border-top: 1px solid #ffffff26; }
+  .pdf .scan-filters { display: flex; gap: 8px; }
+  .pdf .scan .opt { display: grid; justify-items: center; gap: 4px; width: 72px; padding: 4px; border: 2px solid transparent; border-radius: 10px; font-size: .8rem; color: #c8ccd9; cursor: pointer; }
+  .pdf .scan .opt canvas { width: 56px; height: 76px; object-fit: contain; background: #fff; border-radius: 3px; }
+  .pdf .scan .opt:has(:checked) { border-color: var(--accent); color: #fff; }
+  .pdf .scan .opt:has(:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .pdf .scan [hidden] { display: none !important; }
+  .pdf .scan .scan-adjbtn { position: absolute; top: 10px; right: 10px; width: 44px; height: 44px; padding: 0; display: grid; place-items: center; background: #0b0c12; border: 2px solid #fff; color: #fff; box-shadow: 0 2px 10px rgb(0 0 0 / .7); }
+  .pdf .scan-adj { position: absolute; inset: 12px; }
+  .pdf .scan-adj canvas, .pdf .scan-adj svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .pdf .scan-adj canvas { object-fit: contain; }
+  .pdf .scan-adj svg { touch-action: none; overflow: visible; }
+  .pdf .scan-adj polygon { fill: #6a78d133; stroke: #fff; stroke-width: 2px; vector-effect: non-scaling-stroke; }
+  .pdf .scan-adj.bad polygon { fill: #e5484d40; stroke: #e5484d; }
+  .pdf .scan-adj .hit { fill: transparent; cursor: grab; }
+  .pdf .scan-adj .dot { fill: #fff; stroke: var(--accent-strong); stroke-width: 3px; vector-effect: non-scaling-stroke; pointer-events: none; }
+  .pdf .scan .adj-help { flex: 1 1 100%; margin: 0; text-align: center; font-size: .9rem; color: #c8ccd9; }
+  .pdf .scan .chk { display: flex; align-items: center; gap: 6px; font-size: .9rem; }
+  .pdf .scan-act { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 10px 14px 14px; }
+  .pdf .scan-act .btn { flex: 1 1 140px; justify-content: center; }
+  body:has(dialog.scan[open]) { overflow: hidden; }
   .pdf .prev .arrow { color: var(--muted); font-size: 1.4rem; }
   .pdf .strip { display: grid; gap: 8px; padding: 12px; }
   .pdf .strip-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; align-items: flex-end; }

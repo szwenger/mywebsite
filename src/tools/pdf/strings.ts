@@ -3,7 +3,7 @@ export const TABS = ['organize', 'split', 'arrange', 'compress', 'convert', 'num
 
 const en: Record<string, string> = {
   // page
-  drop: 'Drop PDFs or images here', or: 'or', browse: 'Choose files', camera: 'Scan with camera',
+  drop: 'Drop PDFs or images here', or: 'or', browse: 'Choose files', camera: 'Scan with camera', scanTitle: 'Scanned page', scanAuto: 'Find and flatten the page', scanTurn: 'Turn', scanFit: 'Show whole page', scanAdjust: 'Adjust corners', adjHint: 'Drag the corners onto the page edges', adjAuto: 'Auto', adjDone: 'Done', fl_scan: 'Scan', fl_color: 'Color', fl_gray: 'Gray', fl_bw: 'B/W', scanWidth: 'Fit to width', scanRetake: 'Retake', scanAdd: 'Add page', scanNext: 'Add and scan next', scanWait: 'Cleaning up the page…', f_scan: 'Scanner look', f_color: 'Colour', f_gray: 'Grey', f_bw: 'Black and white', scanFilter: 'Filter',
   hint: 'PDF and images (PNG, JPEG, WebP, GIF, BMP). Adding several files appends them in order, so they merge. Nothing leaves your device.',
   tabsLabel: 'Tools', pagesLabel: 'Pages',
   undo: 'Undo', reset: 'Start over', download: 'Download PDF', apply: 'Apply',
@@ -104,7 +104,7 @@ const en: Record<string, string> = {
 };
 
 const de: Record<string, string> = {
-  drop: 'PDFs oder Bilder hier ablegen', or: 'oder', browse: 'Dateien wählen', camera: 'Mit Kamera scannen',
+  drop: 'PDFs oder Bilder hier ablegen', or: 'oder', browse: 'Dateien wählen', camera: 'Mit Kamera scannen', scanTitle: 'Gescannte Seite', scanAuto: 'Seite finden und glätten', scanTurn: 'Drehen', scanFit: 'Ganze Seite zeigen', scanAdjust: 'Ecken anpassen', adjHint: 'Ziehe die Ecken auf die Seitenränder', adjAuto: 'Automatisch', adjDone: 'Fertig', fl_scan: 'Scan', fl_color: 'Farbe', fl_gray: 'Grau', fl_bw: 'S/W', scanWidth: 'Auf Breite anpassen', scanRetake: 'Neu aufnehmen', scanAdd: 'Seite hinzufügen', scanNext: 'Hinzufügen und nächste scannen', scanWait: 'Seite wird aufbereitet…', f_scan: 'Scanner-Optik', f_color: 'Farbe', f_gray: 'Grau', f_bw: 'Schwarzweiß', scanFilter: 'Filter',
   hint: 'PDF und Bilder (PNG, JPEG, WebP, GIF, BMP). Mehrere Dateien werden der Reihe nach angehängt und so zusammengefügt. Nichts verlässt dein Gerät.',
   tabsLabel: 'Werkzeuge', pagesLabel: 'Seiten',
   undo: 'Rückgängig', reset: 'Neu beginnen', download: 'PDF herunterladen', apply: 'Anwenden',
@@ -189,7 +189,7 @@ const de: Record<string, string> = {
 };
 
 const ru: Record<string, string> = {
-  drop: 'Перетащите сюда PDF или картинки', or: 'или', browse: 'Выбрать файлы', camera: 'Сканировать камерой',
+  drop: 'Перетащите сюда PDF или картинки', or: 'или', browse: 'Выбрать файлы', camera: 'Сканировать камерой', scanTitle: 'Отсканированная страница', scanAuto: 'Найти и выровнять страницу', scanTurn: 'Повернуть', scanFit: 'Показать всю страницу', scanAdjust: 'Подогнать углы', adjHint: 'Перетащите углы на края страницы', adjAuto: 'Авто', adjDone: 'Готово', fl_scan: 'Скан', fl_color: 'Цвет', fl_gray: 'Серый', fl_bw: 'Ч/Б', scanWidth: 'По ширине', scanRetake: 'Переснять', scanAdd: 'Добавить страницу', scanNext: 'Добавить и сканировать следующую', scanWait: 'Обработка страницы…', f_scan: 'Как со сканера', f_color: 'Цвет', f_gray: 'Серый', f_bw: 'Чёрно-белый', scanFilter: 'Фильтр',
   hint: 'PDF и изображения (PNG, JPEG, WebP, GIF, BMP). Несколько файлов дописываются подряд, так они объединяются. Ничего не покидает ваше устройство.',
   tabsLabel: 'Инструменты', pagesLabel: 'Страницы',
   undo: 'Отменить', reset: 'Начать заново', download: 'Скачать PDF', apply: 'Применить',
