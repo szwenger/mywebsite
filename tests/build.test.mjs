@@ -446,7 +446,7 @@ test('PDF tool pages exist in every language and the overview links to them', ()
   }
 });
 
-test('the PDF libraries are reachable only from the PDF pages and the metadata tool', () => {
+test('the PDF libraries are reachable only from the PDF pages, the metadata tool and the handwriting font maker (template download)', () => {
   const marker = (name) => chunkSrc(name).includes('PDFDocument.load');
   let pdfPages = 0;
   for (const f of pageHtml()) {
@@ -455,7 +455,7 @@ test('the PDF libraries are reachable only from the PDF pages and the metadata t
     const reaches = closure(entries).some(marker);
     const path = f.split(sep).join('/');
     const isPdfPage = path.endsWith('/tools/pdf/index.html');
-    assert.equal(reaches, isPdfPage || path.endsWith('/tools/meta/index.html'), f);
+    assert.equal(reaches, isPdfPage || path.endsWith('/tools/meta/index.html') || path.endsWith('/tools/handfont/index.html'), f);
     if (isPdfPage) pdfPages++;
   }
   assert.equal(pdfPages, 3);

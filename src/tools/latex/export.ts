@@ -37,7 +37,10 @@ export async function formulaSvg(view: HTMLElement, look: Look): Promise<{ svg: 
     const fam = c.fontFamily.split(',')[0].replace(/["']/g, '').trim();
     if (fam.startsWith('KaTeX')) used.add(`${fam}|${weight(c.fontWeight)}|${c.fontStyle === 'italic' ? 'italic' : 'normal'}`);
   }
-  const r = box.getBoundingClientRect();
+  // In display mode .katex-html is a block as wide as the preview, so measure the content itself.
+  const range = document.createRange();
+  range.selectNodeContents(box);
+  const r = range.getBoundingClientRect();
   const pad = 8, w = Math.ceil(r.width) + 2, h = Math.ceil(r.height) + 2, W = w + 2 * pad, H = h + 2 * pad;
   const clone = el.cloneNode(true) as HTMLElement;
   clone.querySelector('.katex-mathml')?.remove();

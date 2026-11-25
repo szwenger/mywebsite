@@ -53,7 +53,7 @@ export const tools: Tool[] = [
     featured: true,
     produces: ['png', 'svg'],
     icon: 'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h3v3h-3zM20 14v.01M14 20h.01M20 20v.01M17 17v3',
-    tags: 'qr barcode code128 ean13 ean8 upc ean generator label product wifi vcard',
+    tags: 'qr barcode code128 ean13 ean8 upc ean generator label product wifi vcard logo frame gradient rounded dots style',
     name: { en: 'QR codes and barcodes', de: 'QR-Codes und Barcodes', ru: 'QR-коды и штрихкоды' },
     blurb: {
       en: 'Make QR codes for links, Wi-Fi and contacts, or Code 128, EAN and UPC barcodes with the check digit worked out. Download as PNG or SVG.',
@@ -569,6 +569,20 @@ export const tools: Tool[] = [
       en: 'Crop to a shape such as 1:1 or 16:9, zoom, rotate, straighten a skewed scan or photo, trim transparent or solid borders, set a width and save as PNG, JPG or WebP.',
       de: 'Auf eine Form wie 1:1 oder 16:9 zuschneiden, zoomen, drehen, schiefe Scans oder Fotos geraderichten, transparente oder einfarbige Ränder abschneiden, eine Breite setzen und als PNG, JPG oder WebP speichern.',
       ru: 'Обрезка до формата вроде 1:1 или 16:9, масштаб, поворот, выравнивание наклонных сканов и фото, обрезка прозрачных или однотонных полей, ширина и сохранение в PNG, JPG или WebP.',
+    },
+  },
+  {
+    slug: 'handfont',
+    cat: 'text',
+    tags: 'font handwriting handwritten ttf typeface glyph truetype scan template calligraphy own font maker generator',
+    accepts: ['jpg', 'png', 'webp', 'heic'],
+    produces: ['ttf', 'pdf'],
+    icon: 'M5 19l6-14 6 14M7.5 14h7M17 20l3-3M20 17l-1-1',
+    name: { en: 'Handwriting font maker', de: 'Handschrift-Font-Generator', ru: 'Создатель рукописного шрифта' },
+    blurb: {
+      en: 'Print a template, write your letters, photograph the pages and get a font in your own handwriting, with several versions of each letter.',
+      de: 'Vorlage ausdrucken, Buchstaben schreiben, Seiten fotografieren und eine Schrift in deiner Handschrift erhalten, mit mehreren Versionen jedes Buchstabens.',
+      ru: 'Распечатайте шаблон, напишите буквы, сфотографируйте страницы и получите шрифт вашим почерком с несколькими вариантами каждой буквы.',
     },
   },
   {

@@ -1,6 +1,7 @@
 import QRCode from 'qrcode';
 import { urlPayload, vcardPayload, wifiPayload, type WifiSecurity } from './payload';
 import { contrastRatio } from './contrast';
+import { qrSvg, type QrStyle } from './style-logic';
 
 type Mode = 'link' | 'wifi' | 'contact';
 
@@ -32,14 +33,37 @@ function init(root: HTMLElement) {
     return urlPayload(field('text').value);
   };
 
-  const opts = () => ({ errorCorrectionLevel: 'M' as const, margin: 2, color: { dark: field('fg').value, light: field('bg').value } });
+  let logoHref = '';
+  const pick = (name: string) => root.querySelector<HTMLSelectElement>(`[name="${name}"]`)!.value;
+  const style = (): QrStyle => ({
+    shape: pick('shape') as QrStyle['shape'],
+    finder: pick('finder') as QrStyle['finder'],
+    gradient: pick('gradient') as QrStyle['gradient'],
+    frame: pick('frame') as QrStyle['frame'],
+    fg: field('fg').value,
+    fg2: field('fg2').value,
+    bg: field('bg').value,
+    label: field('label').value,
+    logo: logoHref ? { href: logoHref, ratio: Number(field('logosize').value) / 100 } : undefined,
+  });
+
+  /** The code as SVG text, or '' when the data does not fit. */
+  function build(px: number): string {
+    const st = style();
+    const qr = QRCode.create(current, { errorCorrectionLevel: logoHref ? 'H' : 'M' });
+    const m = qr.modules;
+    return qrSvg(m.size, (r, c) => !!m.get(r, c), st, px);
+  }
 
   async function render() {
     const size = Number(field('size').value);
     root.querySelector('output')!.textContent = String(size);
-    const low = contrastRatio(field('fg').value, field('bg').value) < 3;
+    const st = style();
+    const low = contrastRatio(st.fg, st.bg) < 3 || (st.gradient !== 'none' && contrastRatio(st.fg2, st.bg) < 3);
     warn.hidden = !low;
     warn.textContent = low ? warn.dataset.text ?? '' : '';
+    const shown: Record<string, boolean> = { gradient: st.gradient !== 'none', label: st.frame === 'label', logo: !!logoHref };
+    root.querySelectorAll<HTMLElement>('[data-when]').forEach((el) => { el.hidden = !shown[el.dataset.when!]; });
 
     current = payload();
     error.hidden = true;
@@ -49,7 +73,13 @@ function init(root: HTMLElement) {
     buttons.forEach((b) => (b.disabled = !show));
     if (!show) return;
     try {
-      await QRCode.toCanvas(canvas, current, { ...opts(), width: size });
+      const img = new Image();
+      img.src = URL.createObjectURL(new Blob([build(size)], { type: 'image/svg+xml' }));
+      await img.decode();
+      URL.revokeObjectURL(img.src);
+      canvas.width = size;
+      canvas.height = Math.round((size * img.naturalHeight) / img.naturalWidth);
+      canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
     } catch {
       canvas.hidden = true;
       buttons.forEach((b) => (b.disabled = true));
@@ -57,6 +87,26 @@ function init(root: HTMLElement) {
       error.hidden = false;
     }
   }
+
+  /** Centre image: shrunk to 256 px so the SVG stays small. */
+  async function setLogo(file?: File) {
+    logoHref = '';
+    if (file) {
+      try {
+        const bmp = await createImageBitmap(file);
+        const k = Math.min(1, 256 / Math.max(bmp.width, bmp.height));
+        const c = document.createElement('canvas');
+        c.width = Math.round(bmp.width * k);
+        c.height = Math.round(bmp.height * k);
+        c.getContext('2d')!.drawImage(bmp, 0, 0, c.width, c.height);
+        bmp.close();
+        logoHref = c.toDataURL('image/png');
+      } catch { /* not an image: ignore */ }
+    }
+    render();
+  }
+  field('logo').addEventListener('change', (e) => setLogo((e.target as HTMLInputElement).files?.[0]));
+  q('[data-logo-clear]').addEventListener('click', () => { field('logo').value = ''; setLogo(); });
 
   const save = (blob: Blob, name: string) => {
     const a = document.createElement('a');
@@ -69,7 +119,7 @@ function init(root: HTMLElement) {
   buttons.forEach((b) => b.addEventListener('click', async () => {
     if (!current) return;
     if (b.dataset.download === 'png') canvas.toBlob((blob) => blob && save(blob, 'qr-code.png'), 'image/png');
-    else save(new Blob([await QRCode.toString(current, { ...opts(), type: 'svg' })], { type: 'image/svg+xml' }), 'qr-code.svg');
+    else save(new Blob([build(Number(field('size').value))], { type: 'image/svg+xml' }), 'qr-code.svg');
   }));
 
   const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];

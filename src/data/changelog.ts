@@ -19,6 +19,14 @@ const t = (en: string, de: string, ru: string): T => ({ en, de, ru });
 /** Newest first. */
 export const releases: Release[] = [
   {
+    minor: 21, tool: 'handfont',
+    blurb: t('A font in your own handwriting.', 'Eine Schrift in deiner Handschrift.', 'Шрифт вашим почерком.'),
+    changes: [
+      c(0, 'new', '2026-11-25', 'Print a template, write your letters, photograph the pages and download a TrueType font with several versions of each letter that take turns in your text.', 'Vorlage ausdrucken, Buchstaben schreiben, Seiten fotografieren und eine TrueType-Schrift herunterladen, deren Buchstabenversionen sich im Text abwechseln.', 'Распечатайте шаблон, напишите буквы, сфотографируйте страницы и скачайте шрифт TrueType, в котором варианты букв чередуются в тексте.', 'handfont'),
+      c(1, 'fixed', '2026-11-25', 'LaTeX downloads (PNG, SVG, PDF) are cropped to the formula instead of coming out as a wide strip with empty space.', 'LaTeX-Downloads (PNG, SVG, PDF) werden auf die Formel zugeschnitten, statt als breiter Streifen mit leerem Raum zu erscheinen.', 'Скачанные файлы LaTeX (PNG, SVG, PDF) теперь обрезаются по формуле, а не получаются широкой полосой с пустым местом.', 'latex'),
+    ],
+  },
+  {
     minor: 20, tool: 'paper',
     blurb: t('Paper sizes in every unit.', 'Papierformate in jeder Einheit.', 'Форматы бумаги во всех единицах.'),
     changes: [
@@ -27,6 +35,7 @@ export const releases: Release[] = [
       c(2, 'changed', '2026-11-25', 'The unit converter has silly yardsticks: bananas, giraffes, football pitches, Wales and more.', 'Der Einheiten-Umrechner kennt alberne Maße: Bananen, Giraffen, Fußballfelder, Wales und mehr.', 'В конвертере единиц появились шуточные мерки: бананы, жирафы, футбольные поля, Уэльс и другие.', 'units'),
       c(3, 'changed', '2026-11-25', 'Press ? anywhere for a list of keyboard shortcuts, and Ctrl+Enter runs the main action where a tool has one.', 'Mit ? gibt es überall eine Liste der Tastenkürzel, und Strg+Enter führt die Hauptaktion aus, wo ein Werkzeug eine hat.', 'Клавиша ? показывает список горячих клавиш на любой странице, а Ctrl+Enter запускает главное действие, если оно есть.'),
       c(4, 'changed', '2026-11-25', 'The benchmark charts in the LLM and speech posts, and their covers on the blog page, now follow the light or dark theme.', 'Die Diagramme in den Beiträgen zu LLM und Sprachausgabe und ihre Titelbilder auf der Blogseite folgen jetzt dem hellen oder dunklen Design.', 'Графики в статьях про LLM и синтез речи и их обложки на странице блога теперь следуют светлой или тёмной теме.'),
+      c(5, 'changed', '2026-11-25', 'QR codes can be styled: rounded or dotted modules, round corner eyes, a colour fade, a picture in the centre and a frame with your own label.', 'QR-Codes lassen sich gestalten: abgerundete oder runde Module, runde Eckaugen, ein Farbverlauf, ein Bild in der Mitte und ein Rahmen mit eigener Beschriftung.', 'QR-коды можно оформлять: скруглённые или круглые модули, круглые угловые маркеры, градиент, картинка в центре и рамка с вашей подписью.', 'qr'),
     ],
   },
   {

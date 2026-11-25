@@ -1,0 +1,88 @@
+---
+import ToolLayout from '../../../../components/ToolLayout.astro';
+import { langOf, toolPaths } from '../../../../i18n/tool-page';
+import { s as strings } from '../../../../i18n/tools/handfont';
+
+export const getStaticPaths = toolPaths;
+const lang = langOf(Astro.params);
+const s = strings[lang];
+const sets = [
+  { bit: 0, label: s.setLower, on: true }, { bit: 1, label: s.setUpper, on: true }, { bit: 2, label: s.setDigits, on: true },
+  { bit: 3, label: s.setPunct, on: true }, { bit: 4, label: s.setGerman, on: lang === 'de' }, { bit: 5, label: s.setCyrillic, on: lang === 'ru' },
+];
+---
+<ToolLayout lang={lang} slug="handfont">
+  <div class="hf" data-hf data-s={JSON.stringify(s)}>
+    <section class="card pane">
+      <h2 class="sub">{s.step1}</h2>
+      <fieldset class="sets">
+        <legend>{s.sets}</legend>
+        {sets.map((c) => <label class="check"><input type="checkbox" data-set={c.bit} checked={c.on} /> {c.label}</label>)}
+      </fieldset>
+      <label class="narrow">{s.versions}
+        <select name="variants"><option>1</option><option selected>2</option><option>3</option><option>4</option></select>
+      </label>
+      <p class="meta">{s.versionsHint}</p>
+      <div class="actions"><button type="button" class="btn" data-template>{s.tmplBtn}</button><span class="meta" data-summary></span></div>
+      <p class="meta">{s.tips}</p>
+    </section>
+
+    <section class="card pane">
+      <h2 class="sub">{s.step2}</h2>
+      <label>{s.pick}<input type="file" name="pages" accept="image/*" multiple /></label>
+      <p class="meta">{s.pickHint}</p>
+      <ul class="log" data-log aria-live="polite"></ul>
+    </section>
+
+    <section class="card pane">
+      <h2 class="sub">{s.step3}</h2>
+      <p class="meta" data-none>{s.none}</p>
+      <div data-out hidden>
+        <p class="meta">{s.check}</p>
+        <p class="stats" data-stats role="status"></p>
+        <div class="grid" data-grid></div>
+      </div>
+    </section>
+
+    <section class="card pane" data-out hidden>
+      <h2 class="sub">{s.step4}</h2>
+      <div class="row">
+        <label>{s.name}<input name="name" value={s.nameDefault} autocomplete="off" /></label>
+        <label>{s.bearing}<input type="range" name="bearing" min="0" max="120" step="5" value="40" /></label>
+        <label>{s.smooth}<input type="range" name="smooth" min="1" max="3" step="1" value="2" /></label>
+      </div>
+      <label>{s.preview}<textarea data-sample rows="4" spellcheck="false">{s.sample}</textarea></label>
+      <div class="actions"><button type="button" class="btn" data-dl disabled>{s.download}</button></div>
+      <p class="meta">{s.note}</p>
+    </section>
+  </div>
+</ToolLayout>
+<script>
+  import '../../../../tools/handfont/handfont.ts';
+</script>
+<style>
+  .hf { display: grid; gap: 20px; }
+  .sub { margin: 0; font-family: var(--font); font-size: 1rem; font-weight: 600; letter-spacing: 0; }
+  .pane { display: grid; gap: 14px; align-content: start; padding: clamp(16px, 2.4vw, 26px); }
+  label { display: grid; gap: 6px; font-size: .88rem; color: var(--muted); }
+  .check { display: flex; align-items: center; gap: 8px; }
+  .sets { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0; }
+  .sets legend { padding: 0 6px; font-size: .88rem; color: var(--muted); }
+  .narrow { max-width: 12rem; }
+  select, input:not([type='checkbox'], [type='range'], [type='file']), textarea { width: 100%; padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); color: var(--fg); font: inherit; font-size: .95rem; }
+  textarea { font-size: 2rem; line-height: 1.5; resize: vertical; font-feature-settings: 'calt' 1; }
+  input[type='range'] { width: 100%; accent-color: var(--accent-strong); }
+  .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px 20px; }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .btn[disabled] { opacity: .45; cursor: not-allowed; }
+  .log { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: .9rem; }
+  .log :global(.bad) { color: var(--danger, #c0392b); }
+  .stats { margin: 0; font-weight: 600; }
+  [hidden] { display: none !important; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 6px; }
+  :global(.hf .cell) { display: grid; justify-items: center; gap: 2px; padding: 4px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-2); color: var(--fg); font: inherit; font-size: .75rem; cursor: pointer; }
+  :global(.hf .cell canvas) { width: 100%; height: auto; aspect-ratio: 72 / 90; }
+  :global(.hf .cell.off) { opacity: .3; }
+  :global(.hf .cell.cut) { border-color: #e08a1e; box-shadow: inset 0 0 0 1px #e08a1e; }
+  :global(.hf .cell:disabled) { opacity: .35; cursor: default; }
+</style>

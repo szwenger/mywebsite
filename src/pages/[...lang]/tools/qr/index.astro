@@ -18,6 +18,11 @@ const s = {
     low: 'Low contrast: this code may not scan. Pick a darker code colour or a lighter background.',
     png: 'Download PNG', svg: 'Download SVG', preview: 'Preview',
     empty: 'Fill in the form to see your code.', tooLong: 'Too much data for a QR code. Shorten the text.',
+    design: 'Style', shape: 'Modules', sSquare: 'Square', sRounded: 'Rounded', sDots: 'Dots',
+    finder: 'Corner eyes', fSquare: 'Square', fRounded: 'Rounded', fCircle: 'Round',
+    gradient: 'Colour fade', gNone: 'None', gLinear: 'Diagonal', gRadial: 'Radial', fg2: 'Fade to',
+    logo: 'Centre image', logoSize: 'Image size', logoClear: 'Remove image', logoNote: 'Error correction is raised to the highest level so the code still scans.',
+    frame: 'Frame', frNone: 'None', frBox: 'Box', frRounded: 'Rounded box', frLabel: 'Label', label: 'Label text',
   },
   de: {
     kinds: 'Art', kQr: 'QR-Code', kBar: 'Barcode',
@@ -28,6 +33,11 @@ const s = {
     low: 'Geringer Kontrast: Der Code lässt sich vielleicht nicht scannen. Wähle eine dunklere Codefarbe oder einen helleren Hintergrund.',
     png: 'PNG herunterladen', svg: 'SVG herunterladen', preview: 'Vorschau',
     empty: 'Fülle das Formular aus, um deinen Code zu sehen.', tooLong: 'Zu viele Daten für einen QR-Code. Kürze den Text.',
+    design: 'Stil', shape: 'Module', sSquare: 'Quadrat', sRounded: 'Abgerundet', sDots: 'Punkte',
+    finder: 'Eckaugen', fSquare: 'Quadrat', fRounded: 'Abgerundet', fCircle: 'Rund',
+    gradient: 'Farbverlauf', gNone: 'Keiner', gLinear: 'Diagonal', gRadial: 'Radial', fg2: 'Verlauf nach',
+    logo: 'Bild in der Mitte', logoSize: 'Bildgröße', logoClear: 'Bild entfernen', logoNote: 'Die Fehlerkorrektur wird auf die höchste Stufe gesetzt, damit der Code lesbar bleibt.',
+    frame: 'Rahmen', frNone: 'Keiner', frBox: 'Kasten', frRounded: 'Runder Kasten', frLabel: 'Beschriftung', label: 'Beschriftungstext',
   },
   ru: {
     kinds: 'Тип', kQr: 'QR-код', kBar: 'Штрихкод',
@@ -38,6 +48,11 @@ const s = {
     low: 'Низкий контраст: код может не считываться. Выберите более тёмный цвет кода или более светлый фон.',
     png: 'Скачать PNG', svg: 'Скачать SVG', preview: 'Предпросмотр',
     empty: 'Заполните форму, чтобы увидеть код.', tooLong: 'Слишком много данных для QR-кода. Сократите текст.',
+    design: 'Стиль', shape: 'Модули', sSquare: 'Квадраты', sRounded: 'Скруглённые', sDots: 'Точки',
+    finder: 'Угловые маркеры', fSquare: 'Квадрат', fRounded: 'Скруглённый', fCircle: 'Круглый',
+    gradient: 'Градиент', gNone: 'Нет', gLinear: 'Диагональный', gRadial: 'Радиальный', fg2: 'Цвет конца',
+    logo: 'Картинка в центре', logoSize: 'Размер картинки', logoClear: 'Убрать картинку', logoNote: 'Коррекция ошибок ставится на максимум, чтобы код читался.',
+    frame: 'Рамка', frNone: 'Нет', frBox: 'Рамка', frRounded: 'Скруглённая рамка', frLabel: 'Подпись', label: 'Текст подписи',
   },
 }[lang];
 const bs = barcodeStrings[lang];
@@ -78,6 +93,23 @@ const bs = barcodeStrings[lang];
         <label>{s.fg}<input type="color" name="fg" value="#000000" /></label>
         <label>{s.bg}<input type="color" name="bg" value="#ffffff" /></label>
         <label class="size"><span>{s.size}: <output name="sizeOut">512</output> {s.px}</span><input type="range" name="size" aria-label={s.size} min="128" max="1024" step="16" value="512" /></label>
+      </div>
+      <div class="design" data-design>
+        <h3>{s.design}</h3>
+        <div class="grid3">
+          <label>{s.shape}<select name="shape"><option value="square">{s.sSquare}</option><option value="rounded">{s.sRounded}</option><option value="dots">{s.sDots}</option></select></label>
+          <label>{s.finder}<select name="finder"><option value="square">{s.fSquare}</option><option value="rounded">{s.fRounded}</option><option value="circle">{s.fCircle}</option></select></label>
+          <label>{s.gradient}<select name="gradient"><option value="none">{s.gNone}</option><option value="linear">{s.gLinear}</option><option value="radial">{s.gRadial}</option></select></label>
+          <label data-when="gradient" hidden>{s.fg2}<input type="color" name="fg2" value="#5563c6" /></label>
+          <label>{s.frame}<select name="frame"><option value="none">{s.frNone}</option><option value="box">{s.frBox}</option><option value="rounded">{s.frRounded}</option><option value="label">{s.frLabel}</option></select></label>
+          <label data-when="label" hidden>{s.label}<input name="label" value="Scan me" maxlength="24" autocomplete="off" /></label>
+        </div>
+        <div class="logo">
+          <label>{s.logo}<input type="file" name="logo" accept="image/*" /></label>
+          <label data-when="logo" hidden><span>{s.logoSize}</span><input type="range" name="logosize" aria-label={s.logoSize} min="10" max="30" step="1" value="20" /></label>
+          <button type="button" class="btn alt" data-logo-clear data-when="logo" hidden>{s.logoClear}</button>
+        </div>
+        <p class="meta" data-when="logo" hidden>{s.logoNote}</p>
       </div>
       <p class="warn" role="status" data-warn data-text={s.low} hidden></p>
     </div>
@@ -142,7 +174,7 @@ const bs = barcodeStrings[lang];
   input[type='range'] { width: 100%; accent-color: var(--accent-strong); }
   .warn { margin: 14px 0 0; padding: 9px 12px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface-2); font-size: .88rem; }
   .stage { display: grid; place-items: center; min-height: 260px; padding: 12px; border-radius: var(--radius-sm); border: 1px dashed var(--line); }
-  canvas { max-width: 100%; height: auto; image-rendering: pixelated; }
+  canvas { max-width: 100%; height: auto; }
   .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
   .btn[disabled] { opacity: .45; cursor: not-allowed; }
   .btn.alt { background: transparent; color: var(--fg); border: 1px solid var(--line); }
@@ -151,5 +183,12 @@ const bs = barcodeStrings[lang];
   .preview { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 12px; overflow: auto; display: grid; justify-items: center; }
   :global(.preview svg) { max-width: 100%; height: auto; }
   [data-kind][hidden] { display: none; }
+  .design { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); display: grid; gap: 14px; }
+  .design h3 { margin: 0; font-size: .95rem; font-weight: 600; }
+  .grid3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; align-items: end; }
+  .logo { display: flex; flex-wrap: wrap; gap: 14px; align-items: end; }
+  .logo label:first-child { flex: 1 1 220px; }
+  .logo input[type='file'] { font: inherit; font-size: .9rem; color: var(--muted); }
+  [data-when][hidden] { display: none; }
   @media (max-width: 860px) { .qr { grid-template-columns: minmax(0, 1fr); } }
 </style>
