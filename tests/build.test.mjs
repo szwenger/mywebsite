@@ -393,10 +393,8 @@ test('privacy page covers hosting, storage, Twitch click, outbound links, local 
   }
 });
 
-test('legal pages carry the draft marker as an HTML comment only', () => {
-  const h = read('de/privacy/index.html');
-  assert.match(h, /<!--\s*DRAFT/);
-  assert.doesNotMatch(mainOf(h).replace(/<!--[\s\S]*?-->/g, ''), /DRAFT/);
+test('legal pages carry no draft marker, visible or in the source', () => {
+  for (const dir of Object.values(LANG_DIRS)) assert.doesNotMatch(read(`${dir}privacy/index.html`), /DRAFT/);
 });
 
 // ---- Task 6: tools overview and QR ----
@@ -512,11 +510,13 @@ test('deploy workflow: triggers, build and test steps, video cache, permissions,
     /workflow_dispatch:/,
     /schedule:\s*\n\s+- cron: '[^']+'/,
     /npm ci/, /npm run build/, /npm test/,
-    /actions\/cache@v\d/,
+    /actions\/cache@[0-9a-f]{40} # v\d/,
     /src\/data\/videos\.json/, /public\/thumbs/,
     /CI: true/, /pages: write/, /id-token: write/, /actions: write/,
-    /actions\/upload-pages-artifact@v\d/, /actions\/deploy-pages@v\d/,
+    /actions\/upload-pages-artifact@[0-9a-f]{40} # v\d/, /actions\/deploy-pages@[0-9a-f]{40} # v\d/,
   ]) assert.match(wf, re);
+  // every action is pinned to a commit, not a movable tag
+  for (const m of wf.matchAll(/uses: (\S+)/g)) assert.match(m[1], /@[0-9a-f]{40}$/, m[1]);
   // keep-alive: re-enables this workflow so GitHub does not pause the schedule, and only on scheduled runs
   assert.match(wf, /if: github\.event_name == 'schedule'/);
   assert.match(wf, /gh api -X PUT repos\/\$\{\{ github\.repository \}\}\/actions\/workflows\/pages\.yml\/enable/);

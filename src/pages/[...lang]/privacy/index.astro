@@ -10,7 +10,6 @@ const lang = (Astro.params.lang ?? 'en') as Lang;
 const doc = privacy[lang];
 ---
 <Base lang={lang} title={`${doc.title} · Galuin`}>
-  <Fragment set:html={'<!-- DRAFT: privacy text drafted for Simon to check before go-live. Not legal advice. -->'} />
   <section class="wrap page doc">
     <h1 class="section-title">{doc.title}</h1>
     <p class="meta">{t(lang, 'legalUpdated')}: {doc.updated}</p>

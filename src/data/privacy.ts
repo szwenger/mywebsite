@@ -5,6 +5,8 @@ export interface PrivacyDoc { title: string; updated: string; sections: { h: str
 const GH = 'https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement';
 const TW = 'https://www.twitch.tv/p/en/legal/privacy-notice/';
 const YT = 'https://policies.google.com/privacy';
+const DC = 'https://discord.com/privacy';
+const XX = 'https://x.com/en/privacy';
 const AZ = 'https://www.amazon.de/gp/help/customer/display.html?nodeId=201909010';
 const SQ = 'https://www.squarespace.com/privacy';
 const MAIL = '<a href="mailto:request@galuin.com">request@galuin.com</a>';
@@ -12,7 +14,7 @@ const MAIL = '<a href="mailto:request@galuin.com">request@galuin.com</a>';
 export const privacy: Record<Lang, PrivacyDoc> = {
   de: {
     title: 'Datenschutzerklärung',
-    updated: '23. November 2026',
+    updated: '27. November 2026',
     sections: [
       { h: 'Verantwortlicher', p: [`Simon Zwenger, Kontakt: ${MAIL}. Die Anschrift steht im <a href="../impressum/">Impressum</a>.`] },
       { h: 'Hosting über GitHub Pages', p: [
@@ -22,9 +24,9 @@ export const privacy: Record<Lang, PrivacyDoc> = {
       { h: 'Cookies und lokaler Speicher', p: ['Diese Website setzt keine Cookies. Im <code>localStorage</code> deines Browsers speichere ich Einstellungen und Arbeitsstände, damit sie beim nächsten Besuch noch da sind: das Farbschema (hell/dunkel), die Größe der Videokacheln, die zuletzt geöffnete Version der Änderungsliste, den zuletzt geöffneten Reiter und den Stand im Funktionsplotter, deine Eingaben in den Werkzeugen Code-Screenshots, LaTeX und Markdown sowie Einstellungen und Ergebnisse des Tipptrainers. Im <code>sessionStorage</code> liegt nur ein Merker für die Animation beim Sprachwechsel; er verschwindet, wenn du den Tab schließt. Diese Werte verlassen dein Gerät nicht, ich kann sie nicht sehen, und du kannst sie in den Browsereinstellungen löschen. Rechtsgrundlage: § 25 Abs. 2 Nr. 2 TDDDG, weil der Speicher nötig ist, damit die von dir genutzte Funktion arbeitet, und Art. 6 Abs. 1 lit. f DSGVO.'] },
       { h: 'Keine Drittinhalte beim Laden', p: ['Schriften und Vorschaubilder liegen auf galuin.com. Beim Laden einer Seite werden keine Inhalte von Dritten nachgeladen, deshalb erhalten Dritte dabei auch keine Daten von dir.'] },
       { h: 'Twitch-Player (nur nach Klick)', p: [`Der Twitch-Player wird erst geladen, wenn du auf „Player laden“ klickst. Dann stellt dein Browser eine Verbindung zu Twitch her; Twitch erhält deine IP-Adresse und kann Cookies setzen. Rechtsgrundlage ist deine Einwilligung durch den Klick (Art. 6 Abs. 1 lit. a DSGVO). Details: <a href="${TW}" rel="noopener">Datenschutzhinweis von Twitch</a>.`] },
-      { h: 'Links zu YouTube, Twitch und Amazon', p: [
-        'Wenn du einem Link zu YouTube, Twitch oder Amazon folgst, verlässt du diese Website. Ab dann gelten die Datenschutzbestimmungen des jeweiligen Anbieters: ' +
-        `<a href="${YT}" rel="noopener">YouTube (Google)</a>, <a href="${TW}" rel="noopener">Twitch</a>, <a href="${AZ}" rel="noopener">Amazon</a>.`,
+      { h: 'Links zu YouTube, Twitch, Amazon, Discord und X', p: [
+        'Wenn du einem Link zu YouTube, Twitch, Amazon, Discord oder X folgst, verlässt du diese Website. Ab dann gelten die Datenschutzbestimmungen des jeweiligen Anbieters: ' +
+        `<a href="${YT}" rel="noopener">YouTube (Google)</a>, <a href="${TW}" rel="noopener">Twitch</a>, <a href="${AZ}" rel="noopener">Amazon</a>, <a href="${DC}" rel="noopener">Discord</a>, <a href="${XX}" rel="noopener">X</a>.`,
       ] },
       { h: 'Browser-Tools', p: ['Die Tools (z. B. QR-Code, PDF, Bildkonverter) verarbeiten deine Dateien ausschließlich lokal im Browser. Es wird nichts hochgeladen oder an einen Server gesendet.'] },
       { h: 'Kontakt per E-Mail', p: [
@@ -37,7 +39,7 @@ export const privacy: Record<Lang, PrivacyDoc> = {
   },
   en: {
     title: 'Privacy policy',
-    updated: '23 November 2026',
+    updated: '27 November 2026',
     sections: [
       { h: 'Controller', p: [`Simon Zwenger, contact: ${MAIL}. The postal address is in the <a href="../impressum/">legal notice</a>. This is a translation; the German version applies.`] },
       { h: 'Hosting on GitHub Pages', p: [
@@ -47,9 +49,9 @@ export const privacy: Record<Lang, PrivacyDoc> = {
       { h: 'Cookies and local storage', p: ['This site sets no cookies. In your browser\'s <code>localStorage</code> I store settings and work in progress so they are still there on your next visit: the colour scheme (light/dark), the size of the video tiles, the newest changelog version you opened, the last open tab and the state of the graphing calculator, what you type into the Code screenshots, LaTeX and Markdown tools, and the typing trainer\'s settings and results. <code>sessionStorage</code> holds only a flag for the animation when you switch language; it disappears when you close the tab. These values never leave your device, I cannot see them, and you can delete them in your browser settings. Legal basis: § 25(2) no. 2 TDDDG, because the storage is needed for the feature you are using to work, and Art. 6(1)(f) GDPR.'] },
       { h: 'No third-party content on load', p: ['Fonts and thumbnails are served from galuin.com. Loading a page requests nothing from third parties, so no third party receives data about you when you do.'] },
       { h: 'Twitch player (only after a click)', p: [`The Twitch player loads only after you click “Load player”. Your browser then connects to Twitch; Twitch receives your IP address and may set cookies. The legal basis is your consent by clicking (Art. 6(1)(a) GDPR). Details: <a href="${TW}" rel="noopener">Twitch privacy notice</a>.`] },
-      { h: 'Links to YouTube, Twitch and Amazon', p: [
-        'When you follow a link to YouTube, Twitch or Amazon you leave this site, and that provider\'s privacy rules apply: ' +
-        `<a href="${YT}" rel="noopener">YouTube (Google)</a>, <a href="${TW}" rel="noopener">Twitch</a>, <a href="${AZ}" rel="noopener">Amazon</a>.`,
+      { h: 'Links to YouTube, Twitch, Amazon, Discord and X', p: [
+        'When you follow a link to YouTube, Twitch, Amazon, Discord or X you leave this site, and that provider\'s privacy rules apply: ' +
+        `<a href="${YT}" rel="noopener">YouTube (Google)</a>, <a href="${TW}" rel="noopener">Twitch</a>, <a href="${AZ}" rel="noopener">Amazon</a>, <a href="${DC}" rel="noopener">Discord</a>, <a href="${XX}" rel="noopener">X</a>.`,
       ] },
       { h: 'Browser tools', p: ['The tools (such as QR code, PDF and image converter) process your files only locally in your browser. Nothing is uploaded or sent to a server.'] },
       { h: 'Contact by email', p: [
@@ -62,7 +64,7 @@ export const privacy: Record<Lang, PrivacyDoc> = {
   },
   ru: {
     title: 'Политика конфиденциальности',
-    updated: '23 ноября 2026',
+    updated: '27 ноября 2026',
     sections: [
       { h: 'Ответственное лицо', p: [`Simon Zwenger, контакт: ${MAIL}. Почтовый адрес указан в разделе <a href="../impressum/">«Выходные данные»</a>. Это перевод; юридическую силу имеет немецкая версия.`] },
       { h: 'Хостинг на GitHub Pages', p: [
@@ -72,9 +74,9 @@ export const privacy: Record<Lang, PrivacyDoc> = {
       { h: 'Cookies и локальное хранилище', p: ['Сайт не устанавливает cookies. В <code>localStorage</code> браузера я сохраняю настройки и черновики, чтобы они были на месте при следующем визите: тему (светлая/тёмная), размер карточек видео, последнюю открытую версию истории изменений, последнюю открытую вкладку и состояние графического калькулятора, то, что вы вводите в инструментах «Скриншоты кода», LaTeX и Markdown, а также настройки и результаты клавиатурного тренажёра. В <code>sessionStorage</code> лежит только метка для анимации при смене языка; она исчезает при закрытии вкладки. Эти данные не покидают ваше устройство, я их не вижу, а удалить их можно в настройках браузера. Основание: § 25 абз. 2 п. 2 TDDDG, так как хранилище нужно для работы используемой вами функции, и ст. 6(1)(f) GDPR.'] },
       { h: 'Нет сторонних загрузок при открытии', p: ['Шрифты и превью лежат на galuin.com. При загрузке страницы ничего не запрашивается у третьих лиц, поэтому они не получают ваших данных.'] },
       { h: 'Плеер Twitch (только после клика)', p: [`Плеер Twitch загружается только после нажатия «Загрузить плеер». Тогда браузер подключается к Twitch; Twitch получает ваш IP-адрес и может установить cookies. Основание — ваше согласие через клик (ст. 6(1)(a) GDPR). Подробнее: <a href="${TW}" rel="noopener">уведомление Twitch о конфиденциальности</a>.`] },
-      { h: 'Ссылки на YouTube, Twitch и Amazon', p: [
-        'Переходя по ссылке на YouTube, Twitch или Amazon, вы покидаете этот сайт, и действуют правила конфиденциальности соответствующего сервиса: ' +
-        `<a href="${YT}" rel="noopener">YouTube (Google)</a>, <a href="${TW}" rel="noopener">Twitch</a>, <a href="${AZ}" rel="noopener">Amazon</a>.`,
+      { h: 'Ссылки на YouTube, Twitch, Amazon, Discord и X', p: [
+        'Переходя по ссылке на YouTube, Twitch, Amazon, Discord или X, вы покидаете этот сайт, и действуют правила конфиденциальности соответствующего сервиса: ' +
+        `<a href="${YT}" rel="noopener">YouTube (Google)</a>, <a href="${TW}" rel="noopener">Twitch</a>, <a href="${AZ}" rel="noopener">Amazon</a>, <a href="${DC}" rel="noopener">Discord</a>, <a href="${XX}" rel="noopener">X</a>.`,
       ] },
       { h: 'Инструменты в браузере', p: ['Инструменты (QR-код, PDF, конвертер изображений) обрабатывают ваши файлы только локально в браузере. Ничего не загружается и не отправляется на сервер.'] },
       { h: 'Связь по почте', p: [
