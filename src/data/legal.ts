@@ -3,7 +3,7 @@ export const ADDRESS_SENTINEL = 'TODO-ADDRESS';
 /** Impressum details. Replace the placeholder address (one string per line) once it is decided; until then the Impressum says it is pending and is noindex. */
 export const legal = {
   name: 'Simon Zwenger',
-  address: [ADDRESS_SENTINEL] as string[],
+  address: ['c/o Block Services', 'Stuttgarter Str. 106', '70736 Fellbach'] as string[],
   email: 'request@galuin.com',
 };
 
