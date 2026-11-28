@@ -470,11 +470,33 @@ test('the PDF page ships every tool panel, the tab buttons and the not-possible 
   }
 });
 
+test('the PDF page offers OCR in every language and no longer lists it as impossible', () => {
+  for (const dir of Object.values(LANG_DIRS)) {
+    const html = read(`${dir}tools/pdf/index.html`);
+    assert.match(html, /data-do="ocr"/, `${dir} OCR button`);
+    assert.match(html, /name="oclang"/, `${dir} OCR language`);
+    const limits = /<details class="card limits"[\s\S]*?<\/details>/.exec(html)[0];
+    assert.doesNotMatch(limits, /OCR/, `${dir} limits note`);
+  }
+});
+
 test('no built script loads from a CDN, and the pdf.js worker ships with the site', () => {
   const scripts = readdirSync(jsDir).filter((n) => /\.m?js$/.test(n));
   assert.ok(scripts.some((n) => n.includes('pdf.worker')), 'worker file present');
   // Relative imports are dropped first: a content hash in a chunk name can spell "cdn." by chance (list.BnsPIcdN.js).
   for (const n of scripts) assert.doesNotMatch(chunkSrc(n).replace(/["'`]\.\/[^"'`]+["'`]/g, ''), /cdn\.|unpkg|jsdelivr|cdnjs/i, n);
+});
+
+test('OCR engine and language data ship with the site, with no CDN fallback left in them', () => {
+  const files = readdirSync(jsDir);
+  const worker = files.find((n) => /^worker\.min\..+\.js$/.test(n));
+  const core = files.find((n) => /^tesseract-core-simd-lstm\.wasm\..+\.js$/.test(n));
+  assert.ok(worker, 'tesseract worker file present');
+  assert.ok(core, 'tesseract core (simd, lstm) file present');
+  for (const n of [worker, core]) assert.doesNotMatch(chunkSrc(n), /cdn\.jsdelivr|unpkg|cdnjs|projectnaptha/i, n);
+  for (const lang of ['eng', 'deu', 'rus']) assert.ok(existsSync(join('dist', 'ocr', `${lang}.traineddata.gz`)), `${lang} data`);
+  // The main script that starts the worker must not carry the library's default CDN addresses either.
+  for (const n of files.filter((f) => /\.m?js$/.test(f))) assert.doesNotMatch(chunkSrc(n).replace(/["'`]\.\/[^"'`]+["'`]/g, ''), /cdn\.jsdelivr|projectnaptha/i, n);
 });
 
 // ---- Task 8: image converter ----

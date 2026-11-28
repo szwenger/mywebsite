@@ -134,6 +134,27 @@ const TOOLS = ['text', 'image', 'draw', 'highlight', 'whiteout', 'select'];
           <button type="button" class="btn alt" data-do="invert">{s.toInvert}</button>
           <button type="button" class="btn alt" data-do="flat">{s.toFlat}</button>
         </div>
+        <h3>{s.ocrTitle}</h3>
+        <div class="row">
+          <label>{s.ocrLang}<select name="oclang">
+            <option value="en" selected={lang === 'en'}>{s.ocrLangEn}</option>
+            <option value="de" selected={lang === 'de'}>{s.ocrLangDe}</option>
+            <option value="ru" selected={lang === 'ru'}>{s.ocrLangRu}</option>
+            <option value="ru+en">{s.ocrLangRuEn}</option>
+          </select></label>
+          <label>{s.ocrDpi}<input type="number" name="ocdpi" min="100" max="400" value="300" /></label>
+          <label>{s.pagesField}<input name="ocpages" placeholder={s.rangePlaceholder} autocomplete="off" /></label>
+        </div>
+        <label class="check"><input type="checkbox" name="ocforce" />{s.ocrForce}</label>
+        <div class="actions"><button type="button" class="btn" data-do="ocr">{s.ocrBtn}</button></div>
+        <p class="meta">{s.ocrNote}</p>
+        <div data-ocr-out hidden>
+          <textarea readonly rows="8" name="octext" aria-label={s.ocrTitle}></textarea>
+          <div class="actions">
+            <button type="button" class="btn alt" data-ocr="copy">{s.ocrCopy}</button>
+            <button type="button" class="btn alt" data-ocr="save">{s.ocrSave}</button>
+          </div>
+        </div>
         <p class="note" data-out hidden></p>
       </section>
 

@@ -150,7 +150,28 @@ export function initPanels(c: Ctx) {
     gray: async () => c.apply(await rasterizePages(c.doc(), { pages: null, dpi: 130, quality: 0.8, gray: true }, c.progress), identity()),
     invert: async () => c.apply(await rasterizePages(c.doc(), { pages: null, dpi: 130, quality: 0.85, invert: true }, c.progress), identity()),
     flat: async () => c.apply(await rasterizePages(c.doc(), { pages: null, dpi: 170, quality: 0.85 }, c.progress), identity()),
+    ocr: async (p, f) => {
+      const pages = pagesOf(f.str('ocpages'));
+      if (!pages) return;
+      // Engine, language data and the layer writer load only now. The open document is replaced only after every page succeeded.
+      const [{ recognizePages }, { addTextLayer }] = await Promise.all([import('./ocr'), import('./ocrlayer')]);
+      const { layer, text } = await recognizePages(c.doc(), { pages, lang: f.str('oclang') as 'en', dpi: f.num('ocdpi', 300), skipText: !f.on('ocforce') }, c.progress);
+      const out = p.querySelector<HTMLElement>('[data-ocr-out]')!;
+      if (!layer.some((l) => l.words.length)) { out.hidden = true; f.out('[data-out]', s.ocrNoText); return; }
+      const joined = text.map((t, i) => (text.length > 1 ? `--- ${s.page} ${layer[i].index + 1} ---\n` : '') + t).join('\n\n');
+      await c.apply(await addTextLayer(c.doc(), layer), identity());
+      f.out('[data-out]', '');
+      p.querySelector<HTMLTextAreaElement>('[name="octext"]')!.value = joined;
+      out.hidden = false;
+    },
   });
+  const ocrPanel = panel('convert');
+  const ocrText = () => ocrPanel?.querySelector<HTMLTextAreaElement>('[name="octext"]')?.value ?? '';
+  ocrPanel?.querySelector<HTMLElement>('[data-ocr="copy"]')?.addEventListener('click', (e) => {
+    const b = e.currentTarget as HTMLElement, label = b.textContent;
+    void navigator.clipboard.writeText(ocrText()).then(() => { b.textContent = s.ocrCopied; setTimeout(() => { b.textContent = label; }, 1500); });
+  });
+  ocrPanel?.querySelector<HTMLElement>('[data-ocr="save"]')?.addEventListener('click', () => c.save(new TextEncoder().encode(ocrText()), `${c.baseName()}.txt`, 'text/plain;charset=utf-8'));
 
   // ---- page numbers, header and footer ----
   wire('number', {
